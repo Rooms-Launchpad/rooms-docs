@@ -1,1 +1,212 @@
-# Rooms Docs
+# Rooms Protocol
+
+Rooms is a Solana smart contract for community-driven token launches. Contributors pool SOL into a room until a funding target is hit, at which point the program automatically launches a token on PumpFun or Meteora and distributes it proportionally to contributors. Contributors then earn ongoing trading fee rewards based on their share.
+
+---
+
+## Deployments
+
+| Network | Program ID |
+|---|---|
+| Mainnet | `CyenP3qnD453Lr6YD7aWzWajM1ytcYdjPmHpHgMrooms` |
+| Devnet | `CyenP3qnD453Lr6YD7aWzWajM1ytcYdjPmHpHgMrooms` |
+
+The IDL is available at [`idl/rooms.json`](./idl/rooms.json).
+
+---
+
+## Concepts
+
+### Room
+
+A room is an on-chain account that holds contributed SOL until a target is reached. Each room is configured at creation with a platform, access type, and reward structure. Once finalized (target met), a token is launched and the room is locked — contributions and withdrawals are no longer possible.
+
+### Platforms
+
+| Value | Description |
+|---|---|
+| `PumpFun` | Launches on PumpFun bonding curve; fixed raise target (~86.4 SOL) |
+| `Rooms` (Meteora) | Launches on Meteora DAMM v2; configurable raise target (30–300 SOL) |
+
+### Room Types (Access Control)
+
+| Value | Description |
+|---|---|
+| `Open` | Anyone can contribute |
+| `AccessCode` | Contributor must be verified via an access code off-chain |
+
+For `AccessCode` rooms, `rooms_authority` signs a timed verification payload off-chain and the user calls `verify_access` to produce an on-chain `RoomAccess` PDA before contributing.
+
+### Reward Structures
+
+| Value | Description |
+|---|---|
+| `Equal` | All contributors share fees equally based on contribution amount |
+| `Creator` | Room creator receives a share of fees |
+| `Custom` | A specified wallet receives a share of fees |
+
+---
+
+## User Instructions
+
+These are the instructions available to regular users.
+
+### `create_room`
+
+Creates a new room. The creator pays rent for the room account.
+
+| Argument | Type | Description |
+|---|---|---|
+| `room_platform` | `RoomPlatform` | `PumpFun` or `Rooms` (Meteora) |
+| `room_type` | `RoomType` | `Open` or `AccessCode` |
+| `reward_structure` | `RewardStructure` | `Equal`, `Creator`, or `Custom` |
+| `metadata_uri` | `string` | IPFS or URL pointing to token metadata JSON (max 200 chars) |
+| `reward_wallet` | `pubkey?` | Required when `reward_structure` is `Custom`; ignored otherwise |
+| `raise_lamports` | `u64?` | Target raise in lamports. Required for Meteora rooms (30–300 SOL). Ignored for PumpFun. |
+
+**Constraints:**
+- Meteora rooms: `raise_lamports` must be exactly 30 SOL, 90 SOL, or 180 SOL
+- PumpFun rooms: raise target is fixed (~86.4 SOL); passing `raise_lamports` has no effect
+- `reward_wallet` must be provided when using `Custom` reward structure
+
+---
+
+### `increase_contribution`
+
+Contributes SOL to a room.
+
+| Argument | Type | Description |
+|---|---|---|
+| `lamports_amount` | `u64` | Amount to contribute in lamports |
+
+**Constraints:**
+- Room must not be finalized
+- Total contribution must not exceed `max_contribution` per user
+- Must be at or above `min_contribution`
+- For non-Open rooms: user must have a valid `RoomAccess` PDA (see `verify_access`)
+- If this contribution causes `raised_lamports` to reach `target_lamports`, finalization is triggered automatically
+
+---
+
+### `withdraw_contribution`
+
+Withdraws SOL from a room before finalization.
+
+| Argument | Type | Description |
+|---|---|---|
+| `lamports_amount` | `u64` | Amount to withdraw in lamports |
+
+**Constraints:**
+- Room must not be finalized — withdrawals are permanently blocked once a room finalizes
+- Amount must not exceed the user's current `lamports_contributed`
+
+---
+
+### `verify_access` 🔒
+
+Creates a `RoomAccess` PDA that permits a user to contribute to a non-Open room. The instruction validates an Ed25519 signature from `rooms_authority` embedded in the transaction's instruction sysvar.
+
+| Argument | Type | Description |
+|---|---|---|
+| `timestamp` | `i64` | Timestamp included in the signed payload (used to prevent replay) |
+
+**Constraints:**
+- Room type must be `AccessCode`
+- Transaction must include a preceding Ed25519 instruction signed by `rooms_authority`
+- Signature must cover the correct room, user, and timestamp
+- Only needs to be called once per user per room
+
+---
+
+### `claim_rewards`
+
+Claims accumulated trading fee rewards for a contributor.
+
+**No arguments.**
+
+**Constraints:**
+- Room must be finalized and have a token mint
+- Caller must hold **at least 50% of their allocated tokens** at claim time
+- If the token balance check fails, accrued rewards are forfeited to `admin_vault`
+- Rewards are calculated from the delta between the room's `treasury_fee_accumulator` and the user's last `treasury_fee_checkpoint`
+
+---
+
+### `swap_pump`
+
+Buys or sells the room token via PumpSwap AMM. Room must use the `PumpFun` platform.
+
+| Argument | Type | Description |
+|---|---|---|
+| `amount` | `u64` | Input amount in lamports (buy) or tokens (sell) |
+| `min_out` | `u64` | Minimum output amount (slippage protection) |
+| `is_buy` | `bool` | `true` to buy tokens, `false` to sell |
+
+**Constraints:**
+- Room must be `PumpFun` platform and finalized
+- Bonding curve must have already migrated to PumpSwap (see `migrate_pump_pool`)
+
+---
+
+### `swap_meteora`
+
+Buys or sells the room token via Meteora DAMM v2. Room must use the `Rooms` (Meteora) platform.
+
+| Argument | Type | Description |
+|---|---|---|
+| `amount_in` | `u64` | Input amount in lamports (buy) or tokens (sell) |
+| `slippage_bps` | `u16` | Maximum slippage in basis points |
+| `is_buy` | `bool` | `true` to buy tokens, `false` to sell |
+
+**Constraints:**
+- Room must be `Rooms` platform and finalized
+
+---
+
+## Protocol-Managed Instructions
+
+> 🔒 These instructions require the `rooms_authority` signer and are executed by the Rooms backend. They cannot be called directly by users.
+
+| Instruction | Description |
+|---|---|
+| `airdrop_tokens` | Distributes token allocation to contributors. Triggered automatically post-finalization. |
+| `finalize_pump` | Launches token on PumpFun bonding curve. Triggered automatically when target is met. |
+| `finalize_meteora` | Launches token on Meteora DAMM v2. Triggered automatically when target is met. |
+| `migrate_pump_pool` | Migrates a PumpFun bonding curve to PumpSwap AMM after graduation. |
+| `initialize_meteora_dfs` | Initializes Meteora Dynamic Fee Sharing vault post-finalization. |
+| `collect_pump_fees` | Sweeps accumulated PumpSwap creator fees into the room vault for distribution. |
+| `collect_meteora_fees` | Sweeps accumulated Meteora DFS fees into the room vault for distribution. |
+
+---
+
+## Fees
+
+| Action | Fee |
+|---|---|
+| Contribute (`increase_contribution`) | 3% of amount |
+| Withdraw (`withdraw_contribution`) | 3% of amount |
+| Buy (`swap_pump` / `swap_meteora`) | 0.5% of SOL input |
+| Sell (`swap_pump` / `swap_meteora`) | 0.5% of SOL received |
+
+---
+
+## Account PDAs
+
+| Account | Seeds | Description |
+|---|---|---|
+| `GlobalConfig` | `[b"global_config"]` | Singleton protocol config |
+| `Room` | `[b"room", token_mint]` | Per-launch state |
+| `RoomUser` | `[b"room_user", room, user]` | Per-user contribution state |
+| `RoomAccess` | `[b"room_access", room, user]` | Access verification for gated rooms |
+
+---
+
+## External Programs
+
+| Program | Address |
+|---|---|
+| PumpFun | `6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P` |
+| PumpSwap | `pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA` |
+| Meteora DAMM v2 | `cpamdpZCGKUy5JxQXB4dcpGPiikHawvSWAd6mEn1sGG` |
+| Meteora DFS | `dfsdo2UqvwfN8DuUVrMRNfQe11VaiNoKcMqLHVvDPzh` |
+| Token Metadata | `metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s` |
