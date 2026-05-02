@@ -165,17 +165,17 @@ Buys or sells the room token via Meteora DAMM v2. Room must use the `Rooms` (Met
 
 ## Protocol-Managed Instructions
 
-> 🔒 These instructions require the `rooms_authority` signer and are executed by the Rooms backend. They cannot be called directly by users.
+These instructions are executed by the Rooms backend. On-chain authorization varies per instruction.
 
-| Instruction | Description |
-|---|---|
-| `airdrop_tokens` | Distributes token allocation to contributors. Triggered automatically post-finalization. |
-| `finalize_pump` | Launches token on PumpFun bonding curve. Triggered automatically when target is met. |
-| `finalize_meteora` | Launches token on Meteora DAMM v2. Triggered automatically when target is met. |
-| `migrate_pump_pool` | Migrates a PumpFun bonding curve to PumpSwap AMM after graduation. |
-| `initialize_meteora_dfs` | Initializes Meteora Dynamic Fee Sharing vault post-finalization. |
-| `collect_pump_fees` | Sweeps accumulated PumpSwap creator fees into the room vault for distribution. |
-| `collect_meteora_fees` | Sweeps accumulated Meteora DFS fees into the room vault for distribution. |
+| Instruction | Authorization | Description |
+|---|---|---|
+| `airdrop_tokens` | 🔒 `rooms_authority` signer | Distributes token allocation to contributors. Triggered automatically post-finalization. |
+| `finalize_pump` | Permissionless | Launches token on PumpFun bonding curve. Triggered automatically when target is met. |
+| `finalize_meteora` | Permissionless | Launches token on Meteora DAMM v2. Triggered automatically when target is met. |
+| `migrate_pump_pool` | Permissionless | Migrates a PumpFun bonding curve to PumpSwap AMM after graduation. |
+| `initialize_meteora_dfs` | Permissionless | Initializes Meteora Dynamic Fee Sharing vault post-finalization. |
+| `collect_pump_fees` | Permissionless | Sweeps accumulated PumpSwap creator fees into the room vault for distribution. |
+| `collect_meteora_fees` | Permissionless | Sweeps accumulated Meteora DFS fees into the room vault for distribution. |
 
 ---
 
