@@ -41,9 +41,13 @@ For `AccessCode` rooms, `rooms_authority` signs a timed verification payload off
 
 | Value | Description |
 |---|---|
-| `Equal` | All contributors share fees equally based on contribution amount |
-| `Creator` | Room creator receives a share of fees |
-| `Custom` | A specified wallet receives a share of fees |
+| `Equal` | Contributors share fees proportionally to their contribution. The room creator additionally receives a virtual share equal to `max_contribution`, regardless of their actual contribution. |
+| `Creator` | The room creator receives 100% of accumulated fees. |
+| `Custom` | A designated `reward_wallet` (set at room creation) receives 100% of accumulated fees. |
+
+**Equal — creator bonus:** the fee accumulator is divided by `raised_lamports + max_contribution` rather than `raised_lamports`, reserving the creator's slice from the pool without draining more than the fees collected. The creator's reward is calculated as if they contributed exactly `max_contribution`.
+
+**50% holding rule (Equal only):** regular contributors must hold at least 50% of their allocated token amount at claim time. If they do not, their pending rewards are forfeited to `admin_vault`. The room creator is **exempt** from this rule.
 
 ---
 
@@ -120,15 +124,24 @@ Creates a `RoomAccess` PDA that permits a user to contribute to a non-Open room.
 
 ### `claim_rewards`
 
-Claims accumulated trading fee rewards for a contributor.
+Claims accumulated trading fee rewards for a contributor, the room creator, or the designated reward wallet.
 
 **No arguments.**
 
-**Constraints:**
-- Room must be finalized and have a token mint
-- Caller must hold **at least 50% of their allocated tokens** at claim time
-- If the token balance check fails, accrued rewards are forfeited to `admin_vault`
-- Rewards are calculated from the delta between the room's `treasury_fee_accumulator` and the user's last `treasury_fee_checkpoint`
+**Constraints by reward structure:**
+
+| Structure | Who can claim | 50% holding rule | Reward calculation |
+|---|---|---|---|
+| `Equal` (regular contributor) | Any contributor | ✅ Must hold ≥50% of allocated tokens | `accumulator_delta × lamports_contributed / (raised_lamports + max_contribution)` |
+| `Equal` (room creator) | Room creator | ❌ Exempt | `accumulator_delta × max_contribution / (raised_lamports + max_contribution)` |
+| `Creator` | Room creator | ❌ Exempt | `accumulator_delta / 1_000_000_000` (all fees) |
+| `Custom` | `reward_wallet` set at room creation | ❌ Exempt | `accumulator_delta / 1_000_000_000` (all fees) |
+
+**Forfeiture:** if a regular Equal contributor's token balance falls below 50% of their allocation at claim time, the pending rewards are transferred to `admin_vault` instead of the contributor.
+
+**`user_token_account`** is required only for regular Equal contributor claims. It may be omitted for the room creator (Equal) and for Creator / Custom reward structures.
+
+A `RoomUser` PDA is created at room creation for the creator and reward wallet with `treasury_fee_checkpoint = 0`, so they earn fees from room inception.
 
 ---
 
@@ -175,7 +188,7 @@ These instructions are executed by the Rooms backend. On-chain authorization var
 | `migrate_pump_pool` | Permissionless | Migrates a PumpFun bonding curve to PumpSwap AMM after graduation. |
 | `initialize_meteora_dfs` | Permissionless | Initializes Meteora Dynamic Fee Sharing vault post-finalization. |
 | `collect_pump_fees` | Permissionless | Sweeps accumulated PumpSwap creator fees into the room vault for distribution. |
-| `collect_meteora_fees` | Permissionless | Sweeps accumulated Meteora DFS fees into the room vault for distribution. |
+| `collect_meteora_fees` | Permissionless | Sweeps accumulated Meteora DFS fees into the room vault for distribution. Closes the WSOL ATA at the end of each call, unwrapping all collected WSOL to native SOL in `room_vault`. The ATA must be (re-)created by the caller before each invocation. |
 
 ---
 
