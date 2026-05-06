@@ -47,7 +47,7 @@ For `AccessCode` rooms, `rooms_authority` signs a timed verification payload off
 
 **Equal — creator bonus:** the fee accumulator is divided by `raised_lamports + max_contribution` rather than `raised_lamports`, reserving the creator's slice from the pool without draining more than the fees collected. The creator's reward is calculated as if they contributed exactly `max_contribution`.
 
-**50% holding rule (Equal only):** regular contributors must hold at least 50% of their allocated token amount at claim time. If they do not, their pending rewards are forfeited to `admin_vault`. The room creator is **exempt** from this rule.
+**50% holding rule (Equal only):** regular contributors must hold at least 50% of their allocated token amount. Enforcement is handled off-chain: the Rooms backend monitors balances and calls `freeze_rewards` when a contributor drops below the threshold. The room creator is **exempt** from this rule and can never be frozen.
 
 ---
 
@@ -130,18 +130,20 @@ Claims accumulated trading fee rewards for a contributor, the room creator, or t
 
 **Constraints by reward structure:**
 
-| Structure | Who can claim | 50% holding rule | Reward calculation |
-|---|---|---|---|
-| `Equal` (regular contributor) | Any contributor | ✅ Must hold ≥50% of allocated tokens | `accumulator_delta × lamports_contributed / (raised_lamports + max_contribution)` |
-| `Equal` (room creator) | Room creator | ❌ Exempt | `accumulator_delta × max_contribution / (raised_lamports + max_contribution)` |
-| `Creator` | Room creator | ❌ Exempt | `accumulator_delta / 1_000_000_000` (all fees) |
-| `Custom` | `reward_wallet` set at room creation | ❌ Exempt | `accumulator_delta / 1_000_000_000` (all fees) |
+| Structure | Who can claim | Reward calculation |
+|---|---|---|
+| `Equal` (regular contributor) | Any non-frozen contributor | `accumulator_delta × lamports_contributed / (active_lamports + max_contribution)` |
+| `Equal` (room creator) | Room creator | `accumulator_delta × max_contribution / (active_lamports + max_contribution)` |
+| `Creator` | Room creator | `accumulator_delta / 1_000_000_000` (all fees) |
+| `Custom` | `reward_wallet` set at room creation | `accumulator_delta / 1_000_000_000` (all fees) |
 
-**Forfeiture:** if a regular Equal contributor's token balance falls below 50% of their allocation at claim time, the pending rewards are transferred to `admin_vault` instead of the contributor.
+`active_lamports` = `raised_lamports − frozen_contribution_lamports`. Frozen users' contributions are excluded from the denominator so their share is redistributed to active participants on each fee collection.
 
-**`user_token_account`** is required only for regular Equal contributor claims. It may be omitted for the room creator (Equal) and for Creator / Custom reward structures.
+**Frozen users:** if a contributor has been frozen via `freeze_rewards`, their claimable amount is capped at the accumulator value recorded at freeze time. They can drain that pre-freeze amount but earn nothing from subsequent fee collections.
 
 A `RoomUser` PDA is created at room creation for the creator and reward wallet with `treasury_fee_checkpoint = 0`, so they earn fees from room inception.
+
+---
 
 ---
 
@@ -183,6 +185,7 @@ These instructions are executed by the Rooms backend. On-chain authorization var
 | Instruction | Authorization | Description |
 |---|---|---|
 | `airdrop_tokens` | 🔒 `rooms_authority` signer | Distributes token allocation to contributors. Triggered automatically post-finalization. |
+| `freeze_rewards` | 🔒 `rooms_authority` signer | Freezes reward accumulation for an Equal-room contributor who dropped below 50% token holding. Called by the Rooms cron. |
 | `finalize_pump` | Permissionless | Launches token on PumpFun bonding curve. Triggered automatically when target is met. |
 | `finalize_meteora` | Permissionless | Launches token on Meteora DAMM v2. Triggered automatically when target is met. |
 | `migrate_pump_pool` | Permissionless | Migrates a PumpFun bonding curve to PumpSwap AMM after graduation. |

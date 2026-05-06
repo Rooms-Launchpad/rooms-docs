@@ -23,3 +23,6 @@
 - `collect_meteora_fees` — Collect fees from Meteora DFS
 - `migrate_pump_pool` — Migrate bonding curve to PumpSwap AMM
 - `initialize_meteora_dfs` — Setup Meteora DFS fee vault
+- `freeze_rewards` — Freeze reward accumulation for an Equal-room contributor who dropped below 50% token holding; called by the Rooms cron via `rooms_authority`
+
+)

@@ -172,7 +172,8 @@
         {
           "name": "room_user",
           "docs": [
-            "The RoomUser PDA for the signing user."
+            "Created on first claim if the signer never contributed (e.g. creator/reward_wallet).",
+            "Checkpoint starts at 0 so creators earn fees from room inception."
           ],
           "writable": true,
           "pda": {
@@ -228,16 +229,6 @@
               }
             ]
           }
-        },
-        {
-          "name": "user_token_account",
-          "docs": [
-            "The user's token account for the room's token mint."
-          ]
-        },
-        {
-          "name": "admin_vault",
-          "writable": true
         },
         {
           "name": "user",
@@ -1462,6 +1453,92 @@
           "type": "string"
         }
       ]
+    },
+    {
+      "name": "freeze_rewards",
+      "discriminator": [
+        132,
+        73,
+        148,
+        69,
+        166,
+        208,
+        24,
+        98
+      ],
+      "accounts": [
+        {
+          "name": "global_config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  108,
+                  111,
+                  98,
+                  97,
+                  108,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "room",
+          "writable": true
+        },
+        {
+          "name": "room_user",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  111,
+                  111,
+                  109,
+                  95,
+                  117,
+                  115,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "room"
+              },
+              {
+                "kind": "account",
+                "path": "room_user.user",
+                "account": "RoomUser"
+              }
+            ]
+          }
+        },
+        {
+          "name": "user_token_account",
+          "docs": [
+            "Token account belonging to the contributor being evaluated."
+          ]
+        },
+        {
+          "name": "rooms_authority",
+          "signer": true
+        }
+      ],
+      "args": []
     },
     {
       "name": "increase_contribution",
@@ -3312,16 +3389,16 @@
       ]
     },
     {
-      "name": "RewardsForfeited",
+      "name": "RewardsFrozen",
       "discriminator": [
-        171,
-        190,
-        87,
-        208,
-        87,
-        188,
-        100,
-        177
+        239,
+        12,
+        132,
+        183,
+        160,
+        132,
+        72,
+        16
       ]
     },
     {
@@ -3506,6 +3583,21 @@
       "code": 6030,
       "name": "WithdrawalsLocked",
       "msg": "Withdrawals are locked once the room target is reached"
+    },
+    {
+      "code": 6031,
+      "name": "RewardsFrozen",
+      "msg": "Rewards are frozen for this user"
+    },
+    {
+      "code": 6032,
+      "name": "HoldingSufficient",
+      "msg": "User is holding sufficient tokens, freeze not applicable"
+    },
+    {
+      "code": 6033,
+      "name": "CannotFreezeCreator",
+      "msg": "Cannot freeze creator rewards"
     }
   ],
   "types": [
@@ -3735,7 +3827,7 @@
       }
     },
     {
-      "name": "RewardsForfeited",
+      "name": "RewardsFrozen",
       "type": {
         "kind": "struct",
         "fields": [
@@ -3748,8 +3840,8 @@
             "type": "pubkey"
           },
           {
-            "name": "lamports_forfeited",
-            "type": "u64"
+            "name": "frozen_at_accumulator",
+            "type": "u128"
           },
           {
             "name": "timestamp",
@@ -3834,6 +3926,15 @@
           {
             "name": "treasury_fee_accumulator",
             "type": "u128"
+          },
+          {
+            "name": "frozen_contribution_lamports",
+            "docs": [
+              "Sum of lamports_contributed for all frozen users (Equal rooms only).",
+              "Excluded from the fee distribution denominator so their share is",
+              "redistributed to active participants on each fee collection."
+            ],
+            "type": "u64"
           },
           {
             "name": "reward_wallet",
@@ -3993,6 +4094,14 @@
           {
             "name": "treasury_fee_claimed",
             "type": "u64"
+          },
+          {
+            "name": "rewards_frozen",
+            "type": "bool"
+          },
+          {
+            "name": "frozen_at_accumulator",
+            "type": "u128"
           },
           {
             "name": "bump",
