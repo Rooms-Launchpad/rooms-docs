@@ -25,8 +25,8 @@ A room is an on-chain account that holds contributed SOL until a target is reach
 
 | Value | Description |
 |---|---|
-| `PumpFun` | Launches on PumpFun bonding curve; fixed raise target (~86.4 SOL) |
-| `Rooms` (Meteora) | Launches on Meteora DAMM v2; configurable raise target (30–300 SOL) |
+| `PumpFun` | Launches on PumpFun bonding curve; fixed raise target (~86.077 SOL) |
+| `Rooms` (Meteora) | Launches on Meteora DAMM v2; configurable raise target (30, 90, or 180 SOL) |
 
 ### Room Types (Access Control)
 
@@ -70,7 +70,7 @@ Creates a new room. The creator pays rent for the room account.
 
 **Constraints:**
 - Meteora rooms: `raise_lamports` must be exactly 30 SOL, 90 SOL, or 180 SOL
-- PumpFun rooms: raise target is fixed (~86.4 SOL); passing `raise_lamports` has no effect
+- PumpFun rooms: raise target is fixed (~86.077 SOL); passing `raise_lamports` has no effect
 - `reward_wallet` must be provided when using `Custom` reward structure
 
 ---
@@ -90,19 +90,22 @@ Contributes SOL to a room.
 - For non-Open rooms: user must have a valid `RoomAccess` PDA (see `verify_access`)
 - If this contribution causes `raised_lamports` to reach `target_lamports`, finalization is triggered automatically
 
+**Fees charged:**
+- 3% admin fee on the contribution amount, sent to `admin_vault`
+- On a user's **first** contribution only: an additional 2,100,000 lamports (0.0021 SOL) ATA fee is collected into `room_vault`. This pre-funds the Token2022 token account created for the contributor during `airdrop_tokens` and is refunded in full on withdrawal.
+
 ---
 
 ### `withdraw_contribution`
 
-Withdraws SOL from a room before finalization.
+Withdraws the user's full contribution from a room before finalization.
 
-| Argument | Type | Description |
-|---|---|---|
-| `lamports_amount` | `u64` | Amount to withdraw in lamports |
+**No arguments** — withdrawal is always for the full contributed amount.
 
 **Constraints:**
 - Room must not be finalized — withdrawals are permanently blocked once a room finalizes
-- Amount must not exceed the user's current `lamports_contributed`
+
+**Refund:** the user receives their `lamports_contributed` minus the 3% withdrawal fee, plus the 2,100,000 lamport ATA fee refunded in full.
 
 ---
 
@@ -184,7 +187,7 @@ These instructions are executed by the Rooms backend. On-chain authorization var
 
 | Instruction | Authorization | Description |
 |---|---|---|
-| `airdrop_tokens` | 🔒 `rooms_authority` signer | Distributes token allocation to contributors. Triggered automatically post-finalization. |
+| `airdrop_tokens` | 🔒 `rooms_authority` signer | Distributes token allocation to contributors. `room_vault` pays for Token2022 ATA creation per recipient using the ATA fees pre-collected during contributions. Triggered automatically post-finalization. |
 | `freeze_rewards` | 🔒 `rooms_authority` signer | Freezes reward accumulation for an Equal-room contributor who dropped below 50% token holding. Called by the Rooms cron. |
 | `finalize_pump` | Permissionless | Launches token on PumpFun bonding curve. Triggered automatically when target is met. |
 | `finalize_meteora` | Permissionless | Launches token on Meteora DAMM v2. Triggered automatically when target is met. |
@@ -199,7 +202,7 @@ These instructions are executed by the Rooms backend. On-chain authorization var
 
 | Action | Fee | Rooms Protocol | Reward Pool | PumpFun / Meteora Take |
 |---|---|---|---|---|
-| Contribute / Withdraw | 3% | 3% | — | — |
+| Contribute / Withdraw | 3% + 0.0021 SOL ATA fee (first contribution only) | 3% | — | — |
 | Any trade on PumpSwap | ~1.2–1.25% (tiered by market cap) | — | 100% of creator share | ✅ |
 | Any trade on Meteora | 1.5% (Rooms) + Meteora protocol fee | 0.3% | 1.2% | ✅ |
 | `swap_pump` / `swap_meteora` | 0.5% | 0.5% | — | — |
