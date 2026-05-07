@@ -197,12 +197,16 @@ These instructions are executed by the Rooms backend. On-chain authorization var
 
 ## Fees
 
-| Action | Fee |
-|---|---|
-| Contribute (`increase_contribution`) | 3% of amount |
-| Withdraw (`withdraw_contribution`) | 3% of amount |
-| Buy (`swap_pump` / `swap_meteora`) | 0.5% of SOL input |
-| Sell (`swap_pump` / `swap_meteora`) | 0.5% of SOL received |
+| Action | Fee | Rooms Protocol | Reward Pool | PumpFun / Meteora Take |
+|---|---|---|---|---|
+| Contribute / Withdraw | 3% | 3% | — | — |
+| Any trade on PumpSwap | ~1.2–1.25% (tiered by market cap) | — | 100% of creator share | ✅ |
+| Any trade on Meteora | 1.5% (Rooms) + Meteora protocol fee | 0.3% | 1.2% | ✅ |
+| `swap_pump` / `swap_meteora` | 0.5% | 0.5% | — | — |
+
+The PumpSwap and Meteora fees apply to all trades on those AMMs regardless of interface — including trades made directly without going through Rooms. The +0.5% Rooms swap fee is an additional charge applied only when trading through `swap_pump` or `swap_meteora`.
+
+For PumpFun, only the creator share flows to Rooms (30–95 bps depending on market cap); the remainder goes to PumpFun's LPs and protocol. The Reward Pool is distributed to contributors proportionally (`Equal`), to the room creator (`Creator`), or to the designated reward wallet (`Custom`).
 
 ---
 
