@@ -204,7 +204,7 @@ These instructions are executed by the Rooms backend. On-chain authorization var
 |---|---|---|---|---|
 | Contribute / Withdraw | 3% + 0.0021 SOL ATA fee (first contribution only) | 3% | — | — |
 | Any trade on PumpSwap | ~1.2–1.25% (tiered by market cap) | — | 100% of creator share | ✅ |
-| Any trade on Meteora | 1.5% (Rooms) + Meteora protocol fee | 0.3% | 1.2% | ✅ |
+| Any trade on Meteora | 1.5% pool fee | 20% of LP fee | 80% of LP fee | 20% of pool fee |
 | `swap_pump` / `swap_meteora` | 0.5% | 0.5% | — | — |
 
 The PumpSwap and Meteora fees apply to all trades on those AMMs regardless of interface — including trades made directly without going through Rooms. The +0.5% Rooms swap fee is an additional charge applied only when trading through `swap_pump` or `swap_meteora`.
