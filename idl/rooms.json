@@ -3647,8 +3647,8 @@
             "type": "u64"
           },
           {
-            "name": "tokens_allocated",
-            "type": "u64"
+            "name": "target_met",
+            "type": "bool"
           },
           {
             "name": "timestamp",
@@ -3679,8 +3679,8 @@
             "type": "u64"
           },
           {
-            "name": "tokens_allocated",
-            "type": "u64"
+            "name": "target_met",
+            "type": "bool"
           },
           {
             "name": "timestamp",
