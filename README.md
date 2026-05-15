@@ -219,6 +219,7 @@ For PumpFun, only the creator share flows to Rooms (30–95 bps depending on mar
 |---|---|---|
 | `GlobalConfig` | `[b"global_config"]` | Singleton protocol config |
 | `Room` | `[b"room", token_mint]` | Per-launch state |
+| `RoomVault` | `[b"room_vault", room]` | SOL vault that holds raised funds, pays for pool init, and receives fee distributions |
 | `RoomUser` | `[b"room_user", room, user]` | Per-user contribution state |
 | `RoomAccess` | `[b"room_access", room, user]` | Access verification for gated rooms |
 
