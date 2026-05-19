@@ -25,7 +25,7 @@ A room is an on-chain account that holds contributed SOL until a target is reach
 
 | Value | Description |
 |---|---|
-| `PumpFun` | Launches on PumpFun bonding curve; fixed raise target (~86.077 SOL) |
+| `PumpFun` | Launches on PumpFun bonding curve; fixed raise target (~86.080 SOL) |
 | `Rooms` (Meteora) | Launches on Meteora DAMM v2; configurable raise target (30, 90, or 180 SOL) |
 
 ### Room Types (Access Control)
@@ -70,7 +70,7 @@ Creates a new room. The creator pays rent for the room account.
 
 **Constraints:**
 - Meteora rooms: `raise_lamports` must be exactly 30 SOL, 90 SOL, or 180 SOL
-- PumpFun rooms: raise target is fixed (~86.077 SOL); passing `raise_lamports` has no effect
+- PumpFun rooms: raise target is fixed (~86.080 SOL); passing `raise_lamports` has no effect
 - `reward_wallet` must be provided when using `Custom` reward structure
 
 ---
