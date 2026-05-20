@@ -105,7 +105,6 @@
         },
         {
           "name": "rooms_authority",
-          "writable": true,
           "signer": true
         },
         {
@@ -390,7 +389,8 @@
           "name": "dynamic_fee_sharing_event_authority"
         },
         {
-          "name": "dynamic_fee_sharing_program"
+          "name": "dynamic_fee_sharing_program",
+          "address": "dfsdo2UqvwfN8DuUVrMRNfQe11VaiNoKcMqLHVvDPzh"
         },
         {
           "name": "meteora_source_program"
@@ -565,7 +565,6 @@
         },
         {
           "name": "pumpswap_creator_vault_authority",
-          "writable": true,
           "pda": {
             "seeds": [
               {
@@ -599,117 +598,14 @@
         },
         {
           "name": "pumpswap_creator_vault_ata",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "account",
-                "path": "pumpswap_creator_vault_authority"
-              },
-              {
-                "kind": "account",
-                "path": "token_program"
-              },
-              {
-                "kind": "account",
-                "path": "wsol_mint"
-              }
-            ],
-            "program": {
-              "kind": "const",
-              "value": [
-                140,
-                151,
-                37,
-                143,
-                78,
-                36,
-                137,
-                241,
-                187,
-                61,
-                16,
-                41,
-                20,
-                142,
-                13,
-                131,
-                11,
-                90,
-                19,
-                153,
-                218,
-                255,
-                16,
-                132,
-                4,
-                142,
-                123,
-                216,
-                219,
-                233,
-                248,
-                89
-              ]
-            }
-          }
+          "writable": true
         },
         {
           "name": "pumpswap_creator_token_account",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "account",
-                "path": "room_vault"
-              },
-              {
-                "kind": "account",
-                "path": "token_program"
-              },
-              {
-                "kind": "account",
-                "path": "wsol_mint"
-              }
-            ],
-            "program": {
-              "kind": "const",
-              "value": [
-                140,
-                151,
-                37,
-                143,
-                78,
-                36,
-                137,
-                241,
-                187,
-                61,
-                16,
-                41,
-                20,
-                142,
-                13,
-                131,
-                11,
-                90,
-                19,
-                153,
-                218,
-                255,
-                16,
-                132,
-                4,
-                142,
-                123,
-                216,
-                219,
-                233,
-                248,
-                89
-              ]
-            }
-          }
+          "docs": [
+            "Closed at the end of each call; room_vault recreates it next time."
+          ],
+          "writable": true
         },
         {
           "name": "pumpswap_event_authority",
@@ -1049,11 +945,6 @@
         },
         {
           "name": "meteora_event_authority"
-        },
-        {
-          "name": "payer",
-          "writable": true,
-          "signer": true
         },
         {
           "name": "token_metadata_program",
@@ -1494,7 +1385,26 @@
         },
         {
           "name": "room",
-          "writable": true
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  111,
+                  111,
+                  109,
+                  115
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "room.token_mint",
+                "account": "Room"
+              }
+            ]
+          }
         },
         {
           "name": "room_user",
@@ -1528,10 +1438,7 @@
           }
         },
         {
-          "name": "user_token_account",
-          "docs": [
-            "Token account belonging to the contributor being evaluated."
-          ]
+          "name": "user_token_account"
         },
         {
           "name": "rooms_authority",
@@ -1865,10 +1772,6 @@
               }
             ]
           }
-        },
-        {
-          "name": "admin_vault",
-          "writable": true
         },
         {
           "name": "room",
@@ -3026,7 +2929,26 @@
         },
         {
           "name": "room",
-          "writable": true
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  111,
+                  111,
+                  109,
+                  115
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "room.token_mint",
+                "account": "Room"
+              }
+            ]
+          }
         },
         {
           "name": "room_access",
@@ -3234,12 +3156,7 @@
           "address": "SysvarRent111111111111111111111111111111111"
         }
       ],
-      "args": [
-        {
-          "name": "lamports_amount",
-          "type": "u64"
-        }
-      ]
+      "args": []
     }
   ],
   "accounts": [
@@ -3598,6 +3515,11 @@
       "code": 6033,
       "name": "CannotFreezeCreator",
       "msg": "Cannot freeze creator rewards"
+    },
+    {
+      "code": 6034,
+      "name": "InvalidAllocationBasisPoints",
+      "msg": "Allocation basis points must be between 0 and 10000"
     }
   ],
   "types": [
