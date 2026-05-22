@@ -1168,8 +1168,7 @@
         },
         {
           "name": "pumpfun_fee_recipient",
-          "writable": true,
-          "address": "CebN5WGQ4jvEPvsVU4EoHEpgzq1VV7AbicfhtW4xC9iM"
+          "writable": true
         },
         {
           "name": "pumpfun_global_volume_accumulator",
