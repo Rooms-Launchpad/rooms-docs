@@ -6,10 +6,10 @@ Rooms is a Solana smart contract for community-driven token launches. Contributo
 
 ## Deployments
 
-| Network | Program ID |
-|---|---|
-| Mainnet | `CyenP3qnD453Lr6YD7aWzWajM1ytcYdjPmHpHgMrooms` |
-| Devnet | `CyenP3qnD453Lr6YD7aWzWajM1ytcYdjPmHpHgMrooms` |
+| Network | Program ID | API | API Docs |
+|---|---|---|---|
+| Mainnet | `CyenP3qnD453Lr6YD7aWzWajM1ytcYdjPmHpHgMrooms` | api.rooms.run | [View Here](https://api.rooms.run/swagger/index.html) |
+| Devnet | `CyenP3qnD453Lr6YD7aWzWajM1ytcYdjPmHpHgMrooms` | devnet.rooms.run | [View Here](https://devnet.rooms.run/swagger/index.html) |
 
 The IDL is available at [`idl/rooms.json`](./idl/rooms.json).
 
