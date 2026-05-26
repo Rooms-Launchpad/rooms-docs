@@ -2022,8 +2022,7 @@
         },
         {
           "name": "pumpfun_withdraw_authority",
-          "writable": true,
-          "address": "39azUYFWPz3VHgKCf3VChUwbpURdCHRxjWVowf5jUJjg"
+          "writable": true
         },
         {
           "name": "pumpswap_program",
