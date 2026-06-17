@@ -127,6 +127,58 @@
       ]
     },
     {
+      "name": "claim_referral",
+      "discriminator": [
+        219,
+        247,
+        18,
+        148,
+        63,
+        247,
+        112,
+        198
+      ],
+      "accounts": [
+        {
+          "name": "referral_vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  102,
+                  101,
+                  114,
+                  114,
+                  97,
+                  108,
+                  95,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "owner"
+              }
+            ]
+          }
+        },
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true
+        }
+      ],
+      "args": []
+    },
+    {
       "name": "claim_rewards",
       "discriminator": [
         4,
@@ -442,6 +494,36 @@
         },
         {
           "name": "meteora_event_authority"
+        },
+        {
+          "name": "referral_pool",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  102,
+                  101,
+                  114,
+                  114,
+                  97,
+                  108,
+                  95,
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "room"
+              }
+            ]
+          }
         },
         {
           "name": "token_program",
@@ -793,6 +875,146 @@
           "type": {
             "option": "u64"
           }
+        }
+      ]
+    },
+    {
+      "name": "distribute_referral",
+      "discriminator": [
+        11,
+        237,
+        155,
+        252,
+        66,
+        144,
+        241,
+        71
+      ],
+      "accounts": [
+        {
+          "name": "global_config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  108,
+                  111,
+                  98,
+                  97,
+                  108,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "room",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  111,
+                  111,
+                  109,
+                  115
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "room.token_mint",
+                "account": "Room"
+              }
+            ]
+          }
+        },
+        {
+          "name": "referral_pool",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  102,
+                  101,
+                  114,
+                  114,
+                  97,
+                  108,
+                  95,
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "room"
+              }
+            ]
+          }
+        },
+        {
+          "name": "referral_vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  102,
+                  101,
+                  114,
+                  114,
+                  97,
+                  108,
+                  95,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "referral_vault.owner",
+                "account": "ReferralVault"
+              }
+            ]
+          }
+        },
+        {
+          "name": "rooms_authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
         }
       ]
     },
@@ -1899,6 +2121,62 @@
       "args": []
     },
     {
+      "name": "initialize_referral_vault",
+      "discriminator": [
+        106,
+        119,
+        165,
+        237,
+        30,
+        68,
+        212,
+        193
+      ],
+      "accounts": [
+        {
+          "name": "referral_vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  102,
+                  101,
+                  114,
+                  114,
+                  97,
+                  108,
+                  95,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "owner"
+              }
+            ]
+          }
+        },
+        {
+          "name": "owner",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
       "name": "migrate_pump_pool",
       "discriminator": [
         224,
@@ -2888,6 +3166,112 @@
       ]
     },
     {
+      "name": "sweep_referral_pool",
+      "discriminator": [
+        105,
+        70,
+        58,
+        198,
+        168,
+        197,
+        3,
+        22
+      ],
+      "accounts": [
+        {
+          "name": "global_config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  108,
+                  111,
+                  98,
+                  97,
+                  108,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "admin_vault",
+          "writable": true
+        },
+        {
+          "name": "room",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  111,
+                  111,
+                  109,
+                  115
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "room.token_mint",
+                "account": "Room"
+              }
+            ]
+          }
+        },
+        {
+          "name": "referral_pool",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  102,
+                  101,
+                  114,
+                  114,
+                  97,
+                  108,
+                  95,
+                  112,
+                  111,
+                  111,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "room"
+              }
+            ]
+          }
+        },
+        {
+          "name": "rooms_authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
       "name": "verify_access",
       "discriminator": [
         198,
@@ -3172,6 +3556,19 @@
       ]
     },
     {
+      "name": "ReferralVault",
+      "discriminator": [
+        220,
+        195,
+        105,
+        198,
+        64,
+        73,
+        75,
+        240
+      ]
+    },
+    {
       "name": "Room",
       "discriminator": [
         156,
@@ -3288,6 +3685,45 @@
         253,
         152,
         6
+      ]
+    },
+    {
+      "name": "ReferralClaimed",
+      "discriminator": [
+        195,
+        109,
+        77,
+        196,
+        134,
+        226,
+        78,
+        108
+      ]
+    },
+    {
+      "name": "ReferralDistributed",
+      "discriminator": [
+        84,
+        68,
+        122,
+        165,
+        227,
+        94,
+        53,
+        164
+      ]
+    },
+    {
+      "name": "ReferralPoolCredited",
+      "discriminator": [
+        103,
+        80,
+        189,
+        59,
+        141,
+        37,
+        85,
+        224
       ]
     },
     {
@@ -3701,6 +4137,94 @@
           {
             "name": "timestamp",
             "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ReferralClaimed",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "lamports",
+            "type": "u64"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ReferralDistributed",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "earner",
+            "type": "pubkey"
+          },
+          {
+            "name": "lamports",
+            "type": "u64"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ReferralPoolCredited",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "token_mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "lamports",
+            "type": "u64"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ReferralVault",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "balance_lamports",
+            "type": "u64"
+          },
+          {
+            "name": "total_credited",
+            "type": "u64"
+          },
+          {
+            "name": "total_claimed",
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
           }
         ]
       }
