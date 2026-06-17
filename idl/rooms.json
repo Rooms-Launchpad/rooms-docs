@@ -127,58 +127,6 @@
       ]
     },
     {
-      "name": "claim_referral",
-      "discriminator": [
-        219,
-        247,
-        18,
-        148,
-        63,
-        247,
-        112,
-        198
-      ],
-      "accounts": [
-        {
-          "name": "referral_vault",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  114,
-                  101,
-                  102,
-                  101,
-                  114,
-                  114,
-                  97,
-                  108,
-                  95,
-                  118,
-                  97,
-                  117,
-                  108,
-                  116
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "owner"
-              }
-            ]
-          }
-        },
-        {
-          "name": "owner",
-          "writable": true,
-          "signer": true
-        }
-      ],
-      "args": []
-    },
-    {
       "name": "claim_rewards",
       "discriminator": [
         4,
@@ -918,7 +866,6 @@
         },
         {
           "name": "room",
-          "writable": true,
           "pda": {
             "seeds": [
               {
@@ -970,36 +917,8 @@
           }
         },
         {
-          "name": "referral_vault",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  114,
-                  101,
-                  102,
-                  101,
-                  114,
-                  114,
-                  97,
-                  108,
-                  95,
-                  118,
-                  97,
-                  117,
-                  108,
-                  116
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "referral_vault.owner",
-                "account": "ReferralVault"
-              }
-            ]
-          }
+          "name": "referrer",
+          "writable": true
         },
         {
           "name": "rooms_authority",
@@ -2112,62 +2031,6 @@
         {
           "name": "token_2022_program",
           "address": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
-        },
-        {
-          "name": "system_program",
-          "address": "11111111111111111111111111111111"
-        }
-      ],
-      "args": []
-    },
-    {
-      "name": "initialize_referral_vault",
-      "discriminator": [
-        106,
-        119,
-        165,
-        237,
-        30,
-        68,
-        212,
-        193
-      ],
-      "accounts": [
-        {
-          "name": "referral_vault",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  114,
-                  101,
-                  102,
-                  101,
-                  114,
-                  114,
-                  97,
-                  108,
-                  95,
-                  118,
-                  97,
-                  117,
-                  108,
-                  116
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "owner"
-              }
-            ]
-          }
-        },
-        {
-          "name": "owner",
-          "writable": true,
-          "signer": true
         },
         {
           "name": "system_program",
@@ -3556,19 +3419,6 @@
       ]
     },
     {
-      "name": "ReferralVault",
-      "discriminator": [
-        220,
-        195,
-        105,
-        198,
-        64,
-        73,
-        75,
-        240
-      ]
-    },
-    {
       "name": "Room",
       "discriminator": [
         156,
@@ -3685,19 +3535,6 @@
         253,
         152,
         6
-      ]
-    },
-    {
-      "name": "ReferralClaimed",
-      "discriminator": [
-        195,
-        109,
-        77,
-        196,
-        134,
-        226,
-        78,
-        108
       ]
     },
     {
@@ -4142,32 +3979,12 @@
       }
     },
     {
-      "name": "ReferralClaimed",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "owner",
-            "type": "pubkey"
-          },
-          {
-            "name": "lamports",
-            "type": "u64"
-          },
-          {
-            "name": "timestamp",
-            "type": "i64"
-          }
-        ]
-      }
-    },
-    {
       "name": "ReferralDistributed",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "earner",
+            "name": "referrer",
             "type": "pubkey"
           },
           {
@@ -4197,34 +4014,6 @@
           {
             "name": "timestamp",
             "type": "i64"
-          }
-        ]
-      }
-    },
-    {
-      "name": "ReferralVault",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "owner",
-            "type": "pubkey"
-          },
-          {
-            "name": "balance_lamports",
-            "type": "u64"
-          },
-          {
-            "name": "total_credited",
-            "type": "u64"
-          },
-          {
-            "name": "total_claimed",
-            "type": "u64"
-          },
-          {
-            "name": "bump",
-            "type": "u8"
           }
         ]
       }
