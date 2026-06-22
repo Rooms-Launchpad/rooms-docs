@@ -194,7 +194,9 @@ These instructions are executed by the Rooms backend. On-chain authorization var
 | `migrate_pump_pool` | Permissionless | Migrates a PumpFun bonding curve to PumpSwap AMM after graduation. |
 | `initialize_meteora_dfs` | Permissionless | Initializes Meteora Dynamic Fee Sharing vault post-finalization. |
 | `collect_pump_fees` | Permissionless | Sweeps accumulated PumpSwap creator fees into the room vault for distribution. |
-| `collect_meteora_fees` | Permissionless | Sweeps accumulated Meteora DFS fees into the room vault for distribution. Closes the WSOL ATA at the end of each call, unwrapping all collected WSOL to native SOL in `room_vault`. The ATA must be (re-)created by the caller before each invocation. |
+| `collect_meteora_fees` | Permissionless | Sweeps accumulated Meteora DFS fees into the room vault for distribution. Diverts 20% of the fees collected into the room's `referral_pool` PDA (skipped if the cut is too small to fund a rent-exempt pool account); the remainder is distributed to participants as usual. Closes the WSOL ATA at the end of each call, unwrapping all collected WSOL to native SOL in `room_vault`. The ATA must be (re-)created by the caller before each invocation. |
+| `distribute_referral` | 🔒 `rooms_authority` signer | Pays a referrer directly from a room's `referral_pool` PDA. The amount and referrer wallet are determined off-chain by the Rooms backend; the pool must either be fully drained or left at/above the rent-exempt minimum. |
+| `sweep_referral_pool` | 🔒 `rooms_authority` signer | Sends any remaining balance in a room's `referral_pool` to `admin_vault`. Used to reclaim dust/unclaimed referral funds. |
 
 ---
 
@@ -204,12 +206,18 @@ These instructions are executed by the Rooms backend. On-chain authorization var
 |---|---|---|---|---|
 | Contribute / Withdraw | 3% + 0.0021 SOL ATA fee (first contribution only) | 3% | — | — |
 | Any trade on PumpSwap | ~1.2–1.25% (tiered by market cap) | — | 100% of creator share | ✅ |
-| Any trade on Meteora | 1.5% pool fee | 25% of LP fee (0.3%) | 75% of LP fee (0.9%) | 20% of pool fee (0.3%) |
+| Any trade on Meteora | 1.5% pool fee | 25% of LP fee (0.3%) | 75% of LP fee (0.9%), minus the 20% referral cut below | 20% of pool fee (0.3%) |
 | `swap_pump` / `swap_meteora` | 0.5% | 0.5% | — | — |
 
 The PumpSwap and Meteora fees apply to all trades on those AMMs regardless of interface — including trades made directly without going through Rooms. The +0.5% Rooms swap fee is an additional charge applied only when trading through `swap_pump` or `swap_meteora`.
 
 For PumpFun, only the creator share flows to Rooms (30–95 bps depending on market cap); the remainder goes to PumpFun's LPs and protocol. The Reward Pool is distributed to contributors proportionally (`Equal`), to the room creator (`Creator`), or to the designated reward wallet (`Custom`).
+
+### Referrals
+
+Every time `collect_meteora_fees` is called, 20% of the SOL fees collected into `room_vault` is diverted into the room's `referral_pool` PDA before the remainder is added to the reward accumulator for contributors. PumpFun fee collection (`collect_pump_fees`) does not divert a referral cut.
+
+The Rooms backend tracks which referrer is owed what, and pays them out of the pool via `distribute_referral` (signed by `rooms_authority`). There is no on-chain accounting of individual referrer balances or vault — `referral_pool` is a plain PDA holding pooled SOL, and `sweep_referral_pool` lets the protocol reclaim any leftover balance to `admin_vault`.
 
 ---
 
@@ -222,6 +230,7 @@ For PumpFun, only the creator share flows to Rooms (30–95 bps depending on mar
 | `RoomVault` | `[b"room_vault", room]` | SOL vault that holds raised funds, pays for pool init, and receives fee distributions |
 | `RoomUser` | `[b"room_user", room, user]` | Per-user contribution state |
 | `RoomAccess` | `[b"room_access", room, user]` | Access verification for gated rooms |
+| `ReferralPool` | `[b"referral_pool", room]` | Plain SOL PDA holding the per-room referral cut, paid out via `distribute_referral` |
 
 ---
 
