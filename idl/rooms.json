@@ -346,6 +346,11 @@
           "writable": true
         },
         {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
           "name": "wsol_mint",
           "address": "So11111111111111111111111111111111111111112"
         },
@@ -2150,6 +2155,10 @@
           "writable": true
         },
         {
+          "name": "pumpfun_associated_quote_bonding_curve",
+          "writable": true
+        },
+        {
           "name": "pumpfun_global",
           "address": "4wTV1YmiEkRvAtNtsSGPtUrqRYQMe5SKy2uB4Jjaxnjf"
         },
@@ -2397,6 +2406,13 @@
               "path": "associated_token_program"
             }
           }
+        },
+        {
+          "name": "pumpswap_boost_vault_authority"
+        },
+        {
+          "name": "pumpswap_boost_vault",
+          "writable": true
         },
         {
           "name": "token_2022_program",
