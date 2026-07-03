@@ -148,6 +148,27 @@ A `RoomUser` PDA is created at room creation for the creator and reward wallet w
 
 ---
 
+### `claim_referral` 🔒
+
+Claims accumulated referral SOL from the global `referral_vault`. Called directly by the referrer (not the Rooms backend) — the user pays their own transaction fee and, on their first claim, the rent for their own `ReferralClaim` PDA.
+
+| Argument | Type | Description |
+|---|---|---|
+| `cumulative_earned` | `u64` | The referrer's total lifetime earnings in lamports, as tracked off-chain by the Rooms backend |
+| `expiry` | `i64` | Unix timestamp after which the voucher is no longer valid |
+
+The transaction must also include a preceding Ed25519 instruction signed by `rooms_authority`, verifying `keccak256(domain || user || cumulative_earned || expiry)`. See `docs/referral-backend.md` for the exact byte layout and signing procedure.
+
+**Constraints:**
+- `expiry` must not have passed
+- The Ed25519 signature must be valid and from `rooms_authority`
+- `cumulative_earned` must exceed the user's on-chain `claimed` total (resubmitting an already-fully-claimed voucher fails with `NoRewardsToClaim` — safe to retry)
+- The vault must hold enough to cover the payout while remaining rent-exempt
+
+**Payout:** `cumulative_earned − ReferralClaim.claimed`. Because the voucher carries a lifetime total rather than a delta, submitting the same or a stale voucher twice pays out at most once — the second submission is a no-op.
+
+---
+
 ---
 
 ### `swap_pump`
@@ -194,9 +215,9 @@ These instructions are executed by the Rooms backend. On-chain authorization var
 | `migrate_pump_pool` | Permissionless | Migrates a PumpFun bonding curve to PumpSwap AMM after graduation. |
 | `initialize_meteora_dfs` | Permissionless | Initializes Meteora Dynamic Fee Sharing vault post-finalization. |
 | `collect_pump_fees` | Permissionless | Sweeps accumulated PumpSwap creator fees into the room vault for distribution. |
-| `collect_meteora_fees` | Permissionless | Sweeps accumulated Meteora DFS fees into the room vault for distribution. Diverts 20% of the fees collected into the room's `referral_pool` PDA (skipped if the cut is too small to fund a rent-exempt pool account); the remainder is distributed to participants as usual. Closes the WSOL ATA at the end of each call, unwrapping all collected WSOL to native SOL in `room_vault`. The ATA must be (re-)created by the caller before each invocation. |
-| `distribute_referral` | 🔒 `rooms_authority` signer | Pays a referrer directly from a room's `referral_pool` PDA. The amount and referrer wallet are determined off-chain by the Rooms backend; the pool must either be fully drained or left at/above the rent-exempt minimum. |
-| `sweep_referral_pool` | 🔒 `rooms_authority` signer | Sends any remaining balance in a room's `referral_pool` to `admin_vault`. Used to reclaim dust/unclaimed referral funds. |
+| `collect_meteora_fees` | Permissionless | Sweeps accumulated Meteora DFS fees into the room vault for distribution. Diverts 20% of the fees collected into the global `referral_vault` PDA; the remainder is distributed to participants as usual. Closes the WSOL ATA at the end of each call, unwrapping all collected WSOL to native SOL in `room_vault`. The ATA must be (re-)created by the caller before each invocation. |
+| `initialize_referral_vault` | 🔒 `rooms_authority` signer | One-time (idempotent) bootstrap that funds the global `referral_vault` PDA to the rent-exempt minimum. Must be called before the first `collect_meteora_fees` invocation ever runs. |
+| `sweep_referral_vault` | 🔒 `rooms_authority` signer | Sends an explicit `amount` from the global `referral_vault` to `admin_vault`. Used to reclaim dust and unallocated referral cuts; the caller is responsible for computing a safe amount that doesn't touch SOL still owed to unclaimed referrers (see `docs/referral-backend.md`). |
 
 ---
 
@@ -215,9 +236,19 @@ For PumpFun, only the creator share flows to Rooms (30–95 bps depending on mar
 
 ### Referrals
 
-Every time `collect_meteora_fees` is called, 20% of the SOL fees collected into `room_vault` is diverted into the room's `referral_pool` PDA before the remainder is added to the reward accumulator for contributors. PumpFun fee collection (`collect_pump_fees`) does not divert a referral cut.
+Every time `collect_meteora_fees` is called, 20% of the SOL fees collected into `room_vault` is diverted into the global `referral_vault` PDA before the remainder is added to the reward accumulator for contributors. PumpFun fee collection (`collect_pump_fees`) does not divert a referral cut.
 
-The Rooms backend tracks which referrer is owed what, and pays them out of the pool via `distribute_referral` (signed by `rooms_authority`). There is no on-chain accounting of individual referrer balances or vault — `referral_pool` is a plain PDA holding pooled SOL, and `sweep_referral_pool` lets the protocol reclaim any leftover balance to `admin_vault`.
+The 20% cut is split across three referral tiers, resolved entirely off-chain by the Rooms backend from its own referral-tree data — the program has no concept of tiers:
+
+| Tier | Share of trading fees | Share of the 20% referral cut |
+|---|---|---|
+| Direct referrer | 15% | 75% |
+| Indirect referrer (referred the direct referrer) | 3% | 15% |
+| Extended referrer (one level further) | 2% | 10% |
+
+The program's only job is to hold the pooled SOL and let each referrer redeem a lifetime total that the backend authorizes. There is no per-referrer or per-room state on-chain beyond each user's own `ReferralClaim` PDA (tracking how much they've claimed so far, globally). A referrer calls `claim_referral` themselves with a voucher signed by `rooms_authority`, paying their own transaction fee and (on first claim) the rent for their `ReferralClaim` PDA — so referrers who never claim cost the protocol nothing. `sweep_referral_vault` lets the protocol reclaim unallocated dust and orphaned tier cuts (e.g. a referral chain with fewer than three levels) to `admin_vault`, without touching SOL still owed to unclaimed referrers.
+
+Full implementation details for the backend — the exact voucher byte layout, event-driven ledger design, idempotency guarantees, and sweep-safety formula — are in [`docs/referral-backend.md`](./referral-backend.md).
 
 ---
 
@@ -230,7 +261,8 @@ The Rooms backend tracks which referrer is owed what, and pays them out of the p
 | `RoomVault` | `[b"room_vault", room]` | SOL vault that holds raised funds, pays for pool init, and receives fee distributions |
 | `RoomUser` | `[b"room_user", room, user]` | Per-user contribution state |
 | `RoomAccess` | `[b"room_access", room, user]` | Access verification for gated rooms |
-| `ReferralPool` | `[b"referral_pool", room]` | Plain SOL PDA holding the per-room referral cut, paid out via `distribute_referral` |
+| `ReferralVault` | `[b"referral_vault"]` | Global (not per-room) plain SOL PDA holding all pooled referral cuts, paid out via `claim_referral` |
+| `ReferralClaim` | `[b"referral_claim", user]` | Per-user (not per-room) lifetime referral-claim tracker; created and paid for by the user on their first claim |
 
 ---
 

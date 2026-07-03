@@ -127,6 +127,130 @@
       ]
     },
     {
+      "name": "claim_referral",
+      "discriminator": [
+        219,
+        247,
+        18,
+        148,
+        63,
+        247,
+        112,
+        198
+      ],
+      "accounts": [
+        {
+          "name": "global_config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  108,
+                  111,
+                  98,
+                  97,
+                  108,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "referral_vault",
+          "docs": [
+            "collections across all rooms, pending referral payout."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  102,
+                  101,
+                  114,
+                  114,
+                  97,
+                  108,
+                  95,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "referral_claim",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  102,
+                  101,
+                  114,
+                  114,
+                  97,
+                  108,
+                  95,
+                  99,
+                  108,
+                  97,
+                  105,
+                  109
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "user"
+              }
+            ]
+          }
+        },
+        {
+          "name": "instruction_sysvar",
+          "address": "Sysvar1nstructions1111111111111111111111111"
+        },
+        {
+          "name": "user",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "cumulative_earned",
+          "type": "u64"
+        },
+        {
+          "name": "expiry",
+          "type": "i64"
+        }
+      ]
+    },
+    {
       "name": "claim_rewards",
       "discriminator": [
         4,
@@ -449,7 +573,10 @@
           "name": "meteora_event_authority"
         },
         {
-          "name": "referral_pool",
+          "name": "referral_vault",
+          "docs": [
+            "via `initialize_referral_vault` before the first collection."
+          ],
           "writable": true,
           "pda": {
             "seeds": [
@@ -465,15 +592,12 @@
                   97,
                   108,
                   95,
-                  112,
-                  111,
-                  111,
-                  108
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
                 ]
-              },
-              {
-                "kind": "account",
-                "path": "room"
               }
             ]
           }
@@ -828,117 +952,6 @@
           "type": {
             "option": "u64"
           }
-        }
-      ]
-    },
-    {
-      "name": "distribute_referral",
-      "discriminator": [
-        11,
-        237,
-        155,
-        252,
-        66,
-        144,
-        241,
-        71
-      ],
-      "accounts": [
-        {
-          "name": "global_config",
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  103,
-                  108,
-                  111,
-                  98,
-                  97,
-                  108,
-                  95,
-                  99,
-                  111,
-                  110,
-                  102,
-                  105,
-                  103
-                ]
-              }
-            ]
-          }
-        },
-        {
-          "name": "room",
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  114,
-                  111,
-                  111,
-                  109,
-                  115
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "room.token_mint",
-                "account": "Room"
-              }
-            ]
-          }
-        },
-        {
-          "name": "referral_pool",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  114,
-                  101,
-                  102,
-                  101,
-                  114,
-                  114,
-                  97,
-                  108,
-                  95,
-                  112,
-                  111,
-                  111,
-                  108
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "room"
-              }
-            ]
-          }
-        },
-        {
-          "name": "referrer",
-          "writable": true
-        },
-        {
-          "name": "rooms_authority",
-          "writable": true,
-          "signer": true
-        },
-        {
-          "name": "system_program",
-          "address": "11111111111111111111111111111111"
-        }
-      ],
-      "args": [
-        {
-          "name": "amount",
-          "type": "u64"
         }
       ]
     },
@@ -2045,6 +2058,86 @@
       "args": []
     },
     {
+      "name": "initialize_referral_vault",
+      "discriminator": [
+        106,
+        119,
+        165,
+        237,
+        30,
+        68,
+        212,
+        193
+      ],
+      "accounts": [
+        {
+          "name": "global_config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  108,
+                  111,
+                  98,
+                  97,
+                  108,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "referral_vault",
+          "docs": [
+            "every subsequent `collect_meteora_fees` transfer into it is guaranteed to succeed."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  102,
+                  101,
+                  114,
+                  114,
+                  97,
+                  108,
+                  95,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "rooms_authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
       "name": "migrate_pump_pool",
       "discriminator": [
         224,
@@ -3045,16 +3138,16 @@
       ]
     },
     {
-      "name": "sweep_referral_pool",
+      "name": "sweep_referral_vault",
       "discriminator": [
-        105,
-        70,
-        58,
-        198,
-        168,
-        197,
-        3,
-        22
+        51,
+        28,
+        21,
+        180,
+        14,
+        189,
+        216,
+        184
       ],
       "accounts": [
         {
@@ -3087,29 +3180,7 @@
           "writable": true
         },
         {
-          "name": "room",
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  114,
-                  111,
-                  111,
-                  109,
-                  115
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "room.token_mint",
-                "account": "Room"
-              }
-            ]
-          }
-        },
-        {
-          "name": "referral_pool",
+          "name": "referral_vault",
           "writable": true,
           "pda": {
             "seeds": [
@@ -3125,15 +3196,12 @@
                   97,
                   108,
                   95,
-                  112,
-                  111,
-                  111,
-                  108
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
                 ]
-              },
-              {
-                "kind": "account",
-                "path": "room"
               }
             ]
           }
@@ -3148,7 +3216,12 @@
           "address": "11111111111111111111111111111111"
         }
       ],
-      "args": []
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
     },
     {
       "name": "verify_access",
@@ -3435,6 +3508,19 @@
       ]
     },
     {
+      "name": "ReferralClaim",
+      "discriminator": [
+        216,
+        60,
+        207,
+        48,
+        188,
+        213,
+        100,
+        13
+      ]
+    },
+    {
       "name": "Room",
       "discriminator": [
         156,
@@ -3554,29 +3640,29 @@
       ]
     },
     {
-      "name": "ReferralDistributed",
+      "name": "ReferralClaimed",
       "discriminator": [
-        84,
-        68,
-        122,
-        165,
-        227,
-        94,
-        53,
-        164
+        195,
+        109,
+        77,
+        196,
+        134,
+        226,
+        78,
+        108
       ]
     },
     {
-      "name": "ReferralPoolCredited",
+      "name": "ReferralVaultCredited",
       "discriminator": [
-        103,
-        80,
-        189,
-        59,
-        141,
-        37,
-        85,
-        224
+        107,
+        186,
+        8,
+        38,
+        212,
+        181,
+        245,
+        245
       ]
     },
     {
@@ -3807,6 +3893,16 @@
       "code": 6034,
       "name": "InvalidAllocationBasisPoints",
       "msg": "Allocation basis points must be between 0 and 10000"
+    },
+    {
+      "code": 6035,
+      "name": "InvalidReferralSignature",
+      "msg": "Invalid referral claim signature"
+    },
+    {
+      "code": 6036,
+      "name": "ReferralVoucherExpired",
+      "msg": "Referral claim voucher has expired"
     }
   ],
   "types": [
@@ -3995,16 +4091,45 @@
       }
     },
     {
-      "name": "ReferralDistributed",
+      "name": "ReferralClaim",
+      "docs": [
+        "Tracks lifetime referral SOL claimed by a single user, across all rooms.",
+        "`claimed` is compared against the `cumulative_earned` figure in each signed",
+        "voucher so that resubmitting the same (or a stale) voucher pays out zero."
+      ],
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "referrer",
+            "name": "user",
+            "type": "pubkey"
+          },
+          {
+            "name": "claimed",
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ReferralClaimed",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "user",
             "type": "pubkey"
           },
           {
             "name": "lamports",
+            "type": "u64"
+          },
+          {
+            "name": "cumulative_earned",
             "type": "u64"
           },
           {
@@ -4015,7 +4140,7 @@
       }
     },
     {
-      "name": "ReferralPoolCredited",
+      "name": "ReferralVaultCredited",
       "type": {
         "kind": "struct",
         "fields": [
