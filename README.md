@@ -217,8 +217,6 @@ These instructions are executed by the Rooms backend. On-chain authorization var
 | `collect_pump_fees` | Permissionless | Sweeps accumulated PumpSwap creator fees into the room vault for distribution. |
 | `collect_meteora_fees` | Permissionless | Sweeps accumulated Meteora DFS fees into the room vault for distribution. Diverts 20% of the fees collected into the global `referral_vault` PDA; the remainder is distributed to participants as usual. Closes the WSOL ATA at the end of each call, unwrapping all collected WSOL to native SOL in `room_vault`. The ATA must be (re-)created by the caller before each invocation. |
 | `initialize_referral_vault` | 🔒 `rooms_authority` signer | One-time (idempotent) bootstrap that funds the global `referral_vault` PDA to the rent-exempt minimum. Must be called before the first `collect_meteora_fees` invocation ever runs. |
-| `sweep_referral_vault` | 🔒 `rooms_authority` signer | Sends an explicit `amount` from the global `referral_vault` to `admin_vault`. Used to reclaim dust and unallocated referral cuts; the caller is responsible for computing a safe amount that doesn't touch SOL still owed to unclaimed referrers (see `docs/referral-backend.md`). |
-
 ---
 
 ## Fees
