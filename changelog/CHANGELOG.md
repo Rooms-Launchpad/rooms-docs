@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Changed
+- `airdrop_tokens` — `allocation_basis_points` is now a cumulative vesting-level target instead of a per-call increment. Added `claimed_basis_points` (u16) to `RoomUser` to track the level already reached; a call is a no-op per-recipient if the target is already met, so retrying an ambiguous/lost confirmation can no longer double-pay a recipient.
+
 ## [0.1.0] — 2026-05-02
 
 ### Program ID

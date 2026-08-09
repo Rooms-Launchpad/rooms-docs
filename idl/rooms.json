@@ -127,6 +127,273 @@
       ]
     },
     {
+      "name": "approve_escrow",
+      "discriminator": [
+        79,
+        143,
+        76,
+        129,
+        122,
+        177,
+        12,
+        122
+      ],
+      "accounts": [
+        {
+          "name": "escrow",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  101,
+                  115,
+                  99,
+                  114,
+                  111,
+                  119
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "escrow.sender",
+                "account": "Escrow"
+              },
+              {
+                "kind": "account",
+                "path": "escrow.escrow_id",
+                "account": "Escrow"
+              }
+            ]
+          }
+        },
+        {
+          "name": "recipient",
+          "signer": true,
+          "relations": [
+            "escrow"
+          ]
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "begin_escrow",
+      "discriminator": [
+        132,
+        70,
+        196,
+        57,
+        18,
+        169,
+        158,
+        44
+      ],
+      "accounts": [
+        {
+          "name": "escrow",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  101,
+                  115,
+                  99,
+                  114,
+                  111,
+                  119
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "sender"
+              },
+              {
+                "kind": "arg",
+                "path": "escrow_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "recipient"
+        },
+        {
+          "name": "escrow_vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  101,
+                  115,
+                  99,
+                  114,
+                  111,
+                  119,
+                  95,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "escrow"
+              }
+            ]
+          }
+        },
+        {
+          "name": "sender",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "escrow_id",
+          "type": "u64"
+        },
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "claim_escrow",
+      "discriminator": [
+        200,
+        80,
+        182,
+        159,
+        61,
+        75,
+        9,
+        205
+      ],
+      "accounts": [
+        {
+          "name": "escrow",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  101,
+                  115,
+                  99,
+                  114,
+                  111,
+                  119
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "escrow.sender",
+                "account": "Escrow"
+              },
+              {
+                "kind": "account",
+                "path": "escrow.escrow_id",
+                "account": "Escrow"
+              }
+            ]
+          }
+        },
+        {
+          "name": "global_config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  108,
+                  111,
+                  98,
+                  97,
+                  108,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "admin_vault",
+          "writable": true
+        },
+        {
+          "name": "escrow_vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  101,
+                  115,
+                  99,
+                  114,
+                  111,
+                  119,
+                  95,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "escrow"
+              }
+            ]
+          }
+        },
+        {
+          "name": "recipient",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "escrow"
+          ]
+        },
+        {
+          "name": "sender",
+          "writable": true,
+          "relations": [
+            "escrow"
+          ]
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
       "name": "claim_referral",
       "discriminator": [
         219,
@@ -2531,6 +2798,58 @@
       "args": []
     },
     {
+      "name": "reject_escrow",
+      "discriminator": [
+        232,
+        10,
+        254,
+        237,
+        106,
+        176,
+        247,
+        149
+      ],
+      "accounts": [
+        {
+          "name": "escrow",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  101,
+                  115,
+                  99,
+                  114,
+                  111,
+                  119
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "escrow.sender",
+                "account": "Escrow"
+              },
+              {
+                "kind": "account",
+                "path": "escrow.escrow_id",
+                "account": "Escrow"
+              }
+            ]
+          }
+        },
+        {
+          "name": "recipient",
+          "signer": true,
+          "relations": [
+            "escrow"
+          ]
+        }
+      ],
+      "args": []
+    },
+    {
       "name": "swap_meteora",
       "discriminator": [
         208,
@@ -3491,9 +3810,108 @@
         }
       ],
       "args": []
+    },
+    {
+      "name": "withdraw_escrow",
+      "discriminator": [
+        81,
+        84,
+        226,
+        128,
+        245,
+        47,
+        96,
+        104
+      ],
+      "accounts": [
+        {
+          "name": "escrow",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  101,
+                  115,
+                  99,
+                  114,
+                  111,
+                  119
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "escrow.sender",
+                "account": "Escrow"
+              },
+              {
+                "kind": "account",
+                "path": "escrow.escrow_id",
+                "account": "Escrow"
+              }
+            ]
+          }
+        },
+        {
+          "name": "escrow_vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  101,
+                  115,
+                  99,
+                  114,
+                  111,
+                  119,
+                  95,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "escrow"
+              }
+            ]
+          }
+        },
+        {
+          "name": "sender",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "escrow"
+          ]
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
     }
   ],
   "accounts": [
+    {
+      "name": "Escrow",
+      "discriminator": [
+        31,
+        213,
+        123,
+        187,
+        186,
+        22,
+        218,
+        155
+      ]
+    },
     {
       "name": "GlobalConfig",
       "discriminator": [
@@ -3598,6 +4016,84 @@
         2,
         142,
         62
+      ]
+    },
+    {
+      "name": "EscrowApproved",
+      "discriminator": [
+        87,
+        181,
+        230,
+        68,
+        208,
+        43,
+        121,
+        31
+      ]
+    },
+    {
+      "name": "EscrowBegun",
+      "discriminator": [
+        27,
+        212,
+        185,
+        223,
+        143,
+        53,
+        199,
+        59
+      ]
+    },
+    {
+      "name": "EscrowClaimed",
+      "discriminator": [
+        32,
+        116,
+        46,
+        229,
+        165,
+        72,
+        108,
+        78
+      ]
+    },
+    {
+      "name": "EscrowIncreased",
+      "discriminator": [
+        55,
+        246,
+        166,
+        163,
+        46,
+        192,
+        171,
+        50
+      ]
+    },
+    {
+      "name": "EscrowRejected",
+      "discriminator": [
+        219,
+        99,
+        54,
+        24,
+        131,
+        139,
+        249,
+        185
+      ]
+    },
+    {
+      "name": "EscrowWithdrawn",
+      "discriminator": [
+        43,
+        206,
+        174,
+        47,
+        105,
+        219,
+        216,
+        239
       ]
     },
     {
@@ -3903,6 +4399,41 @@
       "code": 6036,
       "name": "ReferralVoucherExpired",
       "msg": "Referral claim voucher has expired"
+    },
+    {
+      "code": 6037,
+      "name": "InvalidEscrowAmount",
+      "msg": "Escrow amount must fund the vault's rent-exempt minimum"
+    },
+    {
+      "code": 6038,
+      "name": "InvalidEscrowIncrease",
+      "msg": "Escrow increase amount must be greater than zero"
+    },
+    {
+      "code": 6039,
+      "name": "InvalidEscrowRecipient",
+      "msg": "Escrow sender and recipient must be different"
+    },
+    {
+      "code": 6040,
+      "name": "EscrowRecipientMismatch",
+      "msg": "Escrow recipient does not match"
+    },
+    {
+      "code": 6041,
+      "name": "EscrowNotPending",
+      "msg": "Escrow is not pending"
+    },
+    {
+      "code": 6042,
+      "name": "EscrowNotApproved",
+      "msg": "Escrow has not been approved"
+    },
+    {
+      "code": 6043,
+      "name": "EscrowAlreadyApproved",
+      "msg": "Approved escrow cannot be withdrawn by the sender"
     }
   ],
   "types": [
@@ -3986,6 +4517,203 @@
           {
             "name": "target_met",
             "type": "bool"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Escrow",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "sender",
+            "type": "pubkey"
+          },
+          {
+            "name": "recipient",
+            "type": "pubkey"
+          },
+          {
+            "name": "escrow_id",
+            "type": "u64"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "status",
+            "type": {
+              "defined": {
+                "name": "EscrowStatus"
+              }
+            }
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "EscrowApproved",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "escrow",
+            "type": "pubkey"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "EscrowBegun",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "escrow",
+            "type": "pubkey"
+          },
+          {
+            "name": "sender",
+            "type": "pubkey"
+          },
+          {
+            "name": "recipient",
+            "type": "pubkey"
+          },
+          {
+            "name": "escrow_id",
+            "type": "u64"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "EscrowClaimed",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "escrow",
+            "type": "pubkey"
+          },
+          {
+            "name": "recipient",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "fee",
+            "type": "u64"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "EscrowIncreased",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "escrow",
+            "type": "pubkey"
+          },
+          {
+            "name": "sender",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount_added",
+            "type": "u64"
+          },
+          {
+            "name": "total_amount",
+            "type": "u64"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "EscrowRejected",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "escrow",
+            "type": "pubkey"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "EscrowStatus",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Pending"
+          },
+          {
+            "name": "Approved"
+          },
+          {
+            "name": "Rejected"
+          }
+        ]
+      }
+    },
+    {
+      "name": "EscrowWithdrawn",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "escrow",
+            "type": "pubkey"
+          },
+          {
+            "name": "sender",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
           },
           {
             "name": "timestamp",
@@ -4460,6 +5188,16 @@
           {
             "name": "claimed_allocation_amount",
             "type": "u64"
+          },
+          {
+            "name": "claimed_basis_points",
+            "docs": [
+              "Cumulative vesting-level target (basis points, 0-10000) already",
+              "fulfilled by `airdrop_tokens`. Lets callers pass the target level as a",
+              "cumulative value instead of a per-call increment, making retries of a",
+              "lost/ambiguous `airdrop_tokens` confirmation a harmless no-op."
+            ],
+            "type": "u16"
           },
           {
             "name": "treasury_fee_checkpoint",

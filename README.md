@@ -208,7 +208,7 @@ These instructions are executed by the Rooms backend. On-chain authorization var
 
 | Instruction | Authorization | Description |
 |---|---|---|
-| `airdrop_tokens` | 🔒 `rooms_authority` signer | Distributes token allocation to contributors. `room_vault` pays for Token2022 ATA creation per recipient using the ATA fees pre-collected during contributions. Triggered automatically post-finalization. |
+| `airdrop_tokens` | 🔒 `rooms_authority` signer | Distributes token allocation to contributors in vesting rounds. `allocation_basis_points` is a **cumulative target level** (0-10000), not a per-call increment — each `RoomUser` tracks its own `claimed_basis_points`, and the instruction pays out only the gap between the target and that level, no-oping per-recipient if the target is already met. This makes retrying a call with an uncertain on-chain outcome (e.g. a timed-out confirmation) safe: a resend for a level already paid out costs nothing beyond the wasted transaction. `room_vault` pays for Token2022 ATA creation per recipient using the ATA fees pre-collected during contributions. Triggered automatically post-finalization. |
 | `freeze_rewards` | 🔒 `rooms_authority` signer | Freezes reward accumulation for an Equal-room contributor who dropped below 50% token holding. Called by the Rooms cron. |
 | `finalize_pump` | Permissionless | Launches token on PumpFun bonding curve. Triggered automatically when target is met. |
 | `finalize_meteora` | Permissionless | Launches token on Meteora DAMM v2. Triggered automatically when target is met. |
