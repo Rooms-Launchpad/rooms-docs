@@ -3023,8 +3023,8 @@
           "type": "u64"
         },
         {
-          "name": "slippage_bps",
-          "type": "u16"
+          "name": "min_out",
+          "type": "u64"
         },
         {
           "name": "is_buy",
@@ -4363,7 +4363,7 @@
     {
       "code": 6029,
       "name": "InvalidRaiseAmount",
-      "msg": "Invalid raise amount: must be between 30 and 300 SOL for Rooms platform"
+      "msg": "Invalid raise amount: must be exactly 30, 90, or 180 SOL for Rooms platform"
     },
     {
       "code": 6030,
