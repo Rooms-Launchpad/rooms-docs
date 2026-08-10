@@ -3,7 +3,7 @@
 ## [0.1.0] — 2026-08-10
 
 ### Program ID
-`CyenP3qnD453Lr6YD7aWzWajM1ytcYdjPmHpHgMrooms`
+`FYs1kpav5Zb8SHYGfGixmKm623ijyPB93zmV5Grooms`
 
 ### Instructions
 - `initialize_global_config` — Bootstrap GlobalConfig PDA

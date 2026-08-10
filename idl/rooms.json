@@ -1,5 +1,5 @@
 {
-  "address": "CyenP3qnD453Lr6YD7aWzWajM1ytcYdjPmHpHgMrooms",
+  "address": "FYs1kpav5Zb8SHYGfGixmKm623ijyPB93zmV5Grooms",
   "metadata": {
     "name": "rooms",
     "version": "1.0.0",
@@ -5206,22 +5206,18 @@
             "type": "u128"
           },
           {
-            "name": "bump",
-            "type": "u8"
-          },
-          {
             "name": "claimed_basis_points",
             "docs": [
               "Cumulative vesting-level target (basis points, 0-10000) already",
               "fulfilled by `airdrop_tokens`. Lets callers pass the target level as a",
               "cumulative value instead of a per-call increment, making retries of a",
-              "lost/ambiguous `airdrop_tokens` confirmation a harmless no-op.",
-              "Appended after all pre-existing fields — never insert a new fixed-size",
-              "field in the middle of an `#[account]` struct, since Borsh deserializes",
-              "fields sequentially and a mid-struct insertion misreads every field",
-              "after it for any account whose on-chain size predates the change."
+              "lost/ambiguous `airdrop_tokens` confirmation a harmless no-op."
             ],
             "type": "u16"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
           }
         ]
       }
