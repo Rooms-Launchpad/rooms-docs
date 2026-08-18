@@ -4489,6 +4489,14 @@
           {
             "name": "timestamp",
             "type": "i64"
+          },
+          {
+            "name": "total_raised",
+            "type": "u64"
+          },
+          {
+            "name": "users",
+            "type": "u16"
           }
         ]
       }
@@ -4521,6 +4529,14 @@
           {
             "name": "timestamp",
             "type": "i64"
+          },
+          {
+            "name": "total_raised",
+            "type": "u64"
+          },
+          {
+            "name": "users",
+            "type": "u16"
           }
         ]
       }
