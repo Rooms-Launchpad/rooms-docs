@@ -628,6 +628,37 @@
         {
           "name": "system_program",
           "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "room_team",
+          "docs": [
+            "Required for `RewardStructure::Team` rooms, absent for every other kind.",
+            "Trailing and optional so pre-team clients keep working (see the",
+            "`allow-missing-optionals` note in Cargo.toml)."
+          ],
+          "optional": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  111,
+                  111,
+                  109,
+                  95,
+                  116,
+                  101,
+                  97,
+                  109
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "room"
+              }
+            ]
+          }
         }
       ],
       "args": []
@@ -2023,6 +2054,40 @@
         {
           "name": "rent",
           "address": "SysvarRent111111111111111111111111111111111"
+        },
+        {
+          "name": "room_team",
+          "docs": [
+            "Required for `RewardStructure::Team` rooms, absent for every other kind.",
+            "",
+            "Last in the list, and optional, so clients built before team splits",
+            "existed keep working unchanged against non-team rooms (see the",
+            "`allow-missing-optionals` note in Cargo.toml). The seeds constraint",
+            "means a team room cannot be satisfied by passing some other account."
+          ],
+          "optional": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  111,
+                  111,
+                  109,
+                  95,
+                  116,
+                  101,
+                  97,
+                  109
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "room"
+              }
+            ]
+          }
         }
       ],
       "args": [
@@ -2848,6 +2913,107 @@
         }
       ],
       "args": []
+    },
+    {
+      "name": "set_room_team",
+      "docs": [
+        "Appends wallets to a Team room's payout list, sealing it when `seal` is",
+        "set. Called after `create_room` because the wallet list does not fit in",
+        "that transaction; `contribute` refuses the room until it is sealed."
+      ],
+      "discriminator": [
+        100,
+        22,
+        48,
+        116,
+        26,
+        109,
+        134,
+        49
+      ],
+      "accounts": [
+        {
+          "name": "room",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  111,
+                  111,
+                  109,
+                  115
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "room.token_mint",
+                "account": "Room"
+              }
+            ]
+          }
+        },
+        {
+          "name": "room_team",
+          "docs": [
+            "Allocated on the first call to hold exactly `total_members` shares, then",
+            "appended to by any follow-up calls. Never reallocated — the size is",
+            "known up front, so rent is paid once and is exact."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  111,
+                  111,
+                  109,
+                  95,
+                  116,
+                  101,
+                  97,
+                  109
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "room"
+              }
+            ]
+          }
+        },
+        {
+          "name": "creator",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "room"
+          ]
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "total_members",
+          "type": "u16"
+        },
+        {
+          "name": "members",
+          "type": {
+            "vec": "pubkey"
+          }
+        },
+        {
+          "name": "seal",
+          "type": "bool"
+        }
+      ]
     },
     {
       "name": "swap_meteora",
@@ -3807,6 +3973,40 @@
         {
           "name": "rent",
           "address": "SysvarRent111111111111111111111111111111111"
+        },
+        {
+          "name": "room_team",
+          "docs": [
+            "Required for `RewardStructure::Team` rooms, absent for every other kind.",
+            "",
+            "Last in the list, and optional, so clients built before team splits",
+            "existed keep working unchanged against non-team rooms (see the",
+            "`allow-missing-optionals` note in Cargo.toml). The seeds constraint",
+            "means a team room cannot be satisfied by passing some other account."
+          ],
+          "optional": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  111,
+                  111,
+                  109,
+                  95,
+                  116,
+                  101,
+                  97,
+                  109
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "room"
+              }
+            ]
+          }
         }
       ],
       "args": []
@@ -3962,6 +4162,19 @@
         151,
         35,
         99
+      ]
+    },
+    {
+      "name": "RoomTeam",
+      "discriminator": [
+        251,
+        175,
+        85,
+        253,
+        246,
+        55,
+        202,
+        129
       ]
     },
     {
@@ -4201,6 +4414,19 @@
       ]
     },
     {
+      "name": "RoomTeamSealed",
+      "discriminator": [
+        199,
+        177,
+        210,
+        5,
+        221,
+        117,
+        42,
+        94
+      ]
+    },
+    {
       "name": "SwapExecuted",
       "discriminator": [
         150,
@@ -4434,6 +4660,51 @@
       "code": 6043,
       "name": "EscrowAlreadyApproved",
       "msg": "Approved escrow cannot be withdrawn by the sender"
+    },
+    {
+      "code": 6044,
+      "name": "MissingRoomTeam",
+      "msg": "This room splits rewards with a team; its room_team account is required"
+    },
+    {
+      "code": 6045,
+      "name": "NotTeamMember",
+      "msg": "Signer is not a member of this room's launch team"
+    },
+    {
+      "code": 6046,
+      "name": "RoomTeamNotSealed",
+      "msg": "The room's team must be sealed before the room can accept contributions"
+    },
+    {
+      "code": 6047,
+      "name": "RoomTeamAlreadySealed",
+      "msg": "The room's team is already sealed and cannot be changed"
+    },
+    {
+      "code": 6048,
+      "name": "TooFewTeamMembers",
+      "msg": "A team split needs at least 2 members"
+    },
+    {
+      "code": 6049,
+      "name": "TooManyTeamMembers",
+      "msg": "Team member count exceeds the maximum a single room can split between"
+    },
+    {
+      "code": 6050,
+      "name": "TeamMemberCountMismatch",
+      "msg": "Team member list does not match the declared member count"
+    },
+    {
+      "code": 6051,
+      "name": "DuplicateTeamMember",
+      "msg": "Duplicate wallet in the team member list"
+    },
+    {
+      "code": 6052,
+      "name": "InvalidTeamMember",
+      "msg": "Team member wallet cannot be the default pubkey"
     }
   ],
   "types": [
@@ -4489,6 +4760,14 @@
           {
             "name": "timestamp",
             "type": "i64"
+          },
+          {
+            "name": "total_raised",
+            "type": "u64"
+          },
+          {
+            "name": "users",
+            "type": "u16"
           }
         ]
       }
@@ -4521,6 +4800,14 @@
           {
             "name": "timestamp",
             "type": "i64"
+          },
+          {
+            "name": "total_raised",
+            "type": "u64"
+          },
+          {
+            "name": "users",
+            "type": "u16"
           }
         ]
       }
@@ -4900,6 +5187,9 @@
           },
           {
             "name": "Custom"
+          },
+          {
+            "name": "Team"
           }
         ]
       }
@@ -5149,6 +5439,99 @@
       }
     },
     {
+      "name": "RoomTeam",
+      "docs": [
+        "The immutable payout list for a `RewardStructure::Team` room.",
+        "",
+        "One per room (the room's address is in the seed), written before the room",
+        "can take a single lamport, and never touched again once sealed. Teams churn",
+        "off-chain; this is the snapshot of who launched *this* room.",
+        "",
+        "No `InitSpace`/`#[max_len]`: `members` is sized from the `total_members` the",
+        "creator declares on the first call, so rent tracks the team's real size and",
+        "no member limit is baked into the account layout."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "room",
+            "type": "pubkey"
+          },
+          {
+            "name": "expected_members",
+            "docs": [
+              "Member count declared on the first `set_room_team` call. The account is",
+              "allocated to hold exactly this many, and `seal` refuses until the list",
+              "is exactly this long — so a half-filled team can never be sealed by a",
+              "dropped follow-up transaction."
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "sealed",
+            "docs": [
+              "Contributions are refused until this is true, which is what replaces",
+              "the atomicity of setting the team inside `create_room`. Write-once."
+            ],
+            "type": "bool"
+          },
+          {
+            "name": "members",
+            "docs": [
+              "Weights sum to exactly 10_000 once sealed."
+            ],
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "TeamShare"
+                }
+              }
+            }
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "RoomTeamSealed",
+      "docs": [
+        "Emitted when a room's team payout list is finalized.",
+        "",
+        "Deliberately carries only the COUNT, not the member list. Serializing two",
+        "more vectors here was the single largest heap allocation in the sealing",
+        "call, and it cost about 80 members of headroom: with the lists included the",
+        "program ran out of the 32KB BPF heap at ~120 members, and without them it",
+        "seals 200+ on the default heap. The list is recoverable from the RoomTeam",
+        "account at any time, so nothing is lost but a round trip nobody makes — the",
+        "backend reconciles from the account and skips this event's payload entirely."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "room",
+            "type": "pubkey"
+          },
+          {
+            "name": "token_mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "member_count",
+            "type": "u16"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
       "name": "RoomType",
       "type": {
         "kind": "enum",
@@ -5250,6 +5633,28 @@
           {
             "name": "timestamp",
             "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "TeamShare",
+      "docs": [
+        "One wallet's share of a team-split room's trading fees.",
+        "",
+        "`weight_bps` is written at seal time, not on append: an even split is",
+        "`10_000 / n`, so no weight can be assigned until `n` is final."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "wallet",
+            "type": "pubkey"
+          },
+          {
+            "name": "weight_bps",
+            "type": "u16"
           }
         ]
       }

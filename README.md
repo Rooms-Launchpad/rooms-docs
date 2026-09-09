@@ -44,8 +44,13 @@ For `AccessCode` rooms, `rooms_authority` signs a timed verification payload off
 | `Equal` | Contributors share fees proportionally to their contribution. The room creator additionally receives a virtual share equal to `max_contribution`, regardless of their actual contribution. |
 | `Creator` | The room creator receives 100% of accumulated fees. |
 | `Custom` | A designated `reward_wallet` (set at room creation) receives 100% of accumulated fees. |
+| `Team` | The wallets that launched the room share fees evenly. The list is written once by `set_room_team` and sealed before the room can accept a single contribution; it never changes afterwards. |
 
 **Equal — creator bonus:** the fee accumulator is divided by `raised_lamports + max_contribution` rather than `raised_lamports`, reserving the creator's slice from the pool without draining more than the fees collected. The creator's reward is calculated as if they contributed exactly `max_contribution`.
+
+**Team — the list is a snapshot.** A `Team` room's payout list is fixed at launch and immutable once sealed. A wallet added to the launching group afterwards receives nothing from that room; a wallet removed keeps its share permanently. There is no on-chain team object shared between rooms — each room holds its own copy, so the same group launching twice produces two independent lists.
+
+**Team — contributors receive tokens, not fees.** Backers of a `Team` room get their token allocation exactly as in any other room, but the trading-fee pool goes entirely to the payout list. The room creator earns nothing unless they are on it — there is no creator bonus here, unlike `Equal`.
 
 **50% holding rule (Equal only):** regular contributors must hold at least 50% of their allocated token amount. Enforcement is handled off-chain: the Rooms backend monitors balances and calls `freeze_rewards` when a contributor drops below the threshold. The room creator is **exempt** from this rule and can never be frozen.
 
@@ -63,7 +68,7 @@ Creates a new room. The creator pays rent for the room account.
 |---|---|---|
 | `room_platform` | `RoomPlatform` | `PumpFun` or `Rooms` (Meteora) |
 | `room_type` | `RoomType` | `Open` or `AccessCode` |
-| `reward_structure` | `RewardStructure` | `Equal`, `Creator`, or `Custom` |
+| `reward_structure` | `RewardStructure` | `Equal`, `Creator`, `Custom`, or `Team` |
 | `metadata_uri` | `string` | IPFS or URL pointing to token metadata JSON (max 200 chars) |
 | `reward_wallet` | `pubkey?` | Required when `reward_structure` is `Custom`; ignored otherwise |
 | `raise_lamports` | `u64?` | Target raise in lamports. Required for Meteora rooms (30–300 SOL). Ignored for PumpFun. |
@@ -72,6 +77,32 @@ Creates a new room. The creator pays rent for the room account.
 - Meteora rooms: `raise_lamports` must be exactly 30 SOL, 90 SOL, or 180 SOL
 - PumpFun rooms: raise target is fixed (~86.080 SOL); passing `raise_lamports` has no effect
 - `reward_wallet` must be provided when using `Custom` reward structure
+- `Team` rooms must call `set_room_team` before they can accept contributions — see below
+
+---
+
+### `set_room_team`
+
+Writes and seals the payout list for a `Team` room. Signed by the room creator, and separate from `create_room` because the wallet list does not fit in that transaction: a `set_room_team` carrying 29 wallets serializes to 1210 bytes, and 30 carries it past the 1232-byte limit. Larger teams are appended across several calls, and only the last one seals.
+
+| Argument | Type | Description |
+|---|---|---|
+| `total_members` | `u16` | The size the finished list will be. Declared identically on every call — the account is allocated for exactly this many on the first, and the program refuses to seal until the list reaches it. |
+| `members` | `pubkey[]` | This call's slice of the list, in order |
+| `seal` | `bool` | `true` on the final call: assigns the weights and opens the room to contributions |
+
+**Constraints:**
+- Room's reward structure must be `Team`, and the signer must be the room creator
+- `2 ≤ total_members ≤ 200`
+- No duplicate wallets, within a call or across calls; no default pubkey
+- `seal` is refused until the list is exactly `total_members` long
+- A sealed list can never be appended to or changed
+
+**Weights:** an even split, `10_000 / n` basis points each, with the indivisible remainder given to index 0 so the weights sum to exactly 10,000. Ordering is therefore meaningful — the first wallet receives the remainder.
+
+**Rent:** the creator pays for the account, sized from `total_members` — roughly 0.0011 SOL plus 0.00024 SOL per member (about 0.013 SOL for a 50-wallet team). It is never closed, so the rent is not recoverable.
+
+> **Ordering matters.** A `Team` room refuses every contribution until the list is sealed, so a launch that stops between `create_room` and the sealing call leaves an inert room rather than a half-defined split. The transactions are not independent — each appends to the same account — so they must be submitted in sequence.
 
 ---
 
@@ -88,6 +119,7 @@ Contributes SOL to a room.
 - Total contribution must not exceed `max_contribution` per user
 - Must be at or above `min_contribution`
 - For non-Open rooms: user must have a valid `RoomAccess` PDA (see `verify_access`)
+- For `Team` rooms: the room's `RoomTeam` account must exist and be sealed (`MissingRoomTeam` / `RoomTeamNotSealed`)
 - If this contribution causes `raised_lamports` to reach `target_lamports`, finalization is triggered automatically
 
 **Fees charged:**
@@ -139,12 +171,15 @@ Claims accumulated trading fee rewards for a contributor, the room creator, or t
 | `Equal` (room creator) | Room creator | `accumulator_delta × max_contribution / (active_lamports + max_contribution)` |
 | `Creator` | Room creator | `accumulator_delta / 1_000_000_000` (all fees) |
 | `Custom` | `reward_wallet` set at room creation | `accumulator_delta / 1_000_000_000` (all fees) |
+| `Team` | Any wallet on the room's sealed payout list | `accumulator_delta × weight_bps / 10_000 / 1_000_000_000` |
 
 `active_lamports` = `raised_lamports − frozen_contribution_lamports`. Frozen users' contributions are excluded from the denominator so their share is redistributed to active participants on each fee collection.
 
 **Frozen users:** if a contributor has been frozen via `freeze_rewards`, their claimable amount is capped at the accumulator value recorded at freeze time. They can drain that pre-freeze amount but earn nothing from subsequent fee collections.
 
 A `RoomUser` PDA is created at room creation for the creator and reward wallet with `treasury_fee_checkpoint = 0`, so they earn fees from room inception.
+
+**Team rooms** accumulate the pot undivided, exactly as `Creator` and `Custom` do — fee collection never needs to know the team's size, and the split is applied here instead. A team member who never contributed pays the rent for their own `RoomUser` PDA on their first claim (~0.0016 SOL), and earns from room inception because the checkpoint starts at zero. The `room_team` account must be passed; a wallet absent from the list is refused with `NotTeamMember`.
 
 ---
 
@@ -230,7 +265,7 @@ These instructions are executed by the Rooms backend. On-chain authorization var
 
 The PumpSwap and Meteora fees apply to all trades on those AMMs regardless of interface — including trades made directly without going through Rooms. The +0.5% Rooms swap fee is an additional charge applied only when trading through `swap_pump` or `swap_meteora`.
 
-For PumpFun, only the creator share flows to Rooms (30–95 bps depending on market cap); the remainder goes to PumpFun's LPs and protocol. The Reward Pool is distributed to contributors proportionally (`Equal`), to the room creator (`Creator`), or to the designated reward wallet (`Custom`).
+For PumpFun, only the creator share flows to Rooms (30–95 bps depending on market cap); the remainder goes to PumpFun's LPs and protocol. The Reward Pool is distributed to contributors proportionally (`Equal`), to the room creator (`Creator`), to the designated reward wallet (`Custom`), or evenly between the wallets that launched the room (`Team`).
 
 ### Referrals
 
@@ -255,10 +290,11 @@ Full implementation details for the backend — the exact voucher byte layout, e
 | Account | Seeds | Description |
 |---|---|---|
 | `GlobalConfig` | `[b"global_config"]` | Singleton protocol config |
-| `Room` | `[b"room", token_mint]` | Per-launch state |
+| `Room` | `[b"rooms", token_mint]` | Per-launch state |
 | `RoomVault` | `[b"room_vault", room]` | SOL vault that holds raised funds, pays for pool init, and receives fee distributions |
 | `RoomUser` | `[b"room_user", room, user]` | Per-user contribution state |
 | `RoomAccess` | `[b"room_access", room, user]` | Access verification for gated rooms |
+| `RoomTeam` | `[b"room_team", room]` | Sealed payout list for a `Team` room. One per room; there is no global team account. |
 | `ReferralVault` | `[b"referral_vault"]` | Global (not per-room) plain SOL PDA holding all pooled referral cuts, paid out via `claim_referral` |
 | `ReferralClaim` | `[b"referral_claim", user]` | Per-user (not per-room) lifetime referral-claim tracker; created and paid for by the user on their first claim |
 
