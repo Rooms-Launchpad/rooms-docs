@@ -8,6 +8,39 @@
   },
   "instructions": [
     {
+      "name": "add_team_member",
+      "docs": [
+        "Adds one wallet to a team's live roster. Touches no room — only a",
+        "room sealed *after* this call will include the new member."
+      ],
+      "discriminator": [
+        64,
+        13,
+        248,
+        67,
+        55,
+        245,
+        184,
+        173
+      ],
+      "accounts": [
+        {
+          "name": "team",
+          "writable": true
+        },
+        {
+          "name": "rooms_authority",
+          "signer": true
+        }
+      ],
+      "args": [
+        {
+          "name": "wallet",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
       "name": "airdrop_tokens",
       "discriminator": [
         242,
@@ -595,6 +628,12 @@
         },
         {
           "name": "room_vault",
+          "docs": [
+            "pays out of this; a Team room only ever reads its",
+            "`treasury_fee_accumulator` from `room` and pays out of `team_vault`",
+            "instead (see below) — but the account still has to be present in",
+            "every call because the struct is shared across all reward structures."
+          ],
           "writable": true,
           "pda": {
             "seeds": [
@@ -659,6 +698,20 @@
               }
             ]
           }
+        },
+        {
+          "name": "team_vault",
+          "docs": [
+            "place of `room_vault`. Deliberately unconstrained here (no seeds/bump",
+            "in this macro) and validated by hand in the handler instead: its",
+            "address depends on `room.team`, itself an `Option`, and deriving one",
+            "optional account's seeds from another optional account's contents is",
+            "a real panic risk if a caller supplies them inconsistently. Manual",
+            "validation lets every case fail cleanly through `require!`/`ok_or`",
+            "instead."
+          ],
+          "writable": true,
+          "optional": true
         }
       ],
       "args": []
@@ -1249,6 +1302,105 @@
           "name": "raise_lamports",
           "type": {
             "option": "u64"
+          }
+        },
+        {
+          "name": "team",
+          "type": {
+            "option": "pubkey"
+          }
+        }
+      ]
+    },
+    {
+      "name": "create_team",
+      "docs": [
+        "Creates (idempotently) the persistent on-chain roster for one team.",
+        "Lazy — called the first time a team's membership needs syncing on",
+        "chain, not eagerly for every team — and rooms_authority-signed, since",
+        "team membership stays exactly as backend-authorized as it is off",
+        "chain today."
+      ],
+      "discriminator": [
+        122,
+        161,
+        98,
+        67,
+        178,
+        128,
+        116,
+        113
+      ],
+      "accounts": [
+        {
+          "name": "global_config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  108,
+                  111,
+                  98,
+                  97,
+                  108,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "team",
+          "docs": [
+            "Allocated once, on first sync, and reused for every room this team",
+            "ever launches — see `Team`'s own doc comment for why this differs",
+            "from `RoomTeam`'s per-room allocation."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  101,
+                  97,
+                  109
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "team_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "rooms_authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "team_id",
+          "type": {
+            "array": [
+              "u8",
+              16
+            ]
           }
         }
       ]
@@ -2915,21 +3067,56 @@
       "args": []
     },
     {
-      "name": "set_room_team",
+      "name": "remove_team_member",
       "docs": [
-        "Appends wallets to a Team room's payout list, sealing it when `seal` is",
-        "set. Called after `create_room` because the wallet list does not fit in",
-        "that transaction; `contribute` refuses the room until it is sealed."
+        "Removes one wallet from a team's live roster. Touches no room — a",
+        "departing member keeps their share of every room already sealed."
       ],
       "discriminator": [
-        100,
-        22,
-        48,
-        116,
-        26,
-        109,
-        134,
-        49
+        224,
+        54,
+        115,
+        192,
+        42,
+        203,
+        4,
+        15
+      ],
+      "accounts": [
+        {
+          "name": "team",
+          "writable": true
+        },
+        {
+          "name": "rooms_authority",
+          "signer": true
+        }
+      ],
+      "args": [
+        {
+          "name": "wallet",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "seal_room_team",
+      "docs": [
+        "Freezes this room's payout split from its team's *current* roster.",
+        "One call, one transaction — the wallet list is already on chain in",
+        "`team`, so there's nothing left to transmit or chunk across multiple",
+        "calls the way the old `set_room_team` had to. `contribute` refuses",
+        "the room until this lands."
+      ],
+      "discriminator": [
+        10,
+        2,
+        223,
+        165,
+        175,
+        203,
+        126,
+        226
       ],
       "accounts": [
         {
@@ -2955,11 +3142,24 @@
           }
         },
         {
+          "name": "team",
+          "docs": [
+            "The team this room launched under. Its *current* roster is what gets",
+            "copied into `room_team` below — not a client-supplied wallet list —",
+            "so the program itself, not just the backend, ties a room's split to",
+            "the team it actually belongs to.",
+            "",
+            "No seeds/bump here: `room.team` already pins the one correct address",
+            "(set once, at `create_room`), so re-deriving it from `team_id` would",
+            "only re-prove what the equality constraint below already proves."
+          ]
+        },
+        {
           "name": "room_team",
           "docs": [
-            "Allocated on the first call to hold exactly `total_members` shares, then",
-            "appended to by any follow-up calls. Never reallocated — the size is",
-            "known up front, so rent is paid once and is exact."
+            "`init`, not `init_if_needed`: sealing a room's team is now exactly",
+            "one call, so a second attempt fails at the account-already-in-use",
+            "constraint rather than needing a runtime `sealed` check."
           ],
           "writable": true,
           "pda": {
@@ -2998,22 +3198,7 @@
           "address": "11111111111111111111111111111111"
         }
       ],
-      "args": [
-        {
-          "name": "total_members",
-          "type": "u16"
-        },
-        {
-          "name": "members",
-          "type": {
-            "vec": "pubkey"
-          }
-        },
-        {
-          "name": "seal",
-          "type": "bool"
-        }
-      ]
+      "args": []
     },
     {
       "name": "swap_meteora",
@@ -3709,6 +3894,115 @@
       ]
     },
     {
+      "name": "sweep_room_to_team_vault",
+      "docs": [
+        "Forwards `amount` lamports from a team_split room's own `room_vault`",
+        "into its team's shared `team_vault`. Called right after",
+        "`collect_pump_fees`/`collect_meteora_fees` for team_split rooms,",
+        "`amount` being exactly what that sweep just collected."
+      ],
+      "discriminator": [
+        155,
+        199,
+        240,
+        135,
+        68,
+        114,
+        247,
+        15
+      ],
+      "accounts": [
+        {
+          "name": "room",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  111,
+                  111,
+                  109,
+                  115
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "room.token_mint",
+                "account": "Room"
+              }
+            ]
+          }
+        },
+        {
+          "name": "room_vault",
+          "docs": [
+            "collection always lands here first (their on-chain \"creator\"/fee",
+            "recipient was registered as this exact PDA at graduation and can't be",
+            "redirected afterward), so this instruction is the forwarding step",
+            "that consolidates it into the team's shared vault. It also carries",
+            "operational reserves unrelated to fees (the per-contributor ATA-fee",
+            "float `airdrop_tokens` spends from, the WSOL-ATA-recycling reserve",
+            "`collect_pump_fees` needs) — see why `amount` is explicit, below."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  111,
+                  111,
+                  109,
+                  95,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "room"
+              }
+            ]
+          }
+        },
+        {
+          "name": "team_vault",
+          "docs": [
+            "`room.team` — nothing the caller chooses — and validated by hand",
+            "below rather than via seeds on this account, for the same reason",
+            "`claim_rewards`'s `team_vault` is: deriving one optional account's",
+            "seeds from another account's `Option` field is a needless panic risk",
+            "when it can just be checked with `require!` instead."
+          ],
+          "writable": true
+        },
+        {
+          "name": "caller",
+          "docs": [
+            "Permissionless, like `collect_pump_fees`/`collect_meteora_fees`: the",
+            "destination is entirely PDA-derived, so the caller's identity can't",
+            "misdirect anything — they only pay the transaction fee."
+          ],
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
       "name": "verify_access",
       "discriminator": [
         198,
@@ -4188,6 +4482,19 @@
         40,
         157,
         62
+      ]
+    },
+    {
+      "name": "Team",
+      "discriminator": [
+        140,
+        218,
+        177,
+        140,
+        193,
+        241,
+        199,
+        106
       ]
     }
   ],
@@ -4705,6 +5012,16 @@
       "code": 6052,
       "name": "InvalidTeamMember",
       "msg": "Team member wallet cannot be the default pubkey"
+    },
+    {
+      "code": 6053,
+      "name": "TeamFull",
+      "msg": "This team's roster is already at its maximum size"
+    },
+    {
+      "code": 6054,
+      "name": "TeamMemberNotFound",
+      "msg": "Wallet is not a member of this team"
     }
   ],
   "types": [
@@ -5335,6 +5652,20 @@
             }
           },
           {
+            "name": "team",
+            "docs": [
+              "The launching team's persistent on-chain account, set once at",
+              "creation when `reward_structure == Team`. `None` for every other",
+              "room. This is what lets `set_room_team`, `claim_rewards` and",
+              "`sweep_room_to_team_vault` derive `team_vault` and prove the",
+              "room-to-team link on chain, instead of trusting a client-supplied",
+              "team identity."
+            ],
+            "type": {
+              "option": "pubkey"
+            }
+          },
+          {
             "name": "bump",
             "type": "u8"
           }
@@ -5633,6 +5964,70 @@
           {
             "name": "timestamp",
             "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Team",
+      "docs": [
+        "The persistent, mutable roster of a team — one per team, not one per room.",
+        "",
+        "Unlike `RoomTeam` (a per-room, write-once snapshot), `Team` is meant to",
+        "change over time: members join and leave, and every future room the team",
+        "launches reads this account's *current* contents at seal time to build",
+        "its own `RoomTeam` snapshot. A room's own payout split, once sealed, is",
+        "still never retroactively affected by later changes here — only new",
+        "rooms see them.",
+        "",
+        "Seeds: `[b\"team\", team_id]`. `team_id` is the backend's own team",
+        "identifier (16 raw bytes — a UUID), so both the backend and any client",
+        "can derive this account's address deterministically with no RPC read.",
+        "",
+        "Fixed capacity (`MAX_TEAM_MEMBERS`), allocated once at creation, rather",
+        "than `realloc`-based growth: this account is reused indefinitely, so its",
+        "size can't be redeclared per call the way a `RoomTeam`'s can."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "team_id",
+            "docs": [
+              "Redundant with the seed, matching `RoomTeam.room`'s existing",
+              "defense-in-depth pattern: a caller-supplied `Team` account still has",
+              "to carry the identity it claims."
+            ],
+            "type": {
+              "array": [
+                "u8",
+                16
+              ]
+            }
+          },
+          {
+            "name": "authority",
+            "docs": [
+              "The signer allowed to call `add_team_member`/`remove_team_member`.",
+              "Always `global_config.rooms_authority` today — kept as its own field",
+              "(rather than re-reading `GlobalConfig` in every mutating instruction)",
+              "so authority checks are a single equality against this account."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "member_count",
+            "type": "u16"
+          },
+          {
+            "name": "members",
+            "type": {
+              "vec": "pubkey"
+            }
+          },
+          {
+            "name": "bump",
+            "type": "u8"
           }
         ]
       }
