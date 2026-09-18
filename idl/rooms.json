@@ -1384,6 +1384,38 @@
           }
         },
         {
+          "name": "team_vault",
+          "docs": [
+            "funded to the zero-data rent minimum when the team is created so a",
+            "later fee sweep can never try to create the PDA with a sub-rent",
+            "transfer after an earlier payout round drained its distributable SOL."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  101,
+                  97,
+                  109,
+                  95,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "team"
+              }
+            ]
+          }
+        },
+        {
           "name": "rooms_authority",
           "writable": true,
           "signer": true
@@ -5656,7 +5688,7 @@
             "docs": [
               "The launching team's persistent on-chain account, set once at",
               "creation when `reward_structure == Team`. `None` for every other",
-              "room. This is what lets `set_room_team`, `claim_rewards` and",
+              "room. This is what lets `seal_room_team`, `claim_rewards` and",
               "`sweep_room_to_team_vault` derive `team_vault` and prove the",
               "room-to-team link on chain, instead of trusting a client-supplied",
               "team identity."
@@ -5778,9 +5810,9 @@
         "can take a single lamport, and never touched again once sealed. Teams churn",
         "off-chain; this is the snapshot of who launched *this* room.",
         "",
-        "No `InitSpace`/`#[max_len]`: `members` is sized from the `total_members` the",
-        "creator declares on the first call, so rent tracks the team's real size and",
-        "no member limit is baked into the account layout."
+        "No `InitSpace`/`#[max_len]`: `members` is sized from the persistent team's",
+        "current roster when `seal_room_team` creates this account, so rent tracks",
+        "the snapshot's real size."
       ],
       "type": {
         "kind": "struct",
@@ -5792,18 +5824,14 @@
           {
             "name": "expected_members",
             "docs": [
-              "Member count declared on the first `set_room_team` call. The account is",
-              "allocated to hold exactly this many, and `seal` refuses until the list",
-              "is exactly this long — so a half-filled team can never be sealed by a",
-              "dropped follow-up transaction."
+              "Member count copied atomically from the persistent team roster."
             ],
             "type": "u16"
           },
           {
             "name": "sealed",
             "docs": [
-              "Contributions are refused until this is true, which is what replaces",
-              "the atomicity of setting the team inside `create_room`. Write-once."
+              "Contributions are refused until this is true. Write-once."
             ],
             "type": "bool"
           },
