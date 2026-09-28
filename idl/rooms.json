@@ -1438,6 +1438,200 @@
       ]
     },
     {
+      "name": "decrease_contribution",
+      "discriminator": [
+        235,
+        175,
+        148,
+        85,
+        120,
+        1,
+        186,
+        91
+      ],
+      "accounts": [
+        {
+          "name": "room",
+          "writable": true
+        },
+        {
+          "name": "global_config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  108,
+                  111,
+                  98,
+                  97,
+                  108,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "admin_vault",
+          "writable": true
+        },
+        {
+          "name": "room_user",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  111,
+                  111,
+                  109,
+                  95,
+                  117,
+                  115,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "room"
+              },
+              {
+                "kind": "account",
+                "path": "user"
+              }
+            ]
+          }
+        },
+        {
+          "name": "room_access",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  111,
+                  111,
+                  109,
+                  95,
+                  97,
+                  99,
+                  99,
+                  101,
+                  115,
+                  115
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "room"
+              },
+              {
+                "kind": "account",
+                "path": "user"
+              }
+            ]
+          }
+        },
+        {
+          "name": "room_vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  111,
+                  111,
+                  109,
+                  95,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "room"
+              }
+            ]
+          }
+        },
+        {
+          "name": "user",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "rent",
+          "address": "SysvarRent111111111111111111111111111111111"
+        },
+        {
+          "name": "room_team",
+          "docs": [
+            "Required for `RewardStructure::Team` rooms, absent for every other kind.",
+            "",
+            "Last in the list, and optional, so clients built before team splits",
+            "existed keep working unchanged against non-team rooms (see the",
+            "`allow-missing-optionals` note in Cargo.toml). The seeds constraint",
+            "means a team room cannot be satisfied by passing some other account."
+          ],
+          "optional": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  111,
+                  111,
+                  109,
+                  95,
+                  116,
+                  101,
+                  97,
+                  109
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "room"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "lamports",
+          "type": "u64"
+        }
+      ]
+    },
+    {
       "name": "finalize_meteora",
       "discriminator": [
         60,
@@ -4149,195 +4343,6 @@
       ]
     },
     {
-      "name": "withdraw_contribution",
-      "discriminator": [
-        228,
-        248,
-        41,
-        205,
-        208,
-        250,
-        5,
-        65
-      ],
-      "accounts": [
-        {
-          "name": "room",
-          "writable": true
-        },
-        {
-          "name": "global_config",
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  103,
-                  108,
-                  111,
-                  98,
-                  97,
-                  108,
-                  95,
-                  99,
-                  111,
-                  110,
-                  102,
-                  105,
-                  103
-                ]
-              }
-            ]
-          }
-        },
-        {
-          "name": "admin_vault",
-          "writable": true
-        },
-        {
-          "name": "room_user",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  114,
-                  111,
-                  111,
-                  109,
-                  95,
-                  117,
-                  115,
-                  101,
-                  114
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "room"
-              },
-              {
-                "kind": "account",
-                "path": "user"
-              }
-            ]
-          }
-        },
-        {
-          "name": "room_access",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  114,
-                  111,
-                  111,
-                  109,
-                  95,
-                  97,
-                  99,
-                  99,
-                  101,
-                  115,
-                  115
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "room"
-              },
-              {
-                "kind": "account",
-                "path": "user"
-              }
-            ]
-          }
-        },
-        {
-          "name": "room_vault",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  114,
-                  111,
-                  111,
-                  109,
-                  95,
-                  118,
-                  97,
-                  117,
-                  108,
-                  116
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "room"
-              }
-            ]
-          }
-        },
-        {
-          "name": "user",
-          "writable": true,
-          "signer": true
-        },
-        {
-          "name": "token_program",
-          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
-        },
-        {
-          "name": "system_program",
-          "address": "11111111111111111111111111111111"
-        },
-        {
-          "name": "rent",
-          "address": "SysvarRent111111111111111111111111111111111"
-        },
-        {
-          "name": "room_team",
-          "docs": [
-            "Required for `RewardStructure::Team` rooms, absent for every other kind.",
-            "",
-            "Last in the list, and optional, so clients built before team splits",
-            "existed keep working unchanged against non-team rooms (see the",
-            "`allow-missing-optionals` note in Cargo.toml). The seeds constraint",
-            "means a team room cannot be satisfied by passing some other account."
-          ],
-          "optional": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  114,
-                  111,
-                  111,
-                  109,
-                  95,
-                  116,
-                  101,
-                  97,
-                  109
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "room"
-              }
-            ]
-          }
-        }
-      ],
-      "args": []
-    },
-    {
       "name": "withdraw_escrow",
       "discriminator": [
         81,
@@ -5054,6 +5059,21 @@
       "code": 6054,
       "name": "TeamMemberNotFound",
       "msg": "Wallet is not a member of this team"
+    },
+    {
+      "code": 6055,
+      "name": "InvalidWithdrawAmount",
+      "msg": "Withdrawal amount must be greater than zero"
+    },
+    {
+      "code": 6056,
+      "name": "WithdrawExceedsContribution",
+      "msg": "Withdrawal exceeds the user's contribution"
+    },
+    {
+      "code": 6057,
+      "name": "RemainingBelowMinimum",
+      "msg": "Remaining contribution is below the room minimum"
     }
   ],
   "types": [
