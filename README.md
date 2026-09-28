@@ -128,16 +128,25 @@ Contributes SOL to a room.
 
 ---
 
-### `withdraw_contribution`
+### `decrease_contribution(lamports: u64)`
 
-Withdraws the user's full contribution from a room before finalization.
+Reduces a contribution by the requested amount. Pass the entire current stake
+for a full exit; `withdraw_contribution` has been removed.
 
-**No arguments** — withdrawal is always for the full contributed amount.
+**Constraints, in order (after account/access checks):**
+- Room must not be finalized and its target must not have been reached.
+- Amount must be greater than zero (`InvalidWithdrawAmount`).
+- Amount must not exceed the current stake (`WithdrawExceedsContribution`).
+- Remaining stake must be zero or at least the room minimum (`RemainingBelowMinimum`).
 
-**Constraints:**
-- Room must not be finalized — withdrawals are permanently blocked once a room finalizes
+**Fee:** `floor(lamports * 300 / 10,000)` lamports (3%) per instruction.
+The wallet receives the requested amount less this fee. A full exit additionally
+refunds the 2,100,000-lamport ATA reserve and decrements the contributor count.
+Partial decreases keep the reserve, contributor slot and both user/access accounts.
+Full exits retain both accounts as before. Reward weight uses the final stake.
 
-**Refund:** the user receives their `lamports_contributed` minus the 3% withdrawal fee, plus the 2,100,000 lamport ATA fee refunded in full.
+Emits the existing `ContributionWithdrawn` event with the requested gross amount
+and absolute remaining stake; the event layout is unchanged.
 
 ---
 
