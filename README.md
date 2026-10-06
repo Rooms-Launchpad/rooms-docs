@@ -4,8 +4,8 @@ Rooms is a Solana protocol for community-funded token launches, token allocation
 
 ## Current interface
 
-Program: `FYs1kpav5Zb8SHYGfGixmKm623ijyPB93zmV5Grooms`  
-IDL program version: `1.0.0` · Anchor IDL specification: `0.1.0`  
+Program: `FYs1kpav5Zb8SHYGfGixmKm623ijyPB93zmV5Grooms`
+IDL program version: `1.0.0` · Anchor IDL specification: `0.1.0`
 Updated: **6 October 2026**.
 
 The canonical interface is [idl/rooms.json](./idl/rooms.json), with its generated TypeScript type at [idl/rooms.ts](./idl/rooms.ts). There is one current IDL pair, including the team trading vault instructions. [V1 changelog](./changelog/CHANGELOG.md).
