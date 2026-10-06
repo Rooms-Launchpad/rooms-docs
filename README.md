@@ -15,7 +15,7 @@ The canonical interface is [idl/rooms.json](./idl/rooms.json), with its generate
 | Devnet | `FYs1kpav5Zb8SHYGfGixmKm623ijyPB93zmV5Grooms` | Matches the published IDL, including team trading vaults. |
 | Mainnet | `FYs1kpav5Zb8SHYGfGixmKm623ijyPB93zmV5Grooms` | Previous deployment; team trading vaults have not been deployed there. |
 
-[Devnet upgrade transaction](https://explorer.solana.com/tx/3whB9yvp6whdZ9GrnrNF1z9T8cKgqK6B3huoX3K7pt9MD5CirAXEtYnTmHM5dsDTJX8k2Hya3BMK8f1SYFY6BDmW?cluster=devnet). This repository's current IDL targets Devnet; the same program address does not mean both networks expose the same ABI.
+[Devnet upgrade transaction](https://explorer.solana.com/tx/4wA6ZqSqKxUVkBpDLPHKumKfmaopnE3guj5NkmiapbymvcHD235AadHeSM8goR9W6UK8Exzb3oaWjmFzwCeqgq6v?cluster=devnet). This repository's current IDL targets Devnet; the same program address does not mean both networks expose the same ABI.
 
 ## Protocol model
 
@@ -82,6 +82,7 @@ Account order, signer/writable flags, arguments, discriminators, layouts and err
 | --- | --- |
 | `initialize_team_governance` | Bootstrap the team owner/admin identities. |
 | `vault_init` | Create separate trading-vault accounts and enable the owner as the initial trader. |
+| `vault_init_automatic` | Configured Rooms authority creates an empty vault for the existing governance owner; defaults to 20% and owner participation. Cannot reinitialize existing vaults. |
 | `vault_set_admin` | Update a team admin flag under owner authority. |
 | `vault_transfer_owner` | Transfer ownership with signatures from both owners; balances and trader flags remain unchanged. |
 | `vault_set_trade_limit` | Set the immediate vault-wide trade limit from 100 to 5000 basis points. |
