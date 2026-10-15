@@ -6,16 +6,16 @@ Rooms is a Solana protocol for community-funded token launches, token allocation
 
 Program: `FYs1kpav5Zb8SHYGfGixmKm623ijyPB93zmV5Grooms`
 IDL program version: `1.0.0` · Anchor IDL specification: `0.1.0`
-Updated: **6 October 2026**.
+Updated: **15 October 2026**.
 
 The canonical interface is [idl/rooms.json](./idl/rooms.json), with its generated TypeScript type at [idl/rooms.ts](./idl/rooms.ts). There is one current IDL pair, including the team trading vault instructions. [V1 changelog](./changelog/CHANGELOG.md).
 
 | Network | Program address | Interface status |
 | --- | --- | --- |
-| Devnet | `FYs1kpav5Zb8SHYGfGixmKm623ijyPB93zmV5Grooms` | Matches the published IDL, including team trading vaults. |
+| Devnet | `FYs1kpav5Zb8SHYGfGixmKm623ijyPB93zmV5Grooms` | Matches the published IDL; current team owners and admins can manage trading controls. |
 | Mainnet | `FYs1kpav5Zb8SHYGfGixmKm623ijyPB93zmV5Grooms` | Previous deployment; team trading vaults have not been deployed there. |
 
-[Devnet upgrade transaction](https://explorer.solana.com/tx/4wA6ZqSqKxUVkBpDLPHKumKfmaopnE3guj5NkmiapbymvcHD235AadHeSM8goR9W6UK8Exzb3oaWjmFzwCeqgq6v?cluster=devnet). This repository's current IDL targets Devnet; the same program address does not mean both networks expose the same ABI.
+[Devnet upgrade transaction](https://explorer.solana.com/tx/4rt6Sj6LjsHduwqoRFX3v1XfToWrboZaoeJroFDqhvJPdvdTEKhvuj5Xk2cN4iRreNuxcaLpxwvR675MXrtGgpnL?cluster=devnet). This repository's current IDL targets Devnet; the same program address does not mean both networks expose the same ABI.
 
 ## Protocol model
 
@@ -26,6 +26,8 @@ The IDL defines room types `Open`, `AccessCode`, `Riddle` and `Approval`. Open r
 Team fee rewards and team trading funds use separate vaults. Trading participation is a per-member flag. Free SOL belongs to each trader and can only be paid to their recorded wallet. Every buy takes the same fraction of eligible free balances, using integer largest-remainder allocation. Position parts stay fixed; subsequent deposits do not gain ownership of earlier trades. Sales credit the original owners in those fixed proportions.
 
 The default trade limit is 2000 bps (20%), with a program-enforced range of 100–5000 bps (1–50%), checked at execution. Up to 16 positions may be open, with 50 ledger slots. Only an eligible opener or the owner can sell a position. Switching a trader off or removing a member is blocked while their money is in an open position. Owner transfer requires both owners' signatures and does not transfer balances or enable a trader flag.
+
+On Devnet, the current governance owner or an admin may set trader flags and the trade limit using their own `actor` signature, provided they remain on the team roster. Trader status alone does not grant these permissions. Manual vault initialization and admin-role changes remain owner-only; the separate authority-funded automatic initialization creates only an empty vault. Ownership transfer still requires both owners to sign. This authorization change leaves the IDL unchanged; the on-chain Devnet IDL matches the published pair.
 
 Vault token trading calls the Rooms PumpSwap or Meteora swap instruction directly; it does not route through Jupiter. Only supported Rooms-launched tokens and canonical route accounts are accepted. Swap minimum outputs are mandatory. Launch rewards enter trading balances only through the claimant's explicit `commit_rewards_to_vault`, sharing the same claim checkpoint as a wallet claim.
 
@@ -81,12 +83,12 @@ Account order, signer/writable flags, arguments, discriminators, layouts and err
 | Instruction | Behavior |
 | --- | --- |
 | `initialize_team_governance` | Bootstrap the team owner/admin identities. |
-| `vault_init` | Create separate trading-vault accounts and enable the owner as the initial trader. |
+| `vault_init` | Owner-signed creation of separate trading-vault accounts; enables the owner as the initial trader. |
 | `vault_init_automatic` | Configured Rooms authority creates an empty vault for the existing governance owner; defaults to 20% and owner participation. Cannot reinitialize existing vaults. |
 | `vault_set_admin` | Update a team admin flag under owner authority. |
 | `vault_transfer_owner` | Transfer ownership with signatures from both owners; balances and trader flags remain unchanged. |
-| `vault_set_trade_limit` | Set the immediate vault-wide trade limit from 100 to 5000 basis points. |
-| `vault_set_trader` | Enable a member as trader, or pay out and disable a trader with no open positions. |
+| `vault_set_trade_limit` | Current team owner/admin signs to set the immediate vault-wide trade limit from 100 to 5000 basis points. |
+| `vault_set_trader` | Current team owner/admin signs to enable a member as trader, or pay out to the recorded wallet and disable a trader with no open positions. |
 | `vault_deposit` | Deposit the trader's own SOL into their free balance. |
 | `vault_withdraw` | Withdraw only the trader's own free balance to their recorded wallet. |
 | `vault_buy` | Open a proportional position in a Rooms-launched token through an allowed direct swap route. |
