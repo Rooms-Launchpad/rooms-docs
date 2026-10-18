@@ -5,7 +5,7 @@
  * IDL can be found at `target/idl/rooms.json`.
  */
 export type Rooms = {
-  "address": "FYs1kpav5Zb8SHYGfGixmKm623ijyPB93zmV5Grooms",
+  "address": "TWexqA2EZiSZEvu2vVdvmHnpew3Xx9wkjgLToBrooms",
   "metadata": {
     "name": "rooms",
     "version": "1.0.0",
@@ -723,254 +723,6 @@ export type Rooms = {
       "args": []
     },
     {
-      "name": "collectMeteoraFees",
-      "discriminator": [
-        18,
-        65,
-        200,
-        231,
-        64,
-        14,
-        5,
-        135
-      ],
-      "accounts": [
-        {
-          "name": "globalConfig",
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  103,
-                  108,
-                  111,
-                  98,
-                  97,
-                  108,
-                  95,
-                  99,
-                  111,
-                  110,
-                  102,
-                  105,
-                  103
-                ]
-              }
-            ]
-          }
-        },
-        {
-          "name": "adminVault",
-          "writable": true
-        },
-        {
-          "name": "adminWsolVault",
-          "writable": true
-        },
-        {
-          "name": "room",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  114,
-                  111,
-                  111,
-                  109,
-                  115
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "room.token_mint",
-                "account": "room"
-              }
-            ]
-          }
-        },
-        {
-          "name": "tokenMint",
-          "writable": true
-        },
-        {
-          "name": "roomVault",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  114,
-                  111,
-                  111,
-                  109,
-                  95,
-                  118,
-                  97,
-                  117,
-                  108,
-                  116
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "room"
-              }
-            ]
-          }
-        },
-        {
-          "name": "roomVaultAta",
-          "writable": true
-        },
-        {
-          "name": "payer",
-          "writable": true,
-          "signer": true
-        },
-        {
-          "name": "wsolMint",
-          "address": "So11111111111111111111111111111111111111112"
-        },
-        {
-          "name": "meteoraFeeVault",
-          "writable": true
-        },
-        {
-          "name": "meteoraFeeVaultAuthority"
-        },
-        {
-          "name": "meteoraTokenVault",
-          "writable": true
-        },
-        {
-          "name": "roomsFeeClaimAdmin",
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  102,
-                  101,
-                  101,
-                  95,
-                  99,
-                  108,
-                  97,
-                  105,
-                  109
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "room"
-              }
-            ]
-          }
-        },
-        {
-          "name": "dynamicFeeSharingEventAuthority"
-        },
-        {
-          "name": "dynamicFeeSharingProgram",
-          "address": "dfsdo2UqvwfN8DuUVrMRNfQe11VaiNoKcMqLHVvDPzh"
-        },
-        {
-          "name": "meteoraSourceProgram"
-        },
-        {
-          "name": "meteoraPoolAuthority"
-        },
-        {
-          "name": "meteoraPool",
-          "writable": true
-        },
-        {
-          "name": "meteoraPosition",
-          "writable": true
-        },
-        {
-          "name": "meteoraTokenAAccount",
-          "writable": true
-        },
-        {
-          "name": "meteoraTokenBAccount",
-          "writable": true
-        },
-        {
-          "name": "meteoraTokenAVault",
-          "writable": true
-        },
-        {
-          "name": "meteoraTokenBVault",
-          "writable": true
-        },
-        {
-          "name": "meteoraTokenAMint"
-        },
-        {
-          "name": "meteoraTokenBMint"
-        },
-        {
-          "name": "meteoraPositionNftAccount"
-        },
-        {
-          "name": "meteoraOwner"
-        },
-        {
-          "name": "meteoraTokenAProgram"
-        },
-        {
-          "name": "meteoraTokenBProgram"
-        },
-        {
-          "name": "meteoraEventAuthority"
-        },
-        {
-          "name": "referralVault",
-          "docs": [
-            "via `initialize_referral_vault` before the first collection."
-          ],
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  114,
-                  101,
-                  102,
-                  101,
-                  114,
-                  114,
-                  97,
-                  108,
-                  95,
-                  118,
-                  97,
-                  117,
-                  108,
-                  116
-                ]
-              }
-            ]
-          }
-        },
-        {
-          "name": "tokenProgram",
-          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
-        },
-        {
-          "name": "systemProgram",
-          "address": "11111111111111111111111111111111"
-        }
-      ],
-      "args": []
-    },
-    {
       "name": "collectPumpFees",
       "discriminator": [
         117,
@@ -1155,6 +907,195 @@ export type Rooms = {
         {
           "name": "rent",
           "address": "SysvarRent111111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "collectRaydiumFees",
+      "discriminator": [
+        152,
+        205,
+        253,
+        183,
+        105,
+        249,
+        182,
+        38
+      ],
+      "accounts": [
+        {
+          "name": "globalConfig",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  108,
+                  111,
+                  98,
+                  97,
+                  108,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "adminWsolVault",
+          "writable": true
+        },
+        {
+          "name": "room",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  111,
+                  111,
+                  109,
+                  115
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "room.token_mint",
+                "account": "room"
+              }
+            ]
+          }
+        },
+        {
+          "name": "roomVault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  111,
+                  111,
+                  109,
+                  95,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "room"
+              }
+            ]
+          }
+        },
+        {
+          "name": "referralVault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  102,
+                  101,
+                  114,
+                  114,
+                  97,
+                  108,
+                  95,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "roomTokenAccount",
+          "writable": true
+        },
+        {
+          "name": "roomWsolAccount",
+          "writable": true
+        },
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "pool",
+          "writable": true
+        },
+        {
+          "name": "authority"
+        },
+        {
+          "name": "ammConfig",
+          "address": "8Pg5wr9H5i2GKbiH8315UiM1W9LJQT2tNiuqBeaoGKjz"
+        },
+        {
+          "name": "token0Mint"
+        },
+        {
+          "name": "token1Mint"
+        },
+        {
+          "name": "token0Vault",
+          "writable": true
+        },
+        {
+          "name": "token1Vault",
+          "writable": true
+        },
+        {
+          "name": "token0Program"
+        },
+        {
+          "name": "token1Program"
+        },
+        {
+          "name": "creatorFeeShare"
+        },
+        {
+          "name": "raydiumProgram",
+          "address": "DRaycpLY18LhpbydsBWbVJtxpNv9oXPgjRSfpF2bWpYb"
+        },
+        {
+          "name": "tokenProgram",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "token2022Program",
+          "address": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
+        },
+        {
+          "name": "associatedTokenProgram",
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
         }
       ],
       "args": []
@@ -1893,206 +1834,6 @@ export type Rooms = {
       ]
     },
     {
-      "name": "finalizeMeteora",
-      "discriminator": [
-        60,
-        135,
-        220,
-        179,
-        252,
-        25,
-        239,
-        24
-      ],
-      "accounts": [
-        {
-          "name": "room",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  114,
-                  111,
-                  111,
-                  109,
-                  115
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "room.token_mint",
-                "account": "room"
-              }
-            ]
-          }
-        },
-        {
-          "name": "roomVault",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  114,
-                  111,
-                  111,
-                  109,
-                  95,
-                  118,
-                  97,
-                  117,
-                  108,
-                  116
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "room"
-              }
-            ]
-          }
-        },
-        {
-          "name": "roomVaultAta",
-          "writable": true
-        },
-        {
-          "name": "tokenMint",
-          "writable": true,
-          "signer": true
-        },
-        {
-          "name": "meteoraProgram"
-        },
-        {
-          "name": "meteoraPoolAuthority",
-          "address": "HLnpSz9h2S4hiLQ43rnSD9XkcUThA7B8hQMKmDaiTLcC"
-        },
-        {
-          "name": "meteoraPositionNftMint",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  112,
-                  111,
-                  115,
-                  105,
-                  116,
-                  105,
-                  111,
-                  110,
-                  95,
-                  110,
-                  102,
-                  116,
-                  95,
-                  109,
-                  105,
-                  110,
-                  116
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "room"
-              }
-            ]
-          }
-        },
-        {
-          "name": "meteoraPositionNftAccount",
-          "writable": true
-        },
-        {
-          "name": "meteoraPosition",
-          "writable": true
-        },
-        {
-          "name": "meteoraPool",
-          "writable": true
-        },
-        {
-          "name": "meteoraTokenAVault",
-          "writable": true
-        },
-        {
-          "name": "meteoraTokenBVault",
-          "writable": true
-        },
-        {
-          "name": "tokenAMint"
-        },
-        {
-          "name": "tokenBMint"
-        },
-        {
-          "name": "payerTokenA",
-          "writable": true
-        },
-        {
-          "name": "payerTokenB",
-          "writable": true
-        },
-        {
-          "name": "meteoraEventAuthority"
-        },
-        {
-          "name": "tokenMetadataProgram",
-          "address": "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
-        },
-        {
-          "name": "tokenMetadata",
-          "writable": true
-        },
-        {
-          "name": "sysvarInstructions",
-          "address": "Sysvar1nstructions1111111111111111111111111"
-        },
-        {
-          "name": "tokenAProgram"
-        },
-        {
-          "name": "tokenBProgram"
-        },
-        {
-          "name": "tokenProgram",
-          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
-        },
-        {
-          "name": "token2022Program",
-          "address": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
-        },
-        {
-          "name": "associatedTokenProgram",
-          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
-        },
-        {
-          "name": "systemProgram",
-          "address": "11111111111111111111111111111111"
-        }
-      ],
-      "args": [
-        {
-          "name": "name",
-          "type": "string"
-        },
-        {
-          "name": "symbol",
-          "type": "string"
-        },
-        {
-          "name": "uri",
-          "type": "string"
-        }
-      ]
-    },
-    {
       "name": "finalizePump",
       "discriminator": [
         127,
@@ -2423,6 +2164,261 @@ export type Rooms = {
         {
           "name": "rent",
           "address": "SysvarRent111111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "symbol",
+          "type": "string"
+        },
+        {
+          "name": "uri",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "finalizeRaydium",
+      "discriminator": [
+        236,
+        122,
+        131,
+        149,
+        180,
+        203,
+        248,
+        125
+      ],
+      "accounts": [
+        {
+          "name": "room",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  111,
+                  111,
+                  109,
+                  115
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "room.token_mint",
+                "account": "room"
+              }
+            ]
+          }
+        },
+        {
+          "name": "roomVault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  111,
+                  111,
+                  109,
+                  95,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "room"
+              }
+            ]
+          }
+        },
+        {
+          "name": "tokenMint",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "roomTokenAccount",
+          "writable": true
+        },
+        {
+          "name": "launchAuthority",
+          "docs": [
+            "Shared signing address to give Raydium for its Permission PDA."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  97,
+                  121,
+                  100,
+                  105,
+                  117,
+                  109,
+                  95,
+                  108,
+                  97,
+                  117,
+                  110,
+                  99,
+                  104,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "permission"
+        },
+        {
+          "name": "ammConfig",
+          "address": "8Pg5wr9H5i2GKbiH8315UiM1W9LJQT2tNiuqBeaoGKjz"
+        },
+        {
+          "name": "authority"
+        },
+        {
+          "name": "pool",
+          "writable": true
+        },
+        {
+          "name": "lpMint",
+          "writable": true
+        },
+        {
+          "name": "launchLpAccount",
+          "writable": true
+        },
+        {
+          "name": "token0Mint"
+        },
+        {
+          "name": "token1Mint"
+        },
+        {
+          "name": "launchTokenAccount",
+          "writable": true
+        },
+        {
+          "name": "launchWsolAccount",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  97,
+                  121,
+                  100,
+                  105,
+                  117,
+                  109,
+                  95,
+                  108,
+                  97,
+                  117,
+                  110,
+                  99,
+                  104,
+                  95,
+                  119,
+                  115,
+                  111,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "room"
+              }
+            ]
+          }
+        },
+        {
+          "name": "token0Vault",
+          "writable": true
+        },
+        {
+          "name": "token1Vault",
+          "writable": true
+        },
+        {
+          "name": "observation",
+          "writable": true
+        },
+        {
+          "name": "createPoolFee",
+          "writable": true,
+          "address": "3oE58BKVt8KuYkGxx8zBojugnymWmBiyafWgMrnb6eYy"
+        },
+        {
+          "name": "wsolMint",
+          "address": "So11111111111111111111111111111111111111112"
+        },
+        {
+          "name": "token0Program"
+        },
+        {
+          "name": "token1Program"
+        },
+        {
+          "name": "raydiumProgram",
+          "address": "DRaycpLY18LhpbydsBWbVJtxpNv9oXPgjRSfpF2bWpYb"
+        },
+        {
+          "name": "tokenMetadata",
+          "writable": true
+        },
+        {
+          "name": "tokenMetadataProgram",
+          "address": "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
+        },
+        {
+          "name": "sysvarInstructions",
+          "address": "Sysvar1nstructions1111111111111111111111111"
+        },
+        {
+          "name": "tokenProgram",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "token2022Program",
+          "address": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
+        },
+        {
+          "name": "associatedTokenProgram",
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
         }
       ],
       "args": [
@@ -2865,170 +2861,6 @@ export type Rooms = {
       "args": []
     },
     {
-      "name": "initializeMeteoraDfs",
-      "discriminator": [
-        197,
-        166,
-        159,
-        120,
-        29,
-        35,
-        183,
-        35
-      ],
-      "accounts": [
-        {
-          "name": "globalConfig",
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  103,
-                  108,
-                  111,
-                  98,
-                  97,
-                  108,
-                  95,
-                  99,
-                  111,
-                  110,
-                  102,
-                  105,
-                  103
-                ]
-              }
-            ]
-          }
-        },
-        {
-          "name": "room",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  114,
-                  111,
-                  111,
-                  109,
-                  115
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "room.token_mint",
-                "account": "room"
-              }
-            ]
-          }
-        },
-        {
-          "name": "roomVault",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  114,
-                  111,
-                  111,
-                  109,
-                  95,
-                  118,
-                  97,
-                  117,
-                  108,
-                  116
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "room"
-              }
-            ]
-          }
-        },
-        {
-          "name": "roomVaultAta",
-          "writable": true
-        },
-        {
-          "name": "tokenMint",
-          "writable": true
-        },
-        {
-          "name": "wsolMint",
-          "address": "So11111111111111111111111111111111111111112"
-        },
-        {
-          "name": "roomsFeeClaimAdmin",
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  102,
-                  101,
-                  101,
-                  95,
-                  99,
-                  108,
-                  97,
-                  105,
-                  109
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "room"
-              }
-            ]
-          }
-        },
-        {
-          "name": "dynamicFeeSharingProgram",
-          "address": "dfsdo2UqvwfN8DuUVrMRNfQe11VaiNoKcMqLHVvDPzh"
-        },
-        {
-          "name": "dynamicFeeSharingEventAuthority",
-          "address": "EjRrm5Ptzzbp4fft5k4oC9LvbXqVA4UV4Sc9RNULDhCA"
-        },
-        {
-          "name": "meteoraPositionNftAccount",
-          "writable": true
-        },
-        {
-          "name": "meteoraFeeVault",
-          "writable": true
-        },
-        {
-          "name": "meteoraTokenVault",
-          "writable": true
-        },
-        {
-          "name": "meteoraFeeVaultAuthority",
-          "writable": true
-        },
-        {
-          "name": "tokenProgram",
-          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
-        },
-        {
-          "name": "token2022Program",
-          "address": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
-        },
-        {
-          "name": "systemProgram",
-          "address": "11111111111111111111111111111111"
-        }
-      ],
-      "args": []
-    },
-    {
       "name": "initializeReferralVault",
       "discriminator": [
         106,
@@ -3069,7 +2901,7 @@ export type Rooms = {
         {
           "name": "referralVault",
           "docs": [
-            "every subsequent `collect_meteora_fees` transfer into it is guaranteed to succeed."
+            "every subsequent `collect_raydium_fees` transfer into it is guaranteed to succeed."
           ],
           "writable": true,
           "pda": {
@@ -3903,189 +3735,6 @@ export type Rooms = {
       "args": []
     },
     {
-      "name": "swapMeteora",
-      "discriminator": [
-        208,
-        69,
-        36,
-        115,
-        209,
-        44,
-        77,
-        171
-      ],
-      "accounts": [
-        {
-          "name": "globalConfig",
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  103,
-                  108,
-                  111,
-                  98,
-                  97,
-                  108,
-                  95,
-                  99,
-                  111,
-                  110,
-                  102,
-                  105,
-                  103
-                ]
-              }
-            ]
-          }
-        },
-        {
-          "name": "adminVault",
-          "writable": true
-        },
-        {
-          "name": "adminWsolVault",
-          "docs": [
-            "Admin's WSOL vault for receiving fees"
-          ],
-          "writable": true
-        },
-        {
-          "name": "room",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  114,
-                  111,
-                  111,
-                  109,
-                  115
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "room.token_mint",
-                "account": "room"
-              }
-            ]
-          }
-        },
-        {
-          "name": "roomVault",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  114,
-                  111,
-                  111,
-                  109,
-                  95,
-                  118,
-                  97,
-                  117,
-                  108,
-                  116
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "room"
-              }
-            ]
-          }
-        },
-        {
-          "name": "payer",
-          "writable": true,
-          "signer": true
-        },
-        {
-          "name": "inputTokenAccount",
-          "writable": true
-        },
-        {
-          "name": "outputTokenAccount",
-          "writable": true
-        },
-        {
-          "name": "referralTokenAccount",
-          "writable": true
-        },
-        {
-          "name": "meteoraPool",
-          "writable": true
-        },
-        {
-          "name": "meteoraPoolAuthority"
-        },
-        {
-          "name": "meteoraTokenAMint",
-          "docs": [
-            "Meteora token A mint"
-          ]
-        },
-        {
-          "name": "meteoraTokenBMint",
-          "docs": [
-            "Meteora token B mint"
-          ]
-        },
-        {
-          "name": "meteoraTokenAVault",
-          "writable": true
-        },
-        {
-          "name": "meteoraTokenBVault",
-          "writable": true
-        },
-        {
-          "name": "meteoraEventAuthority"
-        },
-        {
-          "name": "meteoraProgram"
-        },
-        {
-          "name": "meteoraTokenAAccount",
-          "writable": true
-        },
-        {
-          "name": "meteoraTokenBAccount",
-          "writable": true
-        },
-        {
-          "name": "meteoraTokenAProgram"
-        },
-        {
-          "name": "meteoraTokenBProgram"
-        },
-        {
-          "name": "systemProgram",
-          "address": "11111111111111111111111111111111"
-        }
-      ],
-      "args": [
-        {
-          "name": "amountIn",
-          "type": "u64"
-        },
-        {
-          "name": "minOut",
-          "type": "u64"
-        },
-        {
-          "name": "isBuy",
-          "type": "bool"
-        }
-      ]
-    },
-    {
       "name": "swapPump",
       "discriminator": [
         27,
@@ -4510,6 +4159,172 @@ export type Rooms = {
       ]
     },
     {
+      "name": "swapRaydium",
+      "discriminator": [
+        66,
+        5,
+        174,
+        61,
+        129,
+        8,
+        190,
+        212
+      ],
+      "accounts": [
+        {
+          "name": "globalConfig",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  108,
+                  111,
+                  98,
+                  97,
+                  108,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "adminWsolVault",
+          "writable": true
+        },
+        {
+          "name": "room",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  111,
+                  111,
+                  109,
+                  115
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "room.token_mint",
+                "account": "room"
+              }
+            ]
+          }
+        },
+        {
+          "name": "roomVault",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  111,
+                  111,
+                  109,
+                  95,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "room"
+              }
+            ]
+          }
+        },
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "inputTokenAccount",
+          "writable": true
+        },
+        {
+          "name": "outputTokenAccount",
+          "writable": true
+        },
+        {
+          "name": "pool",
+          "writable": true
+        },
+        {
+          "name": "authority"
+        },
+        {
+          "name": "ammConfig",
+          "address": "8Pg5wr9H5i2GKbiH8315UiM1W9LJQT2tNiuqBeaoGKjz"
+        },
+        {
+          "name": "inputVault",
+          "writable": true
+        },
+        {
+          "name": "outputVault",
+          "writable": true
+        },
+        {
+          "name": "observation",
+          "writable": true
+        },
+        {
+          "name": "inputMint"
+        },
+        {
+          "name": "outputMint"
+        },
+        {
+          "name": "inputTokenProgram"
+        },
+        {
+          "name": "outputTokenProgram"
+        },
+        {
+          "name": "tokenProgram",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "raydiumProgram",
+          "address": "DRaycpLY18LhpbydsBWbVJtxpNv9oXPgjRSfpF2bWpYb"
+        }
+      ],
+      "args": [
+        {
+          "name": "amountIn",
+          "type": "u64"
+        },
+        {
+          "name": "minOut",
+          "type": "u64"
+        },
+        {
+          "name": "isBuy",
+          "type": "bool"
+        }
+      ]
+    },
+    {
       "name": "sweepReferralVault",
       "discriminator": [
         51,
@@ -4600,7 +4415,7 @@ export type Rooms = {
       "docs": [
         "Forwards `amount` lamports from a team_split room's own `room_vault`",
         "into its team's shared `team_vault`. Called right after",
-        "`collect_pump_fees`/`collect_meteora_fees` for team_split rooms,",
+        "`collect_pump_fees`/`collect_raydium_fees` for team_split rooms,",
         "`amount` being exactly what that sweep just collected."
       ],
       "discriminator": [
@@ -4686,7 +4501,7 @@ export type Rooms = {
         {
           "name": "caller",
           "docs": [
-            "Permissionless, like `collect_pump_fees`/`collect_meteora_fees`: the",
+            "Permissionless, like `collect_pump_fees`/`collect_raydium_fees`: the",
             "destination is entirely PDA-derived, so the caller's identity can't",
             "misdirect anything — they only pay the transaction fee."
           ],
@@ -5041,7 +4856,7 @@ export type Rooms = {
             },
             {
               "name": "roomsProgram",
-              "address": "FYs1kpav5Zb8SHYGfGixmKm623ijyPB93zmV5Grooms"
+              "address": "TWexqA2EZiSZEvu2vVdvmHnpew3Xx9wkjgLToBrooms"
             }
           ]
         },
@@ -5630,7 +5445,7 @@ export type Rooms = {
         },
         {
           "name": "roomsProgram",
-          "address": "FYs1kpav5Zb8SHYGfGixmKm623ijyPB93zmV5Grooms"
+          "address": "TWexqA2EZiSZEvu2vVdvmHnpew3Xx9wkjgLToBrooms"
         },
         {
           "name": "systemProgram",
@@ -6439,7 +6254,7 @@ export type Rooms = {
             },
             {
               "name": "roomsProgram",
-              "address": "FYs1kpav5Zb8SHYGfGixmKm623ijyPB93zmV5Grooms"
+              "address": "TWexqA2EZiSZEvu2vVdvmHnpew3Xx9wkjgLToBrooms"
             }
           ]
         }
@@ -8741,6 +8556,16 @@ export type Rooms = {
       "code": 6075,
       "name": "ownerMustTransfer",
       "msg": "Owner must transfer ownership before exiting"
+    },
+    {
+      "code": 6076,
+      "name": "raydiumPermissionMissing",
+      "msg": "Raydium launch authority has not been authorized by Raydium"
+    },
+    {
+      "code": 6077,
+      "name": "invalidRaydiumConfig",
+      "msg": "Raydium fee configuration does not match the supported launch economics"
     }
   ],
   "types": [
@@ -9483,7 +9308,7 @@ export type Rooms = {
             "name": "pumpFun"
           },
           {
-            "name": "rooms"
+            "name": "raydium"
           }
         ]
       }
