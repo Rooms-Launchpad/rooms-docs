@@ -2,7 +2,7 @@
  * Program IDL in camelCase format in order to be used in JS/TS.
  *
  * Note that this is only a type helper and is not the actual IDL. The original
- * IDL can be found at `target/idl/rooms.json`.
+ * IDL can be found at `./rooms.json`.
  */
 export type Rooms = {
   "address": "TWexqA2EZiSZEvu2vVdvmHnpew3Xx9wkjgLToBrooms",
@@ -15,10 +15,6 @@ export type Rooms = {
   "instructions": [
     {
       "name": "addTeamMember",
-      "docs": [
-        "Adds one wallet to a team's live roster. Touches no room — only a",
-        "room sealed *after* this call will include the new member."
-      ],
       "discriminator": [
         64,
         13,
@@ -218,6 +214,101 @@ export type Rooms = {
       "args": []
     },
     {
+      "name": "approveEscrowV2",
+      "discriminator": [
+        252,
+        40,
+        20,
+        69,
+        35,
+        17,
+        162,
+        118
+      ],
+      "accounts": [
+        {
+          "name": "base",
+          "accounts": [
+            {
+              "name": "escrow",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      101,
+                      115,
+                      99,
+                      114,
+                      111,
+                      119
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "escrow.sender",
+                    "account": "escrow"
+                  },
+                  {
+                    "kind": "account",
+                    "path": "escrow.escrow_id",
+                    "account": "escrow"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "recipient",
+              "signer": true,
+              "relations": [
+                "escrow"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "events",
+          "accounts": [
+            {
+              "name": "eventAuthority",
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      95,
+                      95,
+                      101,
+                      118,
+                      101,
+                      110,
+                      116,
+                      95,
+                      97,
+                      117,
+                      116,
+                      104,
+                      111,
+                      114,
+                      105,
+                      116,
+                      121
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "name": "program",
+              "address": "TWexqA2EZiSZEvu2vVdvmHnpew3Xx9wkjgLToBrooms"
+            }
+          ]
+        }
+      ],
+      "args": []
+    },
+    {
       "name": "beginEscrow",
       "discriminator": [
         132,
@@ -297,6 +388,142 @@ export type Rooms = {
         {
           "name": "systemProgram",
           "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "escrowId",
+          "type": "u64"
+        },
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "beginEscrowV2",
+      "discriminator": [
+        199,
+        191,
+        112,
+        203,
+        144,
+        126,
+        232,
+        247
+      ],
+      "accounts": [
+        {
+          "name": "base",
+          "accounts": [
+            {
+              "name": "escrow",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      101,
+                      115,
+                      99,
+                      114,
+                      111,
+                      119
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "sender"
+                  },
+                  {
+                    "kind": "arg",
+                    "path": "escrowId"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "recipient"
+            },
+            {
+              "name": "escrowVault",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      101,
+                      115,
+                      99,
+                      114,
+                      111,
+                      119,
+                      95,
+                      118,
+                      97,
+                      117,
+                      108,
+                      116
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "escrow"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "sender",
+              "writable": true,
+              "signer": true
+            },
+            {
+              "name": "systemProgram",
+              "address": "11111111111111111111111111111111"
+            }
+          ]
+        },
+        {
+          "name": "events",
+          "accounts": [
+            {
+              "name": "eventAuthority",
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      95,
+                      95,
+                      101,
+                      118,
+                      101,
+                      110,
+                      116,
+                      95,
+                      97,
+                      117,
+                      116,
+                      104,
+                      111,
+                      114,
+                      105,
+                      116,
+                      121
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "name": "program",
+              "address": "TWexqA2EZiSZEvu2vVdvmHnpew3Xx9wkjgLToBrooms"
+            }
+          ]
         }
       ],
       "args": [
@@ -433,6 +660,171 @@ export type Rooms = {
       "args": []
     },
     {
+      "name": "claimEscrowV2",
+      "discriminator": [
+        80,
+        48,
+        62,
+        22,
+        1,
+        248,
+        137,
+        99
+      ],
+      "accounts": [
+        {
+          "name": "base",
+          "accounts": [
+            {
+              "name": "escrow",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      101,
+                      115,
+                      99,
+                      114,
+                      111,
+                      119
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "escrow.sender",
+                    "account": "escrow"
+                  },
+                  {
+                    "kind": "account",
+                    "path": "escrow.escrow_id",
+                    "account": "escrow"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "globalConfig",
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      103,
+                      108,
+                      111,
+                      98,
+                      97,
+                      108,
+                      95,
+                      99,
+                      111,
+                      110,
+                      102,
+                      105,
+                      103
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "name": "adminVault",
+              "writable": true
+            },
+            {
+              "name": "escrowVault",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      101,
+                      115,
+                      99,
+                      114,
+                      111,
+                      119,
+                      95,
+                      118,
+                      97,
+                      117,
+                      108,
+                      116
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "escrow"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "recipient",
+              "writable": true,
+              "signer": true,
+              "relations": [
+                "escrow"
+              ]
+            },
+            {
+              "name": "sender",
+              "writable": true,
+              "relations": [
+                "escrow"
+              ]
+            },
+            {
+              "name": "systemProgram",
+              "address": "11111111111111111111111111111111"
+            }
+          ]
+        },
+        {
+          "name": "events",
+          "accounts": [
+            {
+              "name": "eventAuthority",
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      95,
+                      95,
+                      101,
+                      118,
+                      101,
+                      110,
+                      116,
+                      95,
+                      97,
+                      117,
+                      116,
+                      104,
+                      111,
+                      114,
+                      105,
+                      116,
+                      121
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "name": "program",
+              "address": "TWexqA2EZiSZEvu2vVdvmHnpew3Xx9wkjgLToBrooms"
+            }
+          ]
+        }
+      ],
+      "args": []
+    },
+    {
       "name": "claimReferral",
       "discriminator": [
         219,
@@ -472,9 +864,6 @@ export type Rooms = {
         },
         {
           "name": "referralVault",
-          "docs": [
-            "collections across all rooms, pending referral payout."
-          ],
           "writable": true,
           "pda": {
             "seeds": [
@@ -557,6 +946,170 @@ export type Rooms = {
       ]
     },
     {
+      "name": "claimReferralV2",
+      "discriminator": [
+        36,
+        42,
+        136,
+        239,
+        45,
+        11,
+        253,
+        70
+      ],
+      "accounts": [
+        {
+          "name": "base",
+          "accounts": [
+            {
+              "name": "globalConfig",
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      103,
+                      108,
+                      111,
+                      98,
+                      97,
+                      108,
+                      95,
+                      99,
+                      111,
+                      110,
+                      102,
+                      105,
+                      103
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "name": "referralVault",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      114,
+                      101,
+                      102,
+                      101,
+                      114,
+                      114,
+                      97,
+                      108,
+                      95,
+                      118,
+                      97,
+                      117,
+                      108,
+                      116
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "name": "referralClaim",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      114,
+                      101,
+                      102,
+                      101,
+                      114,
+                      114,
+                      97,
+                      108,
+                      95,
+                      99,
+                      108,
+                      97,
+                      105,
+                      109
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "user"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "instructionSysvar",
+              "address": "Sysvar1nstructions1111111111111111111111111"
+            },
+            {
+              "name": "user",
+              "writable": true,
+              "signer": true
+            },
+            {
+              "name": "systemProgram",
+              "address": "11111111111111111111111111111111"
+            }
+          ]
+        },
+        {
+          "name": "events",
+          "accounts": [
+            {
+              "name": "eventAuthority",
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      95,
+                      95,
+                      101,
+                      118,
+                      101,
+                      110,
+                      116,
+                      95,
+                      97,
+                      117,
+                      116,
+                      104,
+                      111,
+                      114,
+                      105,
+                      116,
+                      121
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "name": "program",
+              "address": "TWexqA2EZiSZEvu2vVdvmHnpew3Xx9wkjgLToBrooms"
+            }
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "cumulativeEarned",
+          "type": "u64"
+        },
+        {
+          "name": "expiry",
+          "type": "i64"
+        }
+      ]
+    },
+    {
       "name": "claimRewards",
       "discriminator": [
         4,
@@ -600,10 +1153,6 @@ export type Rooms = {
         },
         {
           "name": "roomUser",
-          "docs": [
-            "Created on first claim if the signer never contributed (e.g. creator/reward_wallet).",
-            "Checkpoint starts at 0 so creators earn fees from room inception."
-          ],
           "writable": true,
           "pda": {
             "seeds": [
@@ -634,12 +1183,6 @@ export type Rooms = {
         },
         {
           "name": "roomVault",
-          "docs": [
-            "pays out of this; a Team room only ever reads its",
-            "`treasury_fee_accumulator` from `room` and pays out of `team_vault`",
-            "instead (see below) — but the account still has to be present in",
-            "every call because the struct is shared across all reward structures."
-          ],
           "writable": true,
           "pda": {
             "seeds": [
@@ -676,11 +1219,6 @@ export type Rooms = {
         },
         {
           "name": "roomTeam",
-          "docs": [
-            "Required for `RewardStructure::Team` rooms, absent for every other kind.",
-            "Trailing and optional so pre-team clients keep working (see the",
-            "`allow-missing-optionals` note in Cargo.toml)."
-          ],
           "optional": true,
           "pda": {
             "seeds": [
@@ -707,17 +1245,193 @@ export type Rooms = {
         },
         {
           "name": "teamVault",
-          "docs": [
-            "place of `room_vault`. Deliberately unconstrained here (no seeds/bump",
-            "in this macro) and validated by hand in the handler instead: its",
-            "address depends on `room.team`, itself an `Option`, and deriving one",
-            "optional account's seeds from another optional account's contents is",
-            "a real panic risk if a caller supplies them inconsistently. Manual",
-            "validation lets every case fail cleanly through `require!`/`ok_or`",
-            "instead."
-          ],
           "writable": true,
           "optional": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "claimRewardsV2",
+      "discriminator": [
+        69,
+        49,
+        158,
+        229,
+        212,
+        133,
+        136,
+        227
+      ],
+      "accounts": [
+        {
+          "name": "base",
+          "accounts": [
+            {
+              "name": "globalConfig",
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      103,
+                      108,
+                      111,
+                      98,
+                      97,
+                      108,
+                      95,
+                      99,
+                      111,
+                      110,
+                      102,
+                      105,
+                      103
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "name": "room",
+              "writable": true
+            },
+            {
+              "name": "roomUser",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      114,
+                      111,
+                      111,
+                      109,
+                      95,
+                      117,
+                      115,
+                      101,
+                      114
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "room"
+                  },
+                  {
+                    "kind": "account",
+                    "path": "user"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "roomVault",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      114,
+                      111,
+                      111,
+                      109,
+                      95,
+                      118,
+                      97,
+                      117,
+                      108,
+                      116
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "room"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "user",
+              "writable": true,
+              "signer": true
+            },
+            {
+              "name": "systemProgram",
+              "address": "11111111111111111111111111111111"
+            },
+            {
+              "name": "roomTeam",
+              "optional": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      114,
+                      111,
+                      111,
+                      109,
+                      95,
+                      116,
+                      101,
+                      97,
+                      109
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "room"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "teamVault",
+              "writable": true,
+              "optional": true
+            }
+          ]
+        },
+        {
+          "name": "events",
+          "accounts": [
+            {
+              "name": "eventAuthority",
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      95,
+                      95,
+                      101,
+                      118,
+                      101,
+                      110,
+                      116,
+                      95,
+                      97,
+                      117,
+                      116,
+                      104,
+                      111,
+                      114,
+                      105,
+                      116,
+                      121
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "name": "program",
+              "address": "TWexqA2EZiSZEvu2vVdvmHnpew3Xx9wkjgLToBrooms"
+            }
+          ]
         }
       ],
       "args": []
@@ -870,9 +1584,6 @@ export type Rooms = {
         },
         {
           "name": "pumpswapCreatorTokenAccount",
-          "docs": [
-            "Closed at the end of each call; room_vault recreates it next time."
-          ],
           "writable": true
         },
         {
@@ -907,6 +1618,235 @@ export type Rooms = {
         {
           "name": "rent",
           "address": "SysvarRent111111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "collectPumpFeesV2",
+      "discriminator": [
+        189,
+        16,
+        51,
+        1,
+        182,
+        174,
+        94,
+        143
+      ],
+      "accounts": [
+        {
+          "name": "base",
+          "accounts": [
+            {
+              "name": "room",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      114,
+                      111,
+                      111,
+                      109,
+                      115
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "room.token_mint",
+                    "account": "room"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "tokenMint",
+              "writable": true
+            },
+            {
+              "name": "roomVault",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      114,
+                      111,
+                      111,
+                      109,
+                      95,
+                      118,
+                      97,
+                      117,
+                      108,
+                      116
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "room"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "wsolMint",
+              "address": "So11111111111111111111111111111111111111112"
+            },
+            {
+              "name": "pumpfunCreatorVault",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      99,
+                      114,
+                      101,
+                      97,
+                      116,
+                      111,
+                      114,
+                      45,
+                      118,
+                      97,
+                      117,
+                      108,
+                      116
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "roomVault"
+                  }
+                ],
+                "program": {
+                  "kind": "account",
+                  "path": "pumpfunProgram"
+                }
+              }
+            },
+            {
+              "name": "pumpfunEventAuthority",
+              "address": "Ce6TQqeHC9p8KetsN6JsjHK7UTZk7nasjjnr7XxXp9F1"
+            },
+            {
+              "name": "pumpswapCreatorVaultAuthority",
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      99,
+                      114,
+                      101,
+                      97,
+                      116,
+                      111,
+                      114,
+                      95,
+                      118,
+                      97,
+                      117,
+                      108,
+                      116
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "roomVault"
+                  }
+                ],
+                "program": {
+                  "kind": "account",
+                  "path": "pumpswapProgram"
+                }
+              }
+            },
+            {
+              "name": "pumpswapCreatorVaultAta",
+              "writable": true
+            },
+            {
+              "name": "pumpswapCreatorTokenAccount",
+              "writable": true
+            },
+            {
+              "name": "pumpswapEventAuthority",
+              "address": "GS4CU59F31iL7aR2Q8zVS8DRrcRnXX1yjQ66TqNVQnaR"
+            },
+            {
+              "name": "pumpfunProgram",
+              "address": "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P"
+            },
+            {
+              "name": "pumpswapProgram",
+              "address": "pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA"
+            },
+            {
+              "name": "claimer",
+              "writable": true,
+              "signer": true
+            },
+            {
+              "name": "tokenProgram",
+              "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+            },
+            {
+              "name": "associatedTokenProgram",
+              "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+            },
+            {
+              "name": "systemProgram",
+              "address": "11111111111111111111111111111111"
+            },
+            {
+              "name": "rent",
+              "address": "SysvarRent111111111111111111111111111111111"
+            }
+          ]
+        },
+        {
+          "name": "events",
+          "accounts": [
+            {
+              "name": "eventAuthority",
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      95,
+                      95,
+                      101,
+                      118,
+                      101,
+                      110,
+                      116,
+                      95,
+                      97,
+                      117,
+                      116,
+                      104,
+                      111,
+                      114,
+                      105,
+                      116,
+                      121
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "name": "program",
+              "address": "TWexqA2EZiSZEvu2vVdvmHnpew3Xx9wkjgLToBrooms"
+            }
+          ]
         }
       ],
       "args": []
@@ -1096,6 +2036,238 @@ export type Rooms = {
         {
           "name": "systemProgram",
           "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "collectRaydiumFeesV2",
+      "discriminator": [
+        134,
+        133,
+        59,
+        55,
+        243,
+        60,
+        251,
+        167
+      ],
+      "accounts": [
+        {
+          "name": "base",
+          "accounts": [
+            {
+              "name": "globalConfig",
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      103,
+                      108,
+                      111,
+                      98,
+                      97,
+                      108,
+                      95,
+                      99,
+                      111,
+                      110,
+                      102,
+                      105,
+                      103
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "name": "adminWsolVault",
+              "writable": true
+            },
+            {
+              "name": "room",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      114,
+                      111,
+                      111,
+                      109,
+                      115
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "room.token_mint",
+                    "account": "room"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "roomVault",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      114,
+                      111,
+                      111,
+                      109,
+                      95,
+                      118,
+                      97,
+                      117,
+                      108,
+                      116
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "room"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "referralVault",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      114,
+                      101,
+                      102,
+                      101,
+                      114,
+                      114,
+                      97,
+                      108,
+                      95,
+                      118,
+                      97,
+                      117,
+                      108,
+                      116
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "name": "roomTokenAccount",
+              "writable": true
+            },
+            {
+              "name": "roomWsolAccount",
+              "writable": true
+            },
+            {
+              "name": "payer",
+              "writable": true,
+              "signer": true
+            },
+            {
+              "name": "pool",
+              "writable": true
+            },
+            {
+              "name": "authority"
+            },
+            {
+              "name": "ammConfig",
+              "address": "8Pg5wr9H5i2GKbiH8315UiM1W9LJQT2tNiuqBeaoGKjz"
+            },
+            {
+              "name": "token0Mint"
+            },
+            {
+              "name": "token1Mint"
+            },
+            {
+              "name": "token0Vault",
+              "writable": true
+            },
+            {
+              "name": "token1Vault",
+              "writable": true
+            },
+            {
+              "name": "token0Program"
+            },
+            {
+              "name": "token1Program"
+            },
+            {
+              "name": "creatorFeeShare"
+            },
+            {
+              "name": "raydiumProgram",
+              "address": "DRaycpLY18LhpbydsBWbVJtxpNv9oXPgjRSfpF2bWpYb"
+            },
+            {
+              "name": "tokenProgram",
+              "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+            },
+            {
+              "name": "token2022Program",
+              "address": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
+            },
+            {
+              "name": "associatedTokenProgram",
+              "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+            },
+            {
+              "name": "systemProgram",
+              "address": "11111111111111111111111111111111"
+            }
+          ]
+        },
+        {
+          "name": "events",
+          "accounts": [
+            {
+              "name": "eventAuthority",
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      95,
+                      95,
+                      101,
+                      118,
+                      101,
+                      110,
+                      116,
+                      95,
+                      97,
+                      117,
+                      116,
+                      104,
+                      111,
+                      114,
+                      105,
+                      116,
+                      121
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "name": "program",
+              "address": "TWexqA2EZiSZEvu2vVdvmHnpew3Xx9wkjgLToBrooms"
+            }
+          ]
         }
       ],
       "args": []
@@ -1356,6 +2528,304 @@ export type Rooms = {
       "args": []
     },
     {
+      "name": "commitRewardsToVaultV2",
+      "discriminator": [
+        13,
+        113,
+        157,
+        72,
+        210,
+        55,
+        59,
+        240
+      ],
+      "accounts": [
+        {
+          "name": "base",
+          "accounts": [
+            {
+              "name": "access",
+              "accounts": [
+                {
+                  "name": "team",
+                  "writable": true,
+                  "relations": [
+                    "governance",
+                    "tradingVault"
+                  ]
+                },
+                {
+                  "name": "governance",
+                  "writable": true,
+                  "pda": {
+                    "seeds": [
+                      {
+                        "kind": "const",
+                        "value": [
+                          116,
+                          101,
+                          97,
+                          109,
+                          95,
+                          103,
+                          111,
+                          118,
+                          101,
+                          114,
+                          110,
+                          97,
+                          110,
+                          99,
+                          101
+                        ]
+                      },
+                      {
+                        "kind": "account",
+                        "path": "team"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "tradingVault",
+                  "writable": true,
+                  "pda": {
+                    "seeds": [
+                      {
+                        "kind": "const",
+                        "value": [
+                          116,
+                          114,
+                          97,
+                          100,
+                          105,
+                          110,
+                          103,
+                          95,
+                          118,
+                          97,
+                          117,
+                          108,
+                          116
+                        ]
+                      },
+                      {
+                        "kind": "account",
+                        "path": "team"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "ledger",
+                  "writable": true,
+                  "pda": {
+                    "seeds": [
+                      {
+                        "kind": "const",
+                        "value": [
+                          118,
+                          97,
+                          117,
+                          108,
+                          116,
+                          95,
+                          108,
+                          101,
+                          100,
+                          103,
+                          101,
+                          114
+                        ]
+                      },
+                      {
+                        "kind": "account",
+                        "path": "tradingVault"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "vaultSol",
+                  "writable": true,
+                  "pda": {
+                    "seeds": [
+                      {
+                        "kind": "const",
+                        "value": [
+                          118,
+                          97,
+                          117,
+                          108,
+                          116,
+                          95,
+                          115,
+                          111,
+                          108
+                        ]
+                      },
+                      {
+                        "kind": "account",
+                        "path": "tradingVault"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "actor",
+                  "writable": true,
+                  "signer": true
+                },
+                {
+                  "name": "wallet",
+                  "writable": true
+                },
+                {
+                  "name": "systemProgram",
+                  "address": "11111111111111111111111111111111"
+                }
+              ]
+            },
+            {
+              "name": "room",
+              "writable": true
+            },
+            {
+              "name": "roomUser",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      114,
+                      111,
+                      111,
+                      109,
+                      95,
+                      117,
+                      115,
+                      101,
+                      114
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "room"
+                  },
+                  {
+                    "kind": "account",
+                    "path": "trader"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "roomTeam",
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      114,
+                      111,
+                      111,
+                      109,
+                      95,
+                      116,
+                      101,
+                      97,
+                      109
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "room"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "teamVault",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      116,
+                      101,
+                      97,
+                      109,
+                      95,
+                      118,
+                      97,
+                      117,
+                      108,
+                      116
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "access.team",
+                    "account": "vaultAccess"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "trader",
+              "writable": true,
+              "signer": true
+            },
+            {
+              "name": "systemProgram",
+              "address": "11111111111111111111111111111111"
+            }
+          ]
+        },
+        {
+          "name": "events",
+          "accounts": [
+            {
+              "name": "eventAuthority",
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      95,
+                      95,
+                      101,
+                      118,
+                      101,
+                      110,
+                      116,
+                      95,
+                      97,
+                      117,
+                      116,
+                      104,
+                      111,
+                      114,
+                      105,
+                      116,
+                      121
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "name": "program",
+              "address": "TWexqA2EZiSZEvu2vVdvmHnpew3Xx9wkjgLToBrooms"
+            }
+          ]
+        }
+      ],
+      "args": []
+    },
+    {
       "name": "createRoom",
       "discriminator": [
         130,
@@ -1429,9 +2899,6 @@ export type Rooms = {
         },
         {
           "name": "rewardWalletRoomUser",
-          "docs": [
-            "RoomUser PDA for the reward wallet, created at room creation time."
-          ],
           "writable": true,
           "pda": {
             "seeds": [
@@ -1515,14 +2982,206 @@ export type Rooms = {
       ]
     },
     {
-      "name": "createTeam",
-      "docs": [
-        "Creates (idempotently) the persistent on-chain roster for one team.",
-        "Lazy — called the first time a team's membership needs syncing on",
-        "chain, not eagerly for every team — and rooms_authority-signed, since",
-        "team membership stays exactly as backend-authorized as it is off",
-        "chain today."
+      "name": "createRoomV2",
+      "discriminator": [
+        242,
+        190,
+        157,
+        207,
+        91,
+        172,
+        247,
+        248
       ],
+      "accounts": [
+        {
+          "name": "base",
+          "accounts": [
+            {
+              "name": "globalConfig",
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      103,
+                      108,
+                      111,
+                      98,
+                      97,
+                      108,
+                      95,
+                      99,
+                      111,
+                      110,
+                      102,
+                      105,
+                      103
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "name": "tokenMint",
+              "signer": true
+            },
+            {
+              "name": "room",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      114,
+                      111,
+                      111,
+                      109,
+                      115
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "tokenMint"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "creator",
+              "writable": true,
+              "signer": true
+            },
+            {
+              "name": "rewardWallet"
+            },
+            {
+              "name": "rewardWalletRoomUser",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      114,
+                      111,
+                      111,
+                      109,
+                      95,
+                      117,
+                      115,
+                      101,
+                      114
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "room"
+                  },
+                  {
+                    "kind": "account",
+                    "path": "rewardWallet"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "systemProgram",
+              "address": "11111111111111111111111111111111"
+            }
+          ]
+        },
+        {
+          "name": "events",
+          "accounts": [
+            {
+              "name": "eventAuthority",
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      95,
+                      95,
+                      101,
+                      118,
+                      101,
+                      110,
+                      116,
+                      95,
+                      97,
+                      117,
+                      116,
+                      104,
+                      111,
+                      114,
+                      105,
+                      116,
+                      121
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "name": "program",
+              "address": "TWexqA2EZiSZEvu2vVdvmHnpew3Xx9wkjgLToBrooms"
+            }
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "roomPlatform",
+          "type": {
+            "defined": {
+              "name": "roomPlatform"
+            }
+          }
+        },
+        {
+          "name": "roomType",
+          "type": {
+            "defined": {
+              "name": "roomType"
+            }
+          }
+        },
+        {
+          "name": "rewardStructure",
+          "type": {
+            "defined": {
+              "name": "rewardStructure"
+            }
+          }
+        },
+        {
+          "name": "metadataUri",
+          "type": "string"
+        },
+        {
+          "name": "rewardWallet",
+          "type": {
+            "option": "pubkey"
+          }
+        },
+        {
+          "name": "raiseLamports",
+          "type": {
+            "option": "u64"
+          }
+        },
+        {
+          "name": "team",
+          "type": {
+            "option": "pubkey"
+          }
+        }
+      ]
+    },
+    {
+      "name": "createTeam",
       "discriminator": [
         122,
         161,
@@ -1561,11 +3220,6 @@ export type Rooms = {
         },
         {
           "name": "team",
-          "docs": [
-            "Allocated once, on first sync, and reused for every room this team",
-            "ever launches — see `Team`'s own doc comment for why this differs",
-            "from `RoomTeam`'s per-room allocation."
-          ],
           "writable": true,
           "pda": {
             "seeds": [
@@ -1587,11 +3241,6 @@ export type Rooms = {
         },
         {
           "name": "teamVault",
-          "docs": [
-            "funded to the zero-data rent minimum when the team is created so a",
-            "later fee sweep can never try to create the PDA with a sub-rent",
-            "transfer after an earlier payout round drained its distributable SOL."
-          ],
           "writable": true,
           "pda": {
             "seeds": [
@@ -1793,14 +3442,6 @@ export type Rooms = {
         },
         {
           "name": "roomTeam",
-          "docs": [
-            "Required for `RewardStructure::Team` rooms, absent for every other kind.",
-            "",
-            "Last in the list, and optional, so clients built before team splits",
-            "existed keep working unchanged against non-team rooms (see the",
-            "`allow-missing-optionals` note in Cargo.toml). The seeds constraint",
-            "means a team room cannot be satisfied by passing some other account."
-          ],
           "optional": true,
           "pda": {
             "seeds": [
@@ -1824,6 +3465,235 @@ export type Rooms = {
               }
             ]
           }
+        }
+      ],
+      "args": [
+        {
+          "name": "lamports",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "decreaseContributionV2",
+      "discriminator": [
+        57,
+        176,
+        164,
+        75,
+        193,
+        34,
+        232,
+        39
+      ],
+      "accounts": [
+        {
+          "name": "base",
+          "accounts": [
+            {
+              "name": "room",
+              "writable": true
+            },
+            {
+              "name": "globalConfig",
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      103,
+                      108,
+                      111,
+                      98,
+                      97,
+                      108,
+                      95,
+                      99,
+                      111,
+                      110,
+                      102,
+                      105,
+                      103
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "name": "adminVault",
+              "writable": true
+            },
+            {
+              "name": "roomUser",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      114,
+                      111,
+                      111,
+                      109,
+                      95,
+                      117,
+                      115,
+                      101,
+                      114
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "room"
+                  },
+                  {
+                    "kind": "account",
+                    "path": "user"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "roomAccess",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      114,
+                      111,
+                      111,
+                      109,
+                      95,
+                      97,
+                      99,
+                      99,
+                      101,
+                      115,
+                      115
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "room"
+                  },
+                  {
+                    "kind": "account",
+                    "path": "user"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "roomVault",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      114,
+                      111,
+                      111,
+                      109,
+                      95,
+                      118,
+                      97,
+                      117,
+                      108,
+                      116
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "room"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "user",
+              "writable": true,
+              "signer": true
+            },
+            {
+              "name": "tokenProgram",
+              "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+            },
+            {
+              "name": "systemProgram",
+              "address": "11111111111111111111111111111111"
+            },
+            {
+              "name": "rent",
+              "address": "SysvarRent111111111111111111111111111111111"
+            },
+            {
+              "name": "roomTeam",
+              "optional": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      114,
+                      111,
+                      111,
+                      109,
+                      95,
+                      116,
+                      101,
+                      97,
+                      109
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "room"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "events",
+          "accounts": [
+            {
+              "name": "eventAuthority",
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      95,
+                      95,
+                      101,
+                      118,
+                      101,
+                      110,
+                      116,
+                      95,
+                      97,
+                      117,
+                      116,
+                      104,
+                      111,
+                      114,
+                      105,
+                      116,
+                      121
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "name": "program",
+              "address": "TWexqA2EZiSZEvu2vVdvmHnpew3Xx9wkjgLToBrooms"
+            }
+          ]
         }
       ],
       "args": [
@@ -2182,6 +4052,397 @@ export type Rooms = {
       ]
     },
     {
+      "name": "finalizePumpV2",
+      "discriminator": [
+        234,
+        91,
+        107,
+        213,
+        87,
+        254,
+        67,
+        101
+      ],
+      "accounts": [
+        {
+          "name": "base",
+          "accounts": [
+            {
+              "name": "room",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      114,
+                      111,
+                      111,
+                      109,
+                      115
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "room.token_mint",
+                    "account": "room"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "roomVault",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      114,
+                      111,
+                      111,
+                      109,
+                      95,
+                      118,
+                      97,
+                      117,
+                      108,
+                      116
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "room"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "roomVaultAta",
+              "writable": true
+            },
+            {
+              "name": "tokenMint",
+              "writable": true,
+              "signer": true
+            },
+            {
+              "name": "pumpfunMintAuthority",
+              "address": "TSLvdd1pWpHVjahSpsvCXUbgwsL3JAcvokwaKt1eokM"
+            },
+            {
+              "name": "pumpfunBondingCurve",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      98,
+                      111,
+                      110,
+                      100,
+                      105,
+                      110,
+                      103,
+                      45,
+                      99,
+                      117,
+                      114,
+                      118,
+                      101
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "room.token_mint",
+                    "account": "room"
+                  }
+                ],
+                "program": {
+                  "kind": "account",
+                  "path": "pumpfunProgram"
+                }
+              }
+            },
+            {
+              "name": "pumpfunAssociatedBondingCurve",
+              "writable": true
+            },
+            {
+              "name": "pumpfunGlobal",
+              "address": "4wTV1YmiEkRvAtNtsSGPtUrqRYQMe5SKy2uB4Jjaxnjf"
+            },
+            {
+              "name": "pumpfunGlobalParams",
+              "address": "13ec7XdrjF3h3YcqBTFDSReRcUFwbCnJaAQspM4j6DDJ"
+            },
+            {
+              "name": "pumpfunSolVault",
+              "writable": true,
+              "address": "BwWK17cbHxwWBKZkUYvzxLcNQ1YVyaFezduWbtm2de6s"
+            },
+            {
+              "name": "pumpfunCreatorVault",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      99,
+                      114,
+                      101,
+                      97,
+                      116,
+                      111,
+                      114,
+                      45,
+                      118,
+                      97,
+                      117,
+                      108,
+                      116
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "roomVault"
+                  }
+                ],
+                "program": {
+                  "kind": "account",
+                  "path": "pumpfunProgram"
+                }
+              }
+            },
+            {
+              "name": "pumpfunProgram",
+              "address": "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P"
+            },
+            {
+              "name": "pumpfunEventAuthority",
+              "address": "Ce6TQqeHC9p8KetsN6JsjHK7UTZk7nasjjnr7XxXp9F1"
+            },
+            {
+              "name": "pumpfunFeeRecipient",
+              "writable": true
+            },
+            {
+              "name": "pumpfunGlobalVolumeAccumulator",
+              "address": "Hq2wp8uJ9jCPsYgNHex8RtqdvMPfVGoYwjvF1ATiwn2Y"
+            },
+            {
+              "name": "pumpfunUserVolumeAccumulator",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      117,
+                      115,
+                      101,
+                      114,
+                      95,
+                      118,
+                      111,
+                      108,
+                      117,
+                      109,
+                      101,
+                      95,
+                      97,
+                      99,
+                      99,
+                      117,
+                      109,
+                      117,
+                      108,
+                      97,
+                      116,
+                      111,
+                      114
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "roomVault"
+                  }
+                ],
+                "program": {
+                  "kind": "account",
+                  "path": "pumpfunProgram"
+                }
+              }
+            },
+            {
+              "name": "pumpfunFeeConfig"
+            },
+            {
+              "name": "pumpfunFeeProgram",
+              "address": "pfeeUxB6jkeY1Hxd7CsFCAjcbHA9rWtchMGdZ6VojVZ"
+            },
+            {
+              "name": "pumpfunBondingCurveV2",
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      98,
+                      111,
+                      110,
+                      100,
+                      105,
+                      110,
+                      103,
+                      45,
+                      99,
+                      117,
+                      114,
+                      118,
+                      101,
+                      45,
+                      118,
+                      50
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "tokenMint"
+                  }
+                ],
+                "program": {
+                  "kind": "account",
+                  "path": "pumpfunProgram"
+                }
+              }
+            },
+            {
+              "name": "pumpfunBuybackFeeRecipient",
+              "writable": true,
+              "address": "GXPFM2caqTtQYC2cJ5yJRi9VDkpsYZXzYdwYpGnLmtDL"
+            },
+            {
+              "name": "pumpfunMayhemProgram",
+              "writable": true,
+              "address": "MAyhSmzXzV1pTf7LsNkrNwkWKTo4ougAJ1PPg47MD4e"
+            },
+            {
+              "name": "pumpfunMayhemState",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      109,
+                      97,
+                      121,
+                      104,
+                      101,
+                      109,
+                      45,
+                      115,
+                      116,
+                      97,
+                      116,
+                      101
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "tokenMint"
+                  }
+                ],
+                "program": {
+                  "kind": "account",
+                  "path": "pumpfunMayhemProgram"
+                }
+              }
+            },
+            {
+              "name": "pumpfunMayhemVault",
+              "writable": true
+            },
+            {
+              "name": "payer",
+              "signer": true
+            },
+            {
+              "name": "tokenProgram",
+              "address": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
+            },
+            {
+              "name": "associatedTokenProgram",
+              "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+            },
+            {
+              "name": "systemProgram",
+              "address": "11111111111111111111111111111111"
+            },
+            {
+              "name": "rent",
+              "address": "SysvarRent111111111111111111111111111111111"
+            }
+          ]
+        },
+        {
+          "name": "events",
+          "accounts": [
+            {
+              "name": "eventAuthority",
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      95,
+                      95,
+                      101,
+                      118,
+                      101,
+                      110,
+                      116,
+                      95,
+                      97,
+                      117,
+                      116,
+                      104,
+                      111,
+                      114,
+                      105,
+                      116,
+                      121
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "name": "program",
+              "address": "TWexqA2EZiSZEvu2vVdvmHnpew3Xx9wkjgLToBrooms"
+            }
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "symbol",
+          "type": "string"
+        },
+        {
+          "name": "uri",
+          "type": "string"
+        }
+      ]
+    },
+    {
       "name": "finalizeRaydium",
       "discriminator": [
         236,
@@ -2255,9 +4516,6 @@ export type Rooms = {
         },
         {
           "name": "launchAuthority",
-          "docs": [
-            "Shared signing address to give Raydium for its Permission PDA."
-          ],
           "writable": true,
           "pda": {
             "seeds": [
@@ -2437,6 +4695,301 @@ export type Rooms = {
       ]
     },
     {
+      "name": "finalizeRaydiumV2",
+      "discriminator": [
+        148,
+        133,
+        224,
+        49,
+        148,
+        202,
+        12,
+        141
+      ],
+      "accounts": [
+        {
+          "name": "base",
+          "accounts": [
+            {
+              "name": "room",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      114,
+                      111,
+                      111,
+                      109,
+                      115
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "room.token_mint",
+                    "account": "room"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "roomVault",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      114,
+                      111,
+                      111,
+                      109,
+                      95,
+                      118,
+                      97,
+                      117,
+                      108,
+                      116
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "room"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "tokenMint",
+              "writable": true,
+              "signer": true
+            },
+            {
+              "name": "roomTokenAccount",
+              "writable": true
+            },
+            {
+              "name": "launchAuthority",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      114,
+                      97,
+                      121,
+                      100,
+                      105,
+                      117,
+                      109,
+                      95,
+                      108,
+                      97,
+                      117,
+                      110,
+                      99,
+                      104,
+                      95,
+                      97,
+                      117,
+                      116,
+                      104,
+                      111,
+                      114,
+                      105,
+                      116,
+                      121
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "name": "permission"
+            },
+            {
+              "name": "ammConfig",
+              "address": "8Pg5wr9H5i2GKbiH8315UiM1W9LJQT2tNiuqBeaoGKjz"
+            },
+            {
+              "name": "authority"
+            },
+            {
+              "name": "pool",
+              "writable": true
+            },
+            {
+              "name": "lpMint",
+              "writable": true
+            },
+            {
+              "name": "launchLpAccount",
+              "writable": true
+            },
+            {
+              "name": "token0Mint"
+            },
+            {
+              "name": "token1Mint"
+            },
+            {
+              "name": "launchTokenAccount",
+              "writable": true
+            },
+            {
+              "name": "launchWsolAccount",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      114,
+                      97,
+                      121,
+                      100,
+                      105,
+                      117,
+                      109,
+                      95,
+                      108,
+                      97,
+                      117,
+                      110,
+                      99,
+                      104,
+                      95,
+                      119,
+                      115,
+                      111,
+                      108
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "room"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "token0Vault",
+              "writable": true
+            },
+            {
+              "name": "token1Vault",
+              "writable": true
+            },
+            {
+              "name": "observation",
+              "writable": true
+            },
+            {
+              "name": "createPoolFee",
+              "writable": true,
+              "address": "3oE58BKVt8KuYkGxx8zBojugnymWmBiyafWgMrnb6eYy"
+            },
+            {
+              "name": "wsolMint",
+              "address": "So11111111111111111111111111111111111111112"
+            },
+            {
+              "name": "token0Program"
+            },
+            {
+              "name": "token1Program"
+            },
+            {
+              "name": "raydiumProgram",
+              "address": "DRaycpLY18LhpbydsBWbVJtxpNv9oXPgjRSfpF2bWpYb"
+            },
+            {
+              "name": "tokenMetadata",
+              "writable": true
+            },
+            {
+              "name": "tokenMetadataProgram",
+              "address": "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
+            },
+            {
+              "name": "sysvarInstructions",
+              "address": "Sysvar1nstructions1111111111111111111111111"
+            },
+            {
+              "name": "tokenProgram",
+              "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+            },
+            {
+              "name": "token2022Program",
+              "address": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
+            },
+            {
+              "name": "associatedTokenProgram",
+              "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+            },
+            {
+              "name": "systemProgram",
+              "address": "11111111111111111111111111111111"
+            }
+          ]
+        },
+        {
+          "name": "events",
+          "accounts": [
+            {
+              "name": "eventAuthority",
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      95,
+                      95,
+                      101,
+                      118,
+                      101,
+                      110,
+                      116,
+                      95,
+                      97,
+                      117,
+                      116,
+                      104,
+                      111,
+                      114,
+                      105,
+                      116,
+                      121
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "name": "program",
+              "address": "TWexqA2EZiSZEvu2vVdvmHnpew3Xx9wkjgLToBrooms"
+            }
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "symbol",
+          "type": "string"
+        },
+        {
+          "name": "uri",
+          "type": "string"
+        }
+      ]
+    },
+    {
       "name": "freezeRewards",
       "discriminator": [
         132,
@@ -2534,6 +5087,151 @@ export type Rooms = {
         {
           "name": "roomsAuthority",
           "signer": true
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "freezeRewardsV2",
+      "discriminator": [
+        136,
+        131,
+        201,
+        173,
+        94,
+        190,
+        44,
+        215
+      ],
+      "accounts": [
+        {
+          "name": "base",
+          "accounts": [
+            {
+              "name": "globalConfig",
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      103,
+                      108,
+                      111,
+                      98,
+                      97,
+                      108,
+                      95,
+                      99,
+                      111,
+                      110,
+                      102,
+                      105,
+                      103
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "name": "room",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      114,
+                      111,
+                      111,
+                      109,
+                      115
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "room.token_mint",
+                    "account": "room"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "roomUser",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      114,
+                      111,
+                      111,
+                      109,
+                      95,
+                      117,
+                      115,
+                      101,
+                      114
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "room"
+                  },
+                  {
+                    "kind": "account",
+                    "path": "room_user.user",
+                    "account": "roomUser"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "userTokenAccount"
+            },
+            {
+              "name": "roomsAuthority",
+              "signer": true
+            }
+          ]
+        },
+        {
+          "name": "events",
+          "accounts": [
+            {
+              "name": "eventAuthority",
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      95,
+                      95,
+                      101,
+                      118,
+                      101,
+                      110,
+                      116,
+                      95,
+                      97,
+                      117,
+                      116,
+                      104,
+                      111,
+                      114,
+                      105,
+                      116,
+                      121
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "name": "program",
+              "address": "TWexqA2EZiSZEvu2vVdvmHnpew3Xx9wkjgLToBrooms"
+            }
+          ]
         }
       ],
       "args": []
@@ -2692,14 +5390,6 @@ export type Rooms = {
         },
         {
           "name": "roomTeam",
-          "docs": [
-            "Required for `RewardStructure::Team` rooms, absent for every other kind.",
-            "",
-            "Last in the list, and optional, so clients built before team splits",
-            "existed keep working unchanged against non-team rooms (see the",
-            "`allow-missing-optionals` note in Cargo.toml). The seeds constraint",
-            "means a team room cannot be satisfied by passing some other account."
-          ],
           "optional": true,
           "pda": {
             "seeds": [
@@ -2723,6 +5413,235 @@ export type Rooms = {
               }
             ]
           }
+        }
+      ],
+      "args": [
+        {
+          "name": "lamportsAmount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "increaseContributionV2",
+      "discriminator": [
+        26,
+        183,
+        139,
+        150,
+        24,
+        33,
+        252,
+        161
+      ],
+      "accounts": [
+        {
+          "name": "base",
+          "accounts": [
+            {
+              "name": "room",
+              "writable": true
+            },
+            {
+              "name": "globalConfig",
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      103,
+                      108,
+                      111,
+                      98,
+                      97,
+                      108,
+                      95,
+                      99,
+                      111,
+                      110,
+                      102,
+                      105,
+                      103
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "name": "adminVault",
+              "writable": true
+            },
+            {
+              "name": "roomUser",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      114,
+                      111,
+                      111,
+                      109,
+                      95,
+                      117,
+                      115,
+                      101,
+                      114
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "room"
+                  },
+                  {
+                    "kind": "account",
+                    "path": "user"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "roomAccess",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      114,
+                      111,
+                      111,
+                      109,
+                      95,
+                      97,
+                      99,
+                      99,
+                      101,
+                      115,
+                      115
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "room"
+                  },
+                  {
+                    "kind": "account",
+                    "path": "user"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "roomVault",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      114,
+                      111,
+                      111,
+                      109,
+                      95,
+                      118,
+                      97,
+                      117,
+                      108,
+                      116
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "room"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "user",
+              "writable": true,
+              "signer": true
+            },
+            {
+              "name": "tokenProgram",
+              "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+            },
+            {
+              "name": "systemProgram",
+              "address": "11111111111111111111111111111111"
+            },
+            {
+              "name": "rent",
+              "address": "SysvarRent111111111111111111111111111111111"
+            },
+            {
+              "name": "roomTeam",
+              "optional": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      114,
+                      111,
+                      111,
+                      109,
+                      95,
+                      116,
+                      101,
+                      97,
+                      109
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "room"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "events",
+          "accounts": [
+            {
+              "name": "eventAuthority",
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      95,
+                      95,
+                      101,
+                      118,
+                      101,
+                      110,
+                      116,
+                      95,
+                      97,
+                      117,
+                      116,
+                      104,
+                      111,
+                      114,
+                      105,
+                      116,
+                      121
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "name": "program",
+              "address": "TWexqA2EZiSZEvu2vVdvmHnpew3Xx9wkjgLToBrooms"
+            }
+          ]
         }
       ],
       "args": [
@@ -2900,9 +5819,6 @@ export type Rooms = {
         },
         {
           "name": "referralVault",
-          "docs": [
-            "every subsequent `collect_raydium_fees` transfer into it is guaranteed to succeed."
-          ],
           "writable": true,
           "pda": {
             "seeds": [
@@ -3430,6 +6346,651 @@ export type Rooms = {
       "args": []
     },
     {
+      "name": "migratePumpPoolV2",
+      "discriminator": [
+        118,
+        76,
+        96,
+        123,
+        129,
+        191,
+        223,
+        197
+      ],
+      "accounts": [
+        {
+          "name": "base",
+          "accounts": [
+            {
+              "name": "room",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      114,
+                      111,
+                      111,
+                      109,
+                      115
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "room.token_mint",
+                    "account": "room"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "roomVault",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      114,
+                      111,
+                      111,
+                      109,
+                      95,
+                      118,
+                      97,
+                      117,
+                      108,
+                      116
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "room"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "roomVaultAta",
+              "writable": true
+            },
+            {
+              "name": "tokenMint",
+              "writable": true
+            },
+            {
+              "name": "pumpfunBondingCurve",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      98,
+                      111,
+                      110,
+                      100,
+                      105,
+                      110,
+                      103,
+                      45,
+                      99,
+                      117,
+                      114,
+                      118,
+                      101
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "room.token_mint",
+                    "account": "room"
+                  }
+                ],
+                "program": {
+                  "kind": "account",
+                  "path": "pumpfunProgram"
+                }
+              }
+            },
+            {
+              "name": "pumpfunAssociatedBondingCurve",
+              "writable": true
+            },
+            {
+              "name": "pumpfunAssociatedQuoteBondingCurve",
+              "writable": true
+            },
+            {
+              "name": "pumpfunGlobal",
+              "address": "4wTV1YmiEkRvAtNtsSGPtUrqRYQMe5SKy2uB4Jjaxnjf"
+            },
+            {
+              "name": "pumpfunProgram",
+              "address": "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P"
+            },
+            {
+              "name": "pumpfunEventAuthority",
+              "address": "Ce6TQqeHC9p8KetsN6JsjHK7UTZk7nasjjnr7XxXp9F1"
+            },
+            {
+              "name": "pumpfunWithdrawAuthority",
+              "writable": true
+            },
+            {
+              "name": "pumpswapProgram",
+              "address": "pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA"
+            },
+            {
+              "name": "wsolMint",
+              "address": "So11111111111111111111111111111111111111112"
+            },
+            {
+              "name": "pumpswapEventAuthority",
+              "address": "GS4CU59F31iL7aR2Q8zVS8DRrcRnXX1yjQ66TqNVQnaR"
+            },
+            {
+              "name": "pumpswapPoolAuthority",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      112,
+                      111,
+                      111,
+                      108,
+                      45,
+                      97,
+                      117,
+                      116,
+                      104,
+                      111,
+                      114,
+                      105,
+                      116,
+                      121
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "tokenMint"
+                  }
+                ],
+                "program": {
+                  "kind": "account",
+                  "path": "pumpfunProgram"
+                }
+              }
+            },
+            {
+              "name": "pumpswapPool",
+              "writable": true
+            },
+            {
+              "name": "pumpswapPoolAuthorityMintAccount",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "account",
+                    "path": "pumpswapPoolAuthority"
+                  },
+                  {
+                    "kind": "account",
+                    "path": "token2022Program"
+                  },
+                  {
+                    "kind": "account",
+                    "path": "tokenMint"
+                  }
+                ],
+                "program": {
+                  "kind": "account",
+                  "path": "associatedTokenProgram"
+                }
+              }
+            },
+            {
+              "name": "pumpswapPoolAuthorityWsolAccount",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "account",
+                    "path": "pumpswapPoolAuthority"
+                  },
+                  {
+                    "kind": "account",
+                    "path": "tokenProgram"
+                  },
+                  {
+                    "kind": "account",
+                    "path": "wsolMint"
+                  }
+                ],
+                "program": {
+                  "kind": "account",
+                  "path": "associatedTokenProgram"
+                }
+              }
+            },
+            {
+              "name": "pumpswapAmmGlobalConfig",
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      103,
+                      108,
+                      111,
+                      98,
+                      97,
+                      108,
+                      95,
+                      99,
+                      111,
+                      110,
+                      102,
+                      105,
+                      103
+                    ]
+                  }
+                ],
+                "program": {
+                  "kind": "account",
+                  "path": "pumpswapProgram"
+                }
+              }
+            },
+            {
+              "name": "pumpswapLpMint",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      112,
+                      111,
+                      111,
+                      108,
+                      95,
+                      108,
+                      112,
+                      95,
+                      109,
+                      105,
+                      110,
+                      116
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "pumpswapPool"
+                  }
+                ],
+                "program": {
+                  "kind": "account",
+                  "path": "pumpswapProgram"
+                }
+              }
+            },
+            {
+              "name": "pumpswapUserPoolTokenAccount",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "account",
+                    "path": "pumpswapPoolAuthority"
+                  },
+                  {
+                    "kind": "account",
+                    "path": "token2022Program"
+                  },
+                  {
+                    "kind": "account",
+                    "path": "pumpswapLpMint"
+                  }
+                ],
+                "program": {
+                  "kind": "account",
+                  "path": "associatedTokenProgram"
+                }
+              }
+            },
+            {
+              "name": "pumpswapPoolBaseTokenAccount",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "account",
+                    "path": "pumpswapPool"
+                  },
+                  {
+                    "kind": "account",
+                    "path": "token2022Program"
+                  },
+                  {
+                    "kind": "account",
+                    "path": "tokenMint"
+                  }
+                ],
+                "program": {
+                  "kind": "account",
+                  "path": "associatedTokenProgram"
+                }
+              }
+            },
+            {
+              "name": "pumpswapPoolQuoteTokenAccount",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "account",
+                    "path": "pumpswapPool"
+                  },
+                  {
+                    "kind": "account",
+                    "path": "tokenProgram"
+                  },
+                  {
+                    "kind": "account",
+                    "path": "wsolMint"
+                  }
+                ],
+                "program": {
+                  "kind": "account",
+                  "path": "associatedTokenProgram"
+                }
+              }
+            },
+            {
+              "name": "pumpswapBoostVaultAuthority"
+            },
+            {
+              "name": "pumpswapBoostVault",
+              "writable": true
+            },
+            {
+              "name": "token2022Program",
+              "address": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
+            },
+            {
+              "name": "tokenProgram",
+              "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+            },
+            {
+              "name": "associatedTokenProgram",
+              "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+            },
+            {
+              "name": "systemProgram",
+              "address": "11111111111111111111111111111111"
+            },
+            {
+              "name": "rent",
+              "address": "SysvarRent111111111111111111111111111111111"
+            }
+          ]
+        },
+        {
+          "name": "events",
+          "accounts": [
+            {
+              "name": "eventAuthority",
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      95,
+                      95,
+                      101,
+                      118,
+                      101,
+                      110,
+                      116,
+                      95,
+                      97,
+                      117,
+                      116,
+                      104,
+                      111,
+                      114,
+                      105,
+                      116,
+                      121
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "name": "program",
+              "address": "TWexqA2EZiSZEvu2vVdvmHnpew3Xx9wkjgLToBrooms"
+            }
+          ]
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "migrateTeamAuthority",
+      "discriminator": [
+        4,
+        121,
+        28,
+        88,
+        88,
+        125,
+        106,
+        61
+      ],
+      "accounts": [
+        {
+          "name": "globalConfig",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  108,
+                  111,
+                  98,
+                  97,
+                  108,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "team",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  101,
+                  97,
+                  109
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "team.team_id",
+                "account": "team"
+              }
+            ]
+          }
+        },
+        {
+          "name": "program",
+          "address": "TWexqA2EZiSZEvu2vVdvmHnpew3Xx9wkjgLToBrooms"
+        },
+        {
+          "name": "programData"
+        },
+        {
+          "name": "upgradeAuthority",
+          "signer": true
+        },
+        {
+          "name": "newAuthority",
+          "signer": true
+        }
+      ],
+      "args": [
+        {
+          "name": "expectedAuthority",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "migrateTeamAuthorityV2",
+      "discriminator": [
+        113,
+        149,
+        110,
+        236,
+        250,
+        111,
+        233,
+        86
+      ],
+      "accounts": [
+        {
+          "name": "base",
+          "accounts": [
+            {
+              "name": "globalConfig",
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      103,
+                      108,
+                      111,
+                      98,
+                      97,
+                      108,
+                      95,
+                      99,
+                      111,
+                      110,
+                      102,
+                      105,
+                      103
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "name": "team",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      116,
+                      101,
+                      97,
+                      109
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "team.team_id",
+                    "account": "team"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "program",
+              "address": "TWexqA2EZiSZEvu2vVdvmHnpew3Xx9wkjgLToBrooms"
+            },
+            {
+              "name": "programData"
+            },
+            {
+              "name": "upgradeAuthority",
+              "signer": true
+            },
+            {
+              "name": "newAuthority",
+              "signer": true
+            }
+          ]
+        },
+        {
+          "name": "events",
+          "accounts": [
+            {
+              "name": "eventAuthority",
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      95,
+                      95,
+                      101,
+                      118,
+                      101,
+                      110,
+                      116,
+                      95,
+                      97,
+                      117,
+                      116,
+                      104,
+                      111,
+                      114,
+                      105,
+                      116,
+                      121
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "name": "program",
+              "address": "TWexqA2EZiSZEvu2vVdvmHnpew3Xx9wkjgLToBrooms"
+            }
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "expectedAuthority",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
       "name": "rejectEscrow",
       "discriminator": [
         232,
@@ -3482,11 +7043,102 @@ export type Rooms = {
       "args": []
     },
     {
-      "name": "removeTeamMember",
-      "docs": [
-        "Removes one wallet from a team's live roster. Touches no room — a",
-        "departing member keeps their share of every room already sealed."
+      "name": "rejectEscrowV2",
+      "discriminator": [
+        214,
+        19,
+        50,
+        153,
+        68,
+        81,
+        145,
+        134
       ],
+      "accounts": [
+        {
+          "name": "base",
+          "accounts": [
+            {
+              "name": "escrow",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      101,
+                      115,
+                      99,
+                      114,
+                      111,
+                      119
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "escrow.sender",
+                    "account": "escrow"
+                  },
+                  {
+                    "kind": "account",
+                    "path": "escrow.escrow_id",
+                    "account": "escrow"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "recipient",
+              "signer": true,
+              "relations": [
+                "escrow"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "events",
+          "accounts": [
+            {
+              "name": "eventAuthority",
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      95,
+                      95,
+                      101,
+                      118,
+                      101,
+                      110,
+                      116,
+                      95,
+                      97,
+                      117,
+                      116,
+                      104,
+                      111,
+                      114,
+                      105,
+                      116,
+                      121
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "name": "program",
+              "address": "TWexqA2EZiSZEvu2vVdvmHnpew3Xx9wkjgLToBrooms"
+            }
+          ]
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "removeTeamMember",
       "discriminator": [
         224,
         54,
@@ -3504,9 +7156,6 @@ export type Rooms = {
         },
         {
           "name": "tradingLedger",
-          "docs": [
-            "cannot omit an initialized ledger to bypass the custody exit guard."
-          ],
           "pda": {
             "seeds": [
               {
@@ -3634,14 +7283,174 @@ export type Rooms = {
       ]
     },
     {
-      "name": "sealRoomTeam",
-      "docs": [
-        "Freezes this room's payout split from its team's *current* roster.",
-        "One call, one transaction — the wallet list is already on chain in",
-        "`team`, so there's nothing left to transmit or chunk across multiple",
-        "calls the way the old `set_room_team` had to. `contribute` refuses",
-        "the room until this lands."
+      "name": "rotateRoomsAuthority",
+      "discriminator": [
+        110,
+        154,
+        82,
+        76,
+        220,
+        109,
+        49,
+        209
       ],
+      "accounts": [
+        {
+          "name": "globalConfig",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  108,
+                  111,
+                  98,
+                  97,
+                  108,
+                  95,
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "program",
+          "address": "TWexqA2EZiSZEvu2vVdvmHnpew3Xx9wkjgLToBrooms"
+        },
+        {
+          "name": "programData"
+        },
+        {
+          "name": "upgradeAuthority",
+          "signer": true
+        },
+        {
+          "name": "newAuthority",
+          "signer": true
+        }
+      ],
+      "args": [
+        {
+          "name": "expectedAuthority",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "rotateRoomsAuthorityV2",
+      "discriminator": [
+        172,
+        184,
+        191,
+        62,
+        167,
+        147,
+        114,
+        75
+      ],
+      "accounts": [
+        {
+          "name": "base",
+          "accounts": [
+            {
+              "name": "globalConfig",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      103,
+                      108,
+                      111,
+                      98,
+                      97,
+                      108,
+                      95,
+                      99,
+                      111,
+                      110,
+                      102,
+                      105,
+                      103
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "name": "program",
+              "address": "TWexqA2EZiSZEvu2vVdvmHnpew3Xx9wkjgLToBrooms"
+            },
+            {
+              "name": "programData"
+            },
+            {
+              "name": "upgradeAuthority",
+              "signer": true
+            },
+            {
+              "name": "newAuthority",
+              "signer": true
+            }
+          ]
+        },
+        {
+          "name": "events",
+          "accounts": [
+            {
+              "name": "eventAuthority",
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      95,
+                      95,
+                      101,
+                      118,
+                      101,
+                      110,
+                      116,
+                      95,
+                      97,
+                      117,
+                      116,
+                      104,
+                      111,
+                      114,
+                      105,
+                      116,
+                      121
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "name": "program",
+              "address": "TWexqA2EZiSZEvu2vVdvmHnpew3Xx9wkjgLToBrooms"
+            }
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "expectedAuthority",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "sealRoomTeam",
       "discriminator": [
         10,
         2,
@@ -3676,25 +7485,10 @@ export type Rooms = {
           }
         },
         {
-          "name": "team",
-          "docs": [
-            "The team this room launched under. Its *current* roster is what gets",
-            "copied into `room_team` below — not a client-supplied wallet list —",
-            "so the program itself, not just the backend, ties a room's split to",
-            "the team it actually belongs to.",
-            "",
-            "No seeds/bump here: `room.team` already pins the one correct address",
-            "(set once, at `create_room`), so re-deriving it from `team_id` would",
-            "only re-prove what the equality constraint below already proves."
-          ]
+          "name": "team"
         },
         {
           "name": "roomTeam",
-          "docs": [
-            "`init`, not `init_if_needed`: sealing a room's team is now exactly",
-            "one call, so a second attempt fails at the account-already-in-use",
-            "constraint rather than needing a runtime `sealed` check."
-          ],
           "writable": true,
           "pda": {
             "seeds": [
@@ -3730,6 +7524,128 @@ export type Rooms = {
         {
           "name": "systemProgram",
           "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "sealRoomTeamV2",
+      "discriminator": [
+        27,
+        186,
+        205,
+        147,
+        50,
+        189,
+        130,
+        196
+      ],
+      "accounts": [
+        {
+          "name": "base",
+          "accounts": [
+            {
+              "name": "room",
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      114,
+                      111,
+                      111,
+                      109,
+                      115
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "room.token_mint",
+                    "account": "room"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "team"
+            },
+            {
+              "name": "roomTeam",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      114,
+                      111,
+                      111,
+                      109,
+                      95,
+                      116,
+                      101,
+                      97,
+                      109
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "room"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "creator",
+              "writable": true,
+              "signer": true,
+              "relations": [
+                "room"
+              ]
+            },
+            {
+              "name": "systemProgram",
+              "address": "11111111111111111111111111111111"
+            }
+          ]
+        },
+        {
+          "name": "events",
+          "accounts": [
+            {
+              "name": "eventAuthority",
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      95,
+                      95,
+                      101,
+                      118,
+                      101,
+                      110,
+                      116,
+                      95,
+                      97,
+                      117,
+                      116,
+                      104,
+                      111,
+                      114,
+                      105,
+                      116,
+                      121
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "name": "program",
+              "address": "TWexqA2EZiSZEvu2vVdvmHnpew3Xx9wkjgLToBrooms"
+            }
+          ]
         }
       ],
       "args": []
@@ -3778,9 +7694,6 @@ export type Rooms = {
         },
         {
           "name": "adminWsolVault",
-          "docs": [
-            "Admin's WSOL vault for receiving sell fees"
-          ],
           "writable": true
         },
         {
@@ -4325,6 +8238,215 @@ export type Rooms = {
       ]
     },
     {
+      "name": "swapRaydiumV2",
+      "discriminator": [
+        71,
+        59,
+        20,
+        166,
+        211,
+        117,
+        44,
+        168
+      ],
+      "accounts": [
+        {
+          "name": "base",
+          "accounts": [
+            {
+              "name": "globalConfig",
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      103,
+                      108,
+                      111,
+                      98,
+                      97,
+                      108,
+                      95,
+                      99,
+                      111,
+                      110,
+                      102,
+                      105,
+                      103
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "name": "adminWsolVault",
+              "writable": true
+            },
+            {
+              "name": "room",
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      114,
+                      111,
+                      111,
+                      109,
+                      115
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "room.token_mint",
+                    "account": "room"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "roomVault",
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      114,
+                      111,
+                      111,
+                      109,
+                      95,
+                      118,
+                      97,
+                      117,
+                      108,
+                      116
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "room"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "payer",
+              "writable": true,
+              "signer": true
+            },
+            {
+              "name": "inputTokenAccount",
+              "writable": true
+            },
+            {
+              "name": "outputTokenAccount",
+              "writable": true
+            },
+            {
+              "name": "pool",
+              "writable": true
+            },
+            {
+              "name": "authority"
+            },
+            {
+              "name": "ammConfig",
+              "address": "8Pg5wr9H5i2GKbiH8315UiM1W9LJQT2tNiuqBeaoGKjz"
+            },
+            {
+              "name": "inputVault",
+              "writable": true
+            },
+            {
+              "name": "outputVault",
+              "writable": true
+            },
+            {
+              "name": "observation",
+              "writable": true
+            },
+            {
+              "name": "inputMint"
+            },
+            {
+              "name": "outputMint"
+            },
+            {
+              "name": "inputTokenProgram"
+            },
+            {
+              "name": "outputTokenProgram"
+            },
+            {
+              "name": "tokenProgram",
+              "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+            },
+            {
+              "name": "systemProgram",
+              "address": "11111111111111111111111111111111"
+            },
+            {
+              "name": "raydiumProgram",
+              "address": "DRaycpLY18LhpbydsBWbVJtxpNv9oXPgjRSfpF2bWpYb"
+            }
+          ]
+        },
+        {
+          "name": "events",
+          "accounts": [
+            {
+              "name": "eventAuthority",
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      95,
+                      95,
+                      101,
+                      118,
+                      101,
+                      110,
+                      116,
+                      95,
+                      97,
+                      117,
+                      116,
+                      104,
+                      111,
+                      114,
+                      105,
+                      116,
+                      121
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "name": "program",
+              "address": "TWexqA2EZiSZEvu2vVdvmHnpew3Xx9wkjgLToBrooms"
+            }
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "amountIn",
+          "type": "u64"
+        },
+        {
+          "name": "minOut",
+          "type": "u64"
+        },
+        {
+          "name": "isBuy",
+          "type": "bool"
+        }
+      ]
+    },
+    {
       "name": "sweepReferralVault",
       "discriminator": [
         51,
@@ -4412,12 +8534,6 @@ export type Rooms = {
     },
     {
       "name": "sweepRoomToTeamVault",
-      "docs": [
-        "Forwards `amount` lamports from a team_split room's own `room_vault`",
-        "into its team's shared `team_vault`. Called right after",
-        "`collect_pump_fees`/`collect_raydium_fees` for team_split rooms,",
-        "`amount` being exactly what that sweep just collected."
-      ],
       "discriminator": [
         155,
         199,
@@ -4453,15 +8569,6 @@ export type Rooms = {
         },
         {
           "name": "roomVault",
-          "docs": [
-            "collection always lands here first (their on-chain \"creator\"/fee",
-            "recipient was registered as this exact PDA at graduation and can't be",
-            "redirected afterward), so this instruction is the forwarding step",
-            "that consolidates it into the team's shared vault. It also carries",
-            "operational reserves unrelated to fees (the per-contributor ATA-fee",
-            "float `airdrop_tokens` spends from, the WSOL-ATA-recycling reserve",
-            "`collect_pump_fees` needs) — see why `amount` is explicit, below."
-          ],
           "writable": true,
           "pda": {
             "seeds": [
@@ -4489,22 +8596,10 @@ export type Rooms = {
         },
         {
           "name": "teamVault",
-          "docs": [
-            "`room.team` — nothing the caller chooses — and validated by hand",
-            "below rather than via seeds on this account, for the same reason",
-            "`claim_rewards`'s `team_vault` is: deriving one optional account's",
-            "seeds from another account's `Option` field is a needless panic risk",
-            "when it can just be checked with `require!` instead."
-          ],
           "writable": true
         },
         {
           "name": "caller",
-          "docs": [
-            "Permissionless, like `collect_pump_fees`/`collect_raydium_fees`: the",
-            "destination is entirely PDA-derived, so the caller's identity can't",
-            "misdirect anything — they only pay the transaction fee."
-          ],
           "signer": true
         },
         {
@@ -4877,6 +8972,321 @@ export type Rooms = {
       ]
     },
     {
+      "name": "vaultBuyV2",
+      "discriminator": [
+        210,
+        212,
+        252,
+        218,
+        199,
+        220,
+        142,
+        97
+      ],
+      "accounts": [
+        {
+          "name": "base",
+          "accounts": [
+            {
+              "name": "access",
+              "accounts": [
+                {
+                  "name": "team",
+                  "writable": true,
+                  "relations": [
+                    "governance",
+                    "tradingVault"
+                  ]
+                },
+                {
+                  "name": "governance",
+                  "writable": true,
+                  "pda": {
+                    "seeds": [
+                      {
+                        "kind": "const",
+                        "value": [
+                          116,
+                          101,
+                          97,
+                          109,
+                          95,
+                          103,
+                          111,
+                          118,
+                          101,
+                          114,
+                          110,
+                          97,
+                          110,
+                          99,
+                          101
+                        ]
+                      },
+                      {
+                        "kind": "account",
+                        "path": "team"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "tradingVault",
+                  "writable": true,
+                  "pda": {
+                    "seeds": [
+                      {
+                        "kind": "const",
+                        "value": [
+                          116,
+                          114,
+                          97,
+                          100,
+                          105,
+                          110,
+                          103,
+                          95,
+                          118,
+                          97,
+                          117,
+                          108,
+                          116
+                        ]
+                      },
+                      {
+                        "kind": "account",
+                        "path": "team"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "ledger",
+                  "writable": true,
+                  "pda": {
+                    "seeds": [
+                      {
+                        "kind": "const",
+                        "value": [
+                          118,
+                          97,
+                          117,
+                          108,
+                          116,
+                          95,
+                          108,
+                          101,
+                          100,
+                          103,
+                          101,
+                          114
+                        ]
+                      },
+                      {
+                        "kind": "account",
+                        "path": "tradingVault"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "vaultSol",
+                  "writable": true,
+                  "pda": {
+                    "seeds": [
+                      {
+                        "kind": "const",
+                        "value": [
+                          118,
+                          97,
+                          117,
+                          108,
+                          116,
+                          95,
+                          115,
+                          111,
+                          108
+                        ]
+                      },
+                      {
+                        "kind": "account",
+                        "path": "tradingVault"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "actor",
+                  "writable": true,
+                  "signer": true
+                },
+                {
+                  "name": "wallet",
+                  "writable": true
+                },
+                {
+                  "name": "systemProgram",
+                  "address": "11111111111111111111111111111111"
+                }
+              ]
+            },
+            {
+              "name": "trade",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      118,
+                      97,
+                      117,
+                      108,
+                      116,
+                      95,
+                      116,
+                      114,
+                      97,
+                      100,
+                      101
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "access.trading_vault",
+                    "account": "vaultAccess"
+                  },
+                  {
+                    "kind": "account",
+                    "path": "access.trading_vault.next_trade_id",
+                    "account": "vaultAccess"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "payer",
+              "writable": true,
+              "signer": true
+            },
+            {
+              "name": "route",
+              "accounts": [
+                {
+                  "name": "room",
+                  "pda": {
+                    "seeds": [
+                      {
+                        "kind": "const",
+                        "value": [
+                          114,
+                          111,
+                          111,
+                          109,
+                          115
+                        ]
+                      },
+                      {
+                        "kind": "account",
+                        "path": "room.token_mint",
+                        "account": "room"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "vaultAuthority",
+                  "writable": true
+                },
+                {
+                  "name": "tokenMint"
+                },
+                {
+                  "name": "tokenAccount",
+                  "writable": true
+                },
+                {
+                  "name": "wsolAccount",
+                  "writable": true
+                },
+                {
+                  "name": "wsolMint",
+                  "address": "So11111111111111111111111111111111111111112"
+                },
+                {
+                  "name": "tokenProgram"
+                },
+                {
+                  "name": "wsolProgram",
+                  "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+                },
+                {
+                  "name": "associatedTokenProgram",
+                  "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+                },
+                {
+                  "name": "roomsProgram",
+                  "address": "TWexqA2EZiSZEvu2vVdvmHnpew3Xx9wkjgLToBrooms"
+                }
+              ]
+            },
+            {
+              "name": "systemProgram",
+              "address": "11111111111111111111111111111111"
+            }
+          ]
+        },
+        {
+          "name": "events",
+          "accounts": [
+            {
+              "name": "eventAuthority",
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      95,
+                      95,
+                      101,
+                      118,
+                      101,
+                      110,
+                      116,
+                      95,
+                      97,
+                      117,
+                      116,
+                      104,
+                      111,
+                      114,
+                      105,
+                      116,
+                      121
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "name": "program",
+              "address": "TWexqA2EZiSZEvu2vVdvmHnpew3Xx9wkjgLToBrooms"
+            }
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        },
+        {
+          "name": "minTokensOut",
+          "type": "u64"
+        }
+      ]
+    },
+    {
       "name": "vaultCloseTradeAccount",
       "discriminator": [
         193,
@@ -5086,6 +9496,208 @@ export type Rooms = {
         {
           "name": "systemProgram",
           "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "vaultDepositV2",
+      "discriminator": [
+        31,
+        109,
+        218,
+        220,
+        241,
+        93,
+        80,
+        158
+      ],
+      "accounts": [
+        {
+          "name": "base",
+          "accounts": [
+            {
+              "name": "team",
+              "writable": true,
+              "relations": [
+                "governance",
+                "tradingVault"
+              ]
+            },
+            {
+              "name": "governance",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      116,
+                      101,
+                      97,
+                      109,
+                      95,
+                      103,
+                      111,
+                      118,
+                      101,
+                      114,
+                      110,
+                      97,
+                      110,
+                      99,
+                      101
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "team"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "tradingVault",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      116,
+                      114,
+                      97,
+                      100,
+                      105,
+                      110,
+                      103,
+                      95,
+                      118,
+                      97,
+                      117,
+                      108,
+                      116
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "team"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "ledger",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      118,
+                      97,
+                      117,
+                      108,
+                      116,
+                      95,
+                      108,
+                      101,
+                      100,
+                      103,
+                      101,
+                      114
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "tradingVault"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "vaultSol",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      118,
+                      97,
+                      117,
+                      108,
+                      116,
+                      95,
+                      115,
+                      111,
+                      108
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "tradingVault"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "actor",
+              "writable": true,
+              "signer": true
+            },
+            {
+              "name": "wallet",
+              "writable": true
+            },
+            {
+              "name": "systemProgram",
+              "address": "11111111111111111111111111111111"
+            }
+          ]
+        },
+        {
+          "name": "events",
+          "accounts": [
+            {
+              "name": "eventAuthority",
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      95,
+                      95,
+                      101,
+                      118,
+                      101,
+                      110,
+                      116,
+                      95,
+                      97,
+                      117,
+                      116,
+                      104,
+                      111,
+                      114,
+                      105,
+                      116,
+                      121
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "name": "program",
+              "address": "TWexqA2EZiSZEvu2vVdvmHnpew3Xx9wkjgLToBrooms"
+            }
+          ]
         }
       ],
       "args": [
@@ -5460,6 +10072,413 @@ export type Rooms = {
       ]
     },
     {
+      "name": "vaultEnterPresaleV2",
+      "discriminator": [
+        242,
+        174,
+        226,
+        8,
+        61,
+        255,
+        222,
+        73
+      ],
+      "accounts": [
+        {
+          "name": "base",
+          "accounts": [
+            {
+              "name": "access",
+              "accounts": [
+                {
+                  "name": "team",
+                  "writable": true,
+                  "relations": [
+                    "governance",
+                    "tradingVault"
+                  ]
+                },
+                {
+                  "name": "governance",
+                  "writable": true,
+                  "pda": {
+                    "seeds": [
+                      {
+                        "kind": "const",
+                        "value": [
+                          116,
+                          101,
+                          97,
+                          109,
+                          95,
+                          103,
+                          111,
+                          118,
+                          101,
+                          114,
+                          110,
+                          97,
+                          110,
+                          99,
+                          101
+                        ]
+                      },
+                      {
+                        "kind": "account",
+                        "path": "team"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "tradingVault",
+                  "writable": true,
+                  "pda": {
+                    "seeds": [
+                      {
+                        "kind": "const",
+                        "value": [
+                          116,
+                          114,
+                          97,
+                          100,
+                          105,
+                          110,
+                          103,
+                          95,
+                          118,
+                          97,
+                          117,
+                          108,
+                          116
+                        ]
+                      },
+                      {
+                        "kind": "account",
+                        "path": "team"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "ledger",
+                  "writable": true,
+                  "pda": {
+                    "seeds": [
+                      {
+                        "kind": "const",
+                        "value": [
+                          118,
+                          97,
+                          117,
+                          108,
+                          116,
+                          95,
+                          108,
+                          101,
+                          100,
+                          103,
+                          101,
+                          114
+                        ]
+                      },
+                      {
+                        "kind": "account",
+                        "path": "tradingVault"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "vaultSol",
+                  "writable": true,
+                  "pda": {
+                    "seeds": [
+                      {
+                        "kind": "const",
+                        "value": [
+                          118,
+                          97,
+                          117,
+                          108,
+                          116,
+                          95,
+                          115,
+                          111,
+                          108
+                        ]
+                      },
+                      {
+                        "kind": "account",
+                        "path": "tradingVault"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "actor",
+                  "writable": true,
+                  "signer": true
+                },
+                {
+                  "name": "wallet",
+                  "writable": true
+                },
+                {
+                  "name": "systemProgram",
+                  "address": "11111111111111111111111111111111"
+                }
+              ]
+            },
+            {
+              "name": "trade",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      118,
+                      97,
+                      117,
+                      108,
+                      116,
+                      95,
+                      116,
+                      114,
+                      97,
+                      100,
+                      101
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "access.trading_vault",
+                    "account": "vaultAccess"
+                  },
+                  {
+                    "kind": "account",
+                    "path": "access.trading_vault.next_trade_id",
+                    "account": "vaultAccess"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "position",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      118,
+                      97,
+                      117,
+                      108,
+                      116,
+                      95,
+                      112,
+                      114,
+                      101,
+                      115,
+                      97,
+                      108,
+                      101
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "access.trading_vault",
+                    "account": "vaultAccess"
+                  },
+                  {
+                    "kind": "account",
+                    "path": "room"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "room",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      114,
+                      111,
+                      111,
+                      109,
+                      115
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "room.token_mint",
+                    "account": "room"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "vaultAuthority",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      118,
+                      97,
+                      117,
+                      108,
+                      116,
+                      95,
+                      97,
+                      117,
+                      116,
+                      104,
+                      111,
+                      114,
+                      105,
+                      116,
+                      121
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "access.trading_vault",
+                    "account": "vaultAccess"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "roomUser",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      114,
+                      111,
+                      111,
+                      109,
+                      95,
+                      117,
+                      115,
+                      101,
+                      114
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "room"
+                  },
+                  {
+                    "kind": "account",
+                    "path": "vaultAuthority"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "roomAccess",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      114,
+                      111,
+                      111,
+                      109,
+                      95,
+                      97,
+                      99,
+                      99,
+                      101,
+                      115,
+                      115
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "room"
+                  },
+                  {
+                    "kind": "account",
+                    "path": "vaultAuthority"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "payer",
+              "writable": true,
+              "signer": true
+            },
+            {
+              "name": "roomsProgram",
+              "address": "TWexqA2EZiSZEvu2vVdvmHnpew3Xx9wkjgLToBrooms"
+            },
+            {
+              "name": "systemProgram",
+              "address": "11111111111111111111111111111111"
+            }
+          ]
+        },
+        {
+          "name": "events",
+          "accounts": [
+            {
+              "name": "eventAuthority",
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      95,
+                      95,
+                      101,
+                      118,
+                      101,
+                      110,
+                      116,
+                      95,
+                      97,
+                      117,
+                      116,
+                      104,
+                      111,
+                      114,
+                      105,
+                      116,
+                      121
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "name": "program",
+              "address": "TWexqA2EZiSZEvu2vVdvmHnpew3Xx9wkjgLToBrooms"
+            }
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
       "name": "vaultExit",
       "discriminator": [
         181,
@@ -5609,6 +10628,208 @@ export type Rooms = {
         {
           "name": "systemProgram",
           "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "wallet",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "vaultExitV2",
+      "discriminator": [
+        19,
+        154,
+        243,
+        74,
+        204,
+        3,
+        142,
+        186
+      ],
+      "accounts": [
+        {
+          "name": "base",
+          "accounts": [
+            {
+              "name": "team",
+              "writable": true,
+              "relations": [
+                "governance",
+                "tradingVault"
+              ]
+            },
+            {
+              "name": "governance",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      116,
+                      101,
+                      97,
+                      109,
+                      95,
+                      103,
+                      111,
+                      118,
+                      101,
+                      114,
+                      110,
+                      97,
+                      110,
+                      99,
+                      101
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "team"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "tradingVault",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      116,
+                      114,
+                      97,
+                      100,
+                      105,
+                      110,
+                      103,
+                      95,
+                      118,
+                      97,
+                      117,
+                      108,
+                      116
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "team"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "ledger",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      118,
+                      97,
+                      117,
+                      108,
+                      116,
+                      95,
+                      108,
+                      101,
+                      100,
+                      103,
+                      101,
+                      114
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "tradingVault"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "vaultSol",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      118,
+                      97,
+                      117,
+                      108,
+                      116,
+                      95,
+                      115,
+                      111,
+                      108
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "tradingVault"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "actor",
+              "writable": true,
+              "signer": true
+            },
+            {
+              "name": "wallet",
+              "writable": true
+            },
+            {
+              "name": "systemProgram",
+              "address": "11111111111111111111111111111111"
+            }
+          ]
+        },
+        {
+          "name": "events",
+          "accounts": [
+            {
+              "name": "eventAuthority",
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      95,
+                      95,
+                      101,
+                      118,
+                      101,
+                      110,
+                      116,
+                      95,
+                      97,
+                      117,
+                      116,
+                      104,
+                      111,
+                      114,
+                      105,
+                      116,
+                      121
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "name": "program",
+              "address": "TWexqA2EZiSZEvu2vVdvmHnpew3Xx9wkjgLToBrooms"
+            }
+          ]
         }
       ],
       "args": [
@@ -6009,6 +11230,482 @@ export type Rooms = {
       "args": []
     },
     {
+      "name": "vaultInitAutomaticV2",
+      "discriminator": [
+        128,
+        202,
+        251,
+        113,
+        49,
+        176,
+        19,
+        19
+      ],
+      "accounts": [
+        {
+          "name": "base",
+          "accounts": [
+            {
+              "name": "globalConfig",
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      103,
+                      108,
+                      111,
+                      98,
+                      97,
+                      108,
+                      95,
+                      99,
+                      111,
+                      110,
+                      102,
+                      105,
+                      103
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "name": "team",
+              "relations": [
+                "governance"
+              ]
+            },
+            {
+              "name": "governance",
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      116,
+                      101,
+                      97,
+                      109,
+                      95,
+                      103,
+                      111,
+                      118,
+                      101,
+                      114,
+                      110,
+                      97,
+                      110,
+                      99,
+                      101
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "team"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "tradingVault",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      116,
+                      114,
+                      97,
+                      100,
+                      105,
+                      110,
+                      103,
+                      95,
+                      118,
+                      97,
+                      117,
+                      108,
+                      116
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "team"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "ledger",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      118,
+                      97,
+                      117,
+                      108,
+                      116,
+                      95,
+                      108,
+                      101,
+                      100,
+                      103,
+                      101,
+                      114
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "tradingVault"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "vaultSol",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      118,
+                      97,
+                      117,
+                      108,
+                      116,
+                      95,
+                      115,
+                      111,
+                      108
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "tradingVault"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "vaultAuthority",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      118,
+                      97,
+                      117,
+                      108,
+                      116,
+                      95,
+                      97,
+                      117,
+                      116,
+                      104,
+                      111,
+                      114,
+                      105,
+                      116,
+                      121
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "tradingVault"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "payer",
+              "writable": true,
+              "signer": true
+            },
+            {
+              "name": "systemProgram",
+              "address": "11111111111111111111111111111111"
+            }
+          ]
+        },
+        {
+          "name": "events",
+          "accounts": [
+            {
+              "name": "eventAuthority",
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      95,
+                      95,
+                      101,
+                      118,
+                      101,
+                      110,
+                      116,
+                      95,
+                      97,
+                      117,
+                      116,
+                      104,
+                      111,
+                      114,
+                      105,
+                      116,
+                      121
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "name": "program",
+              "address": "TWexqA2EZiSZEvu2vVdvmHnpew3Xx9wkjgLToBrooms"
+            }
+          ]
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "vaultInitV2",
+      "discriminator": [
+        241,
+        187,
+        82,
+        121,
+        31,
+        2,
+        79,
+        72
+      ],
+      "accounts": [
+        {
+          "name": "base",
+          "accounts": [
+            {
+              "name": "team",
+              "relations": [
+                "governance"
+              ]
+            },
+            {
+              "name": "governance",
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      116,
+                      101,
+                      97,
+                      109,
+                      95,
+                      103,
+                      111,
+                      118,
+                      101,
+                      114,
+                      110,
+                      97,
+                      110,
+                      99,
+                      101
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "team"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "tradingVault",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      116,
+                      114,
+                      97,
+                      100,
+                      105,
+                      110,
+                      103,
+                      95,
+                      118,
+                      97,
+                      117,
+                      108,
+                      116
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "team"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "ledger",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      118,
+                      97,
+                      117,
+                      108,
+                      116,
+                      95,
+                      108,
+                      101,
+                      100,
+                      103,
+                      101,
+                      114
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "tradingVault"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "vaultSol",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      118,
+                      97,
+                      117,
+                      108,
+                      116,
+                      95,
+                      115,
+                      111,
+                      108
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "tradingVault"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "vaultAuthority",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      118,
+                      97,
+                      117,
+                      108,
+                      116,
+                      95,
+                      97,
+                      117,
+                      116,
+                      104,
+                      111,
+                      114,
+                      105,
+                      116,
+                      121
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "tradingVault"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "owner",
+              "signer": true,
+              "relations": [
+                "governance"
+              ]
+            },
+            {
+              "name": "payer",
+              "writable": true,
+              "signer": true
+            },
+            {
+              "name": "systemProgram",
+              "address": "11111111111111111111111111111111"
+            }
+          ]
+        },
+        {
+          "name": "events",
+          "accounts": [
+            {
+              "name": "eventAuthority",
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      95,
+                      95,
+                      101,
+                      118,
+                      101,
+                      110,
+                      116,
+                      95,
+                      97,
+                      117,
+                      116,
+                      104,
+                      111,
+                      114,
+                      105,
+                      116,
+                      121
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "name": "program",
+              "address": "TWexqA2EZiSZEvu2vVdvmHnpew3Xx9wkjgLToBrooms"
+            }
+          ]
+        }
+      ],
+      "args": []
+    },
+    {
       "name": "vaultSell",
       "discriminator": [
         24,
@@ -6275,6 +11972,315 @@ export type Rooms = {
       ]
     },
     {
+      "name": "vaultSellV2",
+      "discriminator": [
+        201,
+        75,
+        120,
+        151,
+        179,
+        11,
+        171,
+        255
+      ],
+      "accounts": [
+        {
+          "name": "base",
+          "accounts": [
+            {
+              "name": "access",
+              "accounts": [
+                {
+                  "name": "team",
+                  "writable": true,
+                  "relations": [
+                    "governance",
+                    "tradingVault"
+                  ]
+                },
+                {
+                  "name": "governance",
+                  "writable": true,
+                  "pda": {
+                    "seeds": [
+                      {
+                        "kind": "const",
+                        "value": [
+                          116,
+                          101,
+                          97,
+                          109,
+                          95,
+                          103,
+                          111,
+                          118,
+                          101,
+                          114,
+                          110,
+                          97,
+                          110,
+                          99,
+                          101
+                        ]
+                      },
+                      {
+                        "kind": "account",
+                        "path": "team"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "tradingVault",
+                  "writable": true,
+                  "pda": {
+                    "seeds": [
+                      {
+                        "kind": "const",
+                        "value": [
+                          116,
+                          114,
+                          97,
+                          100,
+                          105,
+                          110,
+                          103,
+                          95,
+                          118,
+                          97,
+                          117,
+                          108,
+                          116
+                        ]
+                      },
+                      {
+                        "kind": "account",
+                        "path": "team"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "ledger",
+                  "writable": true,
+                  "pda": {
+                    "seeds": [
+                      {
+                        "kind": "const",
+                        "value": [
+                          118,
+                          97,
+                          117,
+                          108,
+                          116,
+                          95,
+                          108,
+                          101,
+                          100,
+                          103,
+                          101,
+                          114
+                        ]
+                      },
+                      {
+                        "kind": "account",
+                        "path": "tradingVault"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "vaultSol",
+                  "writable": true,
+                  "pda": {
+                    "seeds": [
+                      {
+                        "kind": "const",
+                        "value": [
+                          118,
+                          97,
+                          117,
+                          108,
+                          116,
+                          95,
+                          115,
+                          111,
+                          108
+                        ]
+                      },
+                      {
+                        "kind": "account",
+                        "path": "tradingVault"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "actor",
+                  "writable": true,
+                  "signer": true
+                },
+                {
+                  "name": "wallet",
+                  "writable": true
+                },
+                {
+                  "name": "systemProgram",
+                  "address": "11111111111111111111111111111111"
+                }
+              ]
+            },
+            {
+              "name": "trade",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      118,
+                      97,
+                      117,
+                      108,
+                      116,
+                      95,
+                      116,
+                      114,
+                      97,
+                      100,
+                      101
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "access.trading_vault",
+                    "account": "vaultAccess"
+                  },
+                  {
+                    "kind": "arg",
+                    "path": "tradeId"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "route",
+              "accounts": [
+                {
+                  "name": "room",
+                  "pda": {
+                    "seeds": [
+                      {
+                        "kind": "const",
+                        "value": [
+                          114,
+                          111,
+                          111,
+                          109,
+                          115
+                        ]
+                      },
+                      {
+                        "kind": "account",
+                        "path": "room.token_mint",
+                        "account": "room"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "vaultAuthority",
+                  "writable": true
+                },
+                {
+                  "name": "tokenMint"
+                },
+                {
+                  "name": "tokenAccount",
+                  "writable": true
+                },
+                {
+                  "name": "wsolAccount",
+                  "writable": true
+                },
+                {
+                  "name": "wsolMint",
+                  "address": "So11111111111111111111111111111111111111112"
+                },
+                {
+                  "name": "tokenProgram"
+                },
+                {
+                  "name": "wsolProgram",
+                  "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+                },
+                {
+                  "name": "associatedTokenProgram",
+                  "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+                },
+                {
+                  "name": "roomsProgram",
+                  "address": "TWexqA2EZiSZEvu2vVdvmHnpew3Xx9wkjgLToBrooms"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "events",
+          "accounts": [
+            {
+              "name": "eventAuthority",
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      95,
+                      95,
+                      101,
+                      118,
+                      101,
+                      110,
+                      116,
+                      95,
+                      97,
+                      117,
+                      116,
+                      104,
+                      111,
+                      114,
+                      105,
+                      116,
+                      121
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "name": "program",
+              "address": "TWexqA2EZiSZEvu2vVdvmHnpew3Xx9wkjgLToBrooms"
+            }
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "tradeId",
+          "type": "u64"
+        },
+        {
+          "name": "tokenAmount",
+          "type": "u64"
+        },
+        {
+          "name": "minLamportsOut",
+          "type": "u64"
+        }
+      ]
+    },
+    {
       "name": "vaultSetAdmin",
       "discriminator": [
         23,
@@ -6424,6 +12430,212 @@ export type Rooms = {
         {
           "name": "systemProgram",
           "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "wallet",
+          "type": "pubkey"
+        },
+        {
+          "name": "isAdmin",
+          "type": "bool"
+        }
+      ]
+    },
+    {
+      "name": "vaultSetAdminV2",
+      "discriminator": [
+        54,
+        92,
+        96,
+        59,
+        108,
+        192,
+        8,
+        232
+      ],
+      "accounts": [
+        {
+          "name": "base",
+          "accounts": [
+            {
+              "name": "team",
+              "writable": true,
+              "relations": [
+                "governance",
+                "tradingVault"
+              ]
+            },
+            {
+              "name": "governance",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      116,
+                      101,
+                      97,
+                      109,
+                      95,
+                      103,
+                      111,
+                      118,
+                      101,
+                      114,
+                      110,
+                      97,
+                      110,
+                      99,
+                      101
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "team"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "tradingVault",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      116,
+                      114,
+                      97,
+                      100,
+                      105,
+                      110,
+                      103,
+                      95,
+                      118,
+                      97,
+                      117,
+                      108,
+                      116
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "team"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "ledger",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      118,
+                      97,
+                      117,
+                      108,
+                      116,
+                      95,
+                      108,
+                      101,
+                      100,
+                      103,
+                      101,
+                      114
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "tradingVault"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "vaultSol",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      118,
+                      97,
+                      117,
+                      108,
+                      116,
+                      95,
+                      115,
+                      111,
+                      108
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "tradingVault"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "actor",
+              "writable": true,
+              "signer": true
+            },
+            {
+              "name": "wallet",
+              "writable": true
+            },
+            {
+              "name": "systemProgram",
+              "address": "11111111111111111111111111111111"
+            }
+          ]
+        },
+        {
+          "name": "events",
+          "accounts": [
+            {
+              "name": "eventAuthority",
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      95,
+                      95,
+                      101,
+                      118,
+                      101,
+                      110,
+                      116,
+                      95,
+                      97,
+                      117,
+                      116,
+                      104,
+                      111,
+                      114,
+                      105,
+                      116,
+                      121
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "name": "program",
+              "address": "TWexqA2EZiSZEvu2vVdvmHnpew3Xx9wkjgLToBrooms"
+            }
+          ]
         }
       ],
       "args": [
@@ -6597,6 +12809,208 @@ export type Rooms = {
       ]
     },
     {
+      "name": "vaultSetTradeLimitV2",
+      "discriminator": [
+        228,
+        42,
+        144,
+        139,
+        143,
+        175,
+        234,
+        235
+      ],
+      "accounts": [
+        {
+          "name": "base",
+          "accounts": [
+            {
+              "name": "team",
+              "writable": true,
+              "relations": [
+                "governance",
+                "tradingVault"
+              ]
+            },
+            {
+              "name": "governance",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      116,
+                      101,
+                      97,
+                      109,
+                      95,
+                      103,
+                      111,
+                      118,
+                      101,
+                      114,
+                      110,
+                      97,
+                      110,
+                      99,
+                      101
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "team"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "tradingVault",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      116,
+                      114,
+                      97,
+                      100,
+                      105,
+                      110,
+                      103,
+                      95,
+                      118,
+                      97,
+                      117,
+                      108,
+                      116
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "team"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "ledger",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      118,
+                      97,
+                      117,
+                      108,
+                      116,
+                      95,
+                      108,
+                      101,
+                      100,
+                      103,
+                      101,
+                      114
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "tradingVault"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "vaultSol",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      118,
+                      97,
+                      117,
+                      108,
+                      116,
+                      95,
+                      115,
+                      111,
+                      108
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "tradingVault"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "actor",
+              "writable": true,
+              "signer": true
+            },
+            {
+              "name": "wallet",
+              "writable": true
+            },
+            {
+              "name": "systemProgram",
+              "address": "11111111111111111111111111111111"
+            }
+          ]
+        },
+        {
+          "name": "events",
+          "accounts": [
+            {
+              "name": "eventAuthority",
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      95,
+                      95,
+                      101,
+                      118,
+                      101,
+                      110,
+                      116,
+                      95,
+                      97,
+                      117,
+                      116,
+                      104,
+                      111,
+                      114,
+                      105,
+                      116,
+                      121
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "name": "program",
+              "address": "TWexqA2EZiSZEvu2vVdvmHnpew3Xx9wkjgLToBrooms"
+            }
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "bps",
+          "type": "u16"
+        }
+      ]
+    },
+    {
       "name": "vaultSetTrader",
       "discriminator": [
         79,
@@ -6746,6 +13160,212 @@ export type Rooms = {
         {
           "name": "systemProgram",
           "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "wallet",
+          "type": "pubkey"
+        },
+        {
+          "name": "isTrader",
+          "type": "bool"
+        }
+      ]
+    },
+    {
+      "name": "vaultSetTraderV2",
+      "discriminator": [
+        189,
+        73,
+        86,
+        105,
+        14,
+        65,
+        99,
+        252
+      ],
+      "accounts": [
+        {
+          "name": "base",
+          "accounts": [
+            {
+              "name": "team",
+              "writable": true,
+              "relations": [
+                "governance",
+                "tradingVault"
+              ]
+            },
+            {
+              "name": "governance",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      116,
+                      101,
+                      97,
+                      109,
+                      95,
+                      103,
+                      111,
+                      118,
+                      101,
+                      114,
+                      110,
+                      97,
+                      110,
+                      99,
+                      101
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "team"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "tradingVault",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      116,
+                      114,
+                      97,
+                      100,
+                      105,
+                      110,
+                      103,
+                      95,
+                      118,
+                      97,
+                      117,
+                      108,
+                      116
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "team"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "ledger",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      118,
+                      97,
+                      117,
+                      108,
+                      116,
+                      95,
+                      108,
+                      101,
+                      100,
+                      103,
+                      101,
+                      114
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "tradingVault"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "vaultSol",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      118,
+                      97,
+                      117,
+                      108,
+                      116,
+                      95,
+                      115,
+                      111,
+                      108
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "tradingVault"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "actor",
+              "writable": true,
+              "signer": true
+            },
+            {
+              "name": "wallet",
+              "writable": true
+            },
+            {
+              "name": "systemProgram",
+              "address": "11111111111111111111111111111111"
+            }
+          ]
+        },
+        {
+          "name": "events",
+          "accounts": [
+            {
+              "name": "eventAuthority",
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      95,
+                      95,
+                      101,
+                      118,
+                      101,
+                      110,
+                      116,
+                      95,
+                      97,
+                      117,
+                      116,
+                      104,
+                      111,
+                      114,
+                      105,
+                      116,
+                      121
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "name": "program",
+              "address": "TWexqA2EZiSZEvu2vVdvmHnpew3Xx9wkjgLToBrooms"
+            }
+          ]
         }
       ],
       "args": [
@@ -7078,6 +13698,367 @@ export type Rooms = {
       ]
     },
     {
+      "name": "vaultSettlePresaleV2",
+      "discriminator": [
+        47,
+        188,
+        187,
+        196,
+        33,
+        132,
+        17,
+        52
+      ],
+      "accounts": [
+        {
+          "name": "base",
+          "accounts": [
+            {
+              "name": "access",
+              "accounts": [
+                {
+                  "name": "team",
+                  "writable": true,
+                  "relations": [
+                    "governance",
+                    "tradingVault"
+                  ]
+                },
+                {
+                  "name": "governance",
+                  "writable": true,
+                  "pda": {
+                    "seeds": [
+                      {
+                        "kind": "const",
+                        "value": [
+                          116,
+                          101,
+                          97,
+                          109,
+                          95,
+                          103,
+                          111,
+                          118,
+                          101,
+                          114,
+                          110,
+                          97,
+                          110,
+                          99,
+                          101
+                        ]
+                      },
+                      {
+                        "kind": "account",
+                        "path": "team"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "tradingVault",
+                  "writable": true,
+                  "pda": {
+                    "seeds": [
+                      {
+                        "kind": "const",
+                        "value": [
+                          116,
+                          114,
+                          97,
+                          100,
+                          105,
+                          110,
+                          103,
+                          95,
+                          118,
+                          97,
+                          117,
+                          108,
+                          116
+                        ]
+                      },
+                      {
+                        "kind": "account",
+                        "path": "team"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "ledger",
+                  "writable": true,
+                  "pda": {
+                    "seeds": [
+                      {
+                        "kind": "const",
+                        "value": [
+                          118,
+                          97,
+                          117,
+                          108,
+                          116,
+                          95,
+                          108,
+                          101,
+                          100,
+                          103,
+                          101,
+                          114
+                        ]
+                      },
+                      {
+                        "kind": "account",
+                        "path": "tradingVault"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "vaultSol",
+                  "writable": true,
+                  "pda": {
+                    "seeds": [
+                      {
+                        "kind": "const",
+                        "value": [
+                          118,
+                          97,
+                          117,
+                          108,
+                          116,
+                          95,
+                          115,
+                          111,
+                          108
+                        ]
+                      },
+                      {
+                        "kind": "account",
+                        "path": "tradingVault"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "actor",
+                  "writable": true,
+                  "signer": true
+                },
+                {
+                  "name": "wallet",
+                  "writable": true
+                },
+                {
+                  "name": "systemProgram",
+                  "address": "11111111111111111111111111111111"
+                }
+              ]
+            },
+            {
+              "name": "trade",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      118,
+                      97,
+                      117,
+                      108,
+                      116,
+                      95,
+                      116,
+                      114,
+                      97,
+                      100,
+                      101
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "access.trading_vault",
+                    "account": "vaultAccess"
+                  },
+                  {
+                    "kind": "arg",
+                    "path": "tradeId"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "room",
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      114,
+                      111,
+                      111,
+                      109,
+                      115
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "trade.token_mint",
+                    "account": "vaultTrade"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "position",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      118,
+                      97,
+                      117,
+                      108,
+                      116,
+                      95,
+                      112,
+                      114,
+                      101,
+                      115,
+                      97,
+                      108,
+                      101
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "access.trading_vault",
+                    "account": "vaultAccess"
+                  },
+                  {
+                    "kind": "account",
+                    "path": "room"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "vaultAuthority",
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      118,
+                      97,
+                      117,
+                      108,
+                      116,
+                      95,
+                      97,
+                      117,
+                      116,
+                      104,
+                      111,
+                      114,
+                      105,
+                      116,
+                      121
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "access.trading_vault",
+                    "account": "vaultAccess"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "roomUser",
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      114,
+                      111,
+                      111,
+                      109,
+                      95,
+                      117,
+                      115,
+                      101,
+                      114
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "room"
+                  },
+                  {
+                    "kind": "account",
+                    "path": "vaultAuthority"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "tokenAccount"
+            }
+          ]
+        },
+        {
+          "name": "events",
+          "accounts": [
+            {
+              "name": "eventAuthority",
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      95,
+                      95,
+                      101,
+                      118,
+                      101,
+                      110,
+                      116,
+                      95,
+                      97,
+                      117,
+                      116,
+                      104,
+                      111,
+                      114,
+                      105,
+                      116,
+                      121
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "name": "program",
+              "address": "TWexqA2EZiSZEvu2vVdvmHnpew3Xx9wkjgLToBrooms"
+            }
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "tradeId",
+          "type": "u64"
+        }
+      ]
+    },
+    {
       "name": "vaultTransferOwner",
       "discriminator": [
         45,
@@ -7241,6 +14222,212 @@ export type Rooms = {
       "args": []
     },
     {
+      "name": "vaultTransferOwnerV2",
+      "discriminator": [
+        89,
+        247,
+        34,
+        182,
+        62,
+        194,
+        216,
+        94
+      ],
+      "accounts": [
+        {
+          "name": "base",
+          "accounts": [
+            {
+              "name": "access",
+              "accounts": [
+                {
+                  "name": "team",
+                  "writable": true,
+                  "relations": [
+                    "governance",
+                    "tradingVault"
+                  ]
+                },
+                {
+                  "name": "governance",
+                  "writable": true,
+                  "pda": {
+                    "seeds": [
+                      {
+                        "kind": "const",
+                        "value": [
+                          116,
+                          101,
+                          97,
+                          109,
+                          95,
+                          103,
+                          111,
+                          118,
+                          101,
+                          114,
+                          110,
+                          97,
+                          110,
+                          99,
+                          101
+                        ]
+                      },
+                      {
+                        "kind": "account",
+                        "path": "team"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "tradingVault",
+                  "writable": true,
+                  "pda": {
+                    "seeds": [
+                      {
+                        "kind": "const",
+                        "value": [
+                          116,
+                          114,
+                          97,
+                          100,
+                          105,
+                          110,
+                          103,
+                          95,
+                          118,
+                          97,
+                          117,
+                          108,
+                          116
+                        ]
+                      },
+                      {
+                        "kind": "account",
+                        "path": "team"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "ledger",
+                  "writable": true,
+                  "pda": {
+                    "seeds": [
+                      {
+                        "kind": "const",
+                        "value": [
+                          118,
+                          97,
+                          117,
+                          108,
+                          116,
+                          95,
+                          108,
+                          101,
+                          100,
+                          103,
+                          101,
+                          114
+                        ]
+                      },
+                      {
+                        "kind": "account",
+                        "path": "tradingVault"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "vaultSol",
+                  "writable": true,
+                  "pda": {
+                    "seeds": [
+                      {
+                        "kind": "const",
+                        "value": [
+                          118,
+                          97,
+                          117,
+                          108,
+                          116,
+                          95,
+                          115,
+                          111,
+                          108
+                        ]
+                      },
+                      {
+                        "kind": "account",
+                        "path": "tradingVault"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "actor",
+                  "writable": true,
+                  "signer": true
+                },
+                {
+                  "name": "wallet",
+                  "writable": true
+                },
+                {
+                  "name": "systemProgram",
+                  "address": "11111111111111111111111111111111"
+                }
+              ]
+            },
+            {
+              "name": "newOwner",
+              "signer": true
+            }
+          ]
+        },
+        {
+          "name": "events",
+          "accounts": [
+            {
+              "name": "eventAuthority",
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      95,
+                      95,
+                      101,
+                      118,
+                      101,
+                      110,
+                      116,
+                      95,
+                      97,
+                      117,
+                      116,
+                      104,
+                      111,
+                      114,
+                      105,
+                      116,
+                      121
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "name": "program",
+              "address": "TWexqA2EZiSZEvu2vVdvmHnpew3Xx9wkjgLToBrooms"
+            }
+          ]
+        }
+      ],
+      "args": []
+    },
+    {
       "name": "vaultWithdraw",
       "discriminator": [
         98,
@@ -7390,6 +14577,208 @@ export type Rooms = {
         {
           "name": "systemProgram",
           "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "vaultWithdrawV2",
+      "discriminator": [
+        177,
+        216,
+        46,
+        30,
+        16,
+        172,
+        75,
+        40
+      ],
+      "accounts": [
+        {
+          "name": "base",
+          "accounts": [
+            {
+              "name": "team",
+              "writable": true,
+              "relations": [
+                "governance",
+                "tradingVault"
+              ]
+            },
+            {
+              "name": "governance",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      116,
+                      101,
+                      97,
+                      109,
+                      95,
+                      103,
+                      111,
+                      118,
+                      101,
+                      114,
+                      110,
+                      97,
+                      110,
+                      99,
+                      101
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "team"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "tradingVault",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      116,
+                      114,
+                      97,
+                      100,
+                      105,
+                      110,
+                      103,
+                      95,
+                      118,
+                      97,
+                      117,
+                      108,
+                      116
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "team"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "ledger",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      118,
+                      97,
+                      117,
+                      108,
+                      116,
+                      95,
+                      108,
+                      101,
+                      100,
+                      103,
+                      101,
+                      114
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "tradingVault"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "vaultSol",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      118,
+                      97,
+                      117,
+                      108,
+                      116,
+                      95,
+                      115,
+                      111,
+                      108
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "tradingVault"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "actor",
+              "writable": true,
+              "signer": true
+            },
+            {
+              "name": "wallet",
+              "writable": true
+            },
+            {
+              "name": "systemProgram",
+              "address": "11111111111111111111111111111111"
+            }
+          ]
+        },
+        {
+          "name": "events",
+          "accounts": [
+            {
+              "name": "eventAuthority",
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      95,
+                      95,
+                      101,
+                      118,
+                      101,
+                      110,
+                      116,
+                      95,
+                      97,
+                      117,
+                      116,
+                      104,
+                      111,
+                      114,
+                      105,
+                      116,
+                      121
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "name": "program",
+              "address": "TWexqA2EZiSZEvu2vVdvmHnpew3Xx9wkjgLToBrooms"
+            }
+          ]
         }
       ],
       "args": [
@@ -7595,6 +14984,135 @@ export type Rooms = {
         {
           "name": "systemProgram",
           "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "withdrawEscrowV2",
+      "discriminator": [
+        61,
+        198,
+        7,
+        36,
+        2,
+        62,
+        23,
+        71
+      ],
+      "accounts": [
+        {
+          "name": "base",
+          "accounts": [
+            {
+              "name": "escrow",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      101,
+                      115,
+                      99,
+                      114,
+                      111,
+                      119
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "escrow.sender",
+                    "account": "escrow"
+                  },
+                  {
+                    "kind": "account",
+                    "path": "escrow.escrow_id",
+                    "account": "escrow"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "escrowVault",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      101,
+                      115,
+                      99,
+                      114,
+                      111,
+                      119,
+                      95,
+                      118,
+                      97,
+                      117,
+                      108,
+                      116
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "escrow"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "sender",
+              "writable": true,
+              "signer": true,
+              "relations": [
+                "escrow"
+              ]
+            },
+            {
+              "name": "systemProgram",
+              "address": "11111111111111111111111111111111"
+            }
+          ]
+        },
+        {
+          "name": "events",
+          "accounts": [
+            {
+              "name": "eventAuthority",
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      95,
+                      95,
+                      101,
+                      118,
+                      101,
+                      110,
+                      116,
+                      95,
+                      97,
+                      117,
+                      116,
+                      104,
+                      111,
+                      114,
+                      105,
+                      116,
+                      121
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "name": "program",
+              "address": "TWexqA2EZiSZEvu2vVdvmHnpew3Xx9wkjgLToBrooms"
+            }
+          ]
         }
       ],
       "args": []
@@ -8007,6 +15525,19 @@ export type Rooms = {
       ]
     },
     {
+      "name": "roomsAuthorityRotated",
+      "discriminator": [
+        183,
+        87,
+        70,
+        113,
+        125,
+        208,
+        127,
+        12
+      ]
+    },
+    {
       "name": "swapExecuted",
       "discriminator": [
         150,
@@ -8016,6 +15547,19 @@ export type Rooms = {
         28,
         89,
         38,
+        79
+      ]
+    },
+    {
+      "name": "teamAuthorityMigrated",
+      "discriminator": [
+        77,
+        231,
+        154,
+        164,
+        218,
+        162,
+        51,
         79
       ]
     },
@@ -8968,11 +16512,6 @@ export type Rooms = {
     },
     {
       "name": "referralClaim",
-      "docs": [
-        "Tracks lifetime referral SOL claimed by a single user, across all rooms.",
-        "`claimed` is compared against the `cumulative_earned` figure in each signed",
-        "voucher so that resubmitting the same (or a stale) voucher pays out zero."
-      ],
       "type": {
         "kind": "struct",
         "fields": [
@@ -9182,11 +16721,6 @@ export type Rooms = {
           },
           {
             "name": "frozenContributionLamports",
-            "docs": [
-              "Sum of lamports_contributed for all frozen users (Equal rooms only).",
-              "Excluded from the fee distribution denominator so their share is",
-              "redistributed to active participants on each fee collection."
-            ],
             "type": "u64"
           },
           {
@@ -9197,14 +16731,6 @@ export type Rooms = {
           },
           {
             "name": "team",
-            "docs": [
-              "The launching team's persistent on-chain account, set once at",
-              "creation when `reward_structure == Team`. `None` for every other",
-              "room. This is what lets `seal_room_team`, `claim_rewards` and",
-              "`sweep_room_to_team_vault` derive `team_vault` and prove the",
-              "room-to-team link on chain, instead of trusting a client-supplied",
-              "team identity."
-            ],
             "type": {
               "option": "pubkey"
             }
@@ -9315,17 +16841,6 @@ export type Rooms = {
     },
     {
       "name": "roomTeam",
-      "docs": [
-        "The immutable payout list for a `RewardStructure::Team` room.",
-        "",
-        "One per room (the room's address is in the seed), written before the room",
-        "can take a single lamport, and never touched again once sealed. Teams churn",
-        "off-chain; this is the snapshot of who launched *this* room.",
-        "",
-        "No `InitSpace`/`#[max_len]`: `members` is sized from the persistent team's",
-        "current roster when `seal_room_team` creates this account, so rent tracks",
-        "the snapshot's real size."
-      ],
       "type": {
         "kind": "struct",
         "fields": [
@@ -9335,23 +16850,14 @@ export type Rooms = {
           },
           {
             "name": "expectedMembers",
-            "docs": [
-              "Member count copied atomically from the persistent team roster."
-            ],
             "type": "u16"
           },
           {
             "name": "sealed",
-            "docs": [
-              "Contributions are refused until this is true. Write-once."
-            ],
             "type": "bool"
           },
           {
             "name": "members",
-            "docs": [
-              "Weights sum to exactly 10_000 once sealed."
-            ],
             "type": {
               "vec": {
                 "defined": {
@@ -9369,17 +16875,6 @@ export type Rooms = {
     },
     {
       "name": "roomTeamSealed",
-      "docs": [
-        "Emitted when a room's team payout list is finalized.",
-        "",
-        "Deliberately carries only the COUNT, not the member list. Serializing two",
-        "more vectors here was the single largest heap allocation in the sealing",
-        "call, and it cost about 80 members of headroom: with the lists included the",
-        "program ran out of the 32KB BPF heap at ~120 members, and without them it",
-        "seals 200+ on the default heap. The list is recoverable from the RoomTeam",
-        "account at any time, so nothing is lost but a round trip nobody makes — the",
-        "backend reconciles from the account and skips this event's payload entirely."
-      ],
       "type": {
         "kind": "struct",
         "fields": [
@@ -9461,17 +16956,27 @@ export type Rooms = {
           },
           {
             "name": "claimedBasisPoints",
-            "docs": [
-              "Cumulative vesting-level target (basis points, 0-10000) already",
-              "fulfilled by `airdrop_tokens`. Lets callers pass the target level as a",
-              "cumulative value instead of a per-call increment, making retries of a",
-              "lost/ambiguous `airdrop_tokens` confirmation a harmless no-op."
-            ],
             "type": "u16"
           },
           {
             "name": "bump",
             "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "roomsAuthorityRotated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "previousAuthority",
+            "type": "pubkey"
+          },
+          {
+            "name": "newAuthority",
+            "type": "pubkey"
           }
         ]
       }
@@ -9510,34 +17015,11 @@ export type Rooms = {
     },
     {
       "name": "team",
-      "docs": [
-        "The persistent, mutable roster of a team — one per team, not one per room.",
-        "",
-        "Unlike `RoomTeam` (a per-room, write-once snapshot), `Team` is meant to",
-        "change over time: members join and leave, and every future room the team",
-        "launches reads this account's *current* contents at seal time to build",
-        "its own `RoomTeam` snapshot. A room's own payout split, once sealed, is",
-        "still never retroactively affected by later changes here — only new",
-        "rooms see them.",
-        "",
-        "Seeds: `[b\"team\", team_id]`. `team_id` is the backend's own team",
-        "identifier (16 raw bytes — a UUID), so both the backend and any client",
-        "can derive this account's address deterministically with no RPC read.",
-        "",
-        "Fixed capacity (`MAX_TEAM_MEMBERS`), allocated once at creation, rather",
-        "than `realloc`-based growth: this account is reused indefinitely, so its",
-        "size can't be redeclared per call the way a `RoomTeam`'s can."
-      ],
       "type": {
         "kind": "struct",
         "fields": [
           {
             "name": "teamId",
-            "docs": [
-              "Redundant with the seed, matching `RoomTeam.room`'s existing",
-              "defense-in-depth pattern: a caller-supplied `Team` account still has",
-              "to carry the identity it claims."
-            ],
             "type": {
               "array": [
                 "u8",
@@ -9547,12 +17029,6 @@ export type Rooms = {
           },
           {
             "name": "authority",
-            "docs": [
-              "The signer allowed to call `add_team_member`/`remove_team_member`.",
-              "Always `global_config.rooms_authority` today — kept as its own field",
-              "(rather than re-reading `GlobalConfig` in every mutating instruction)",
-              "so authority checks are a single equality against this account."
-            ],
             "type": "pubkey"
           },
           {
@@ -9568,6 +17044,26 @@ export type Rooms = {
           {
             "name": "bump",
             "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "teamAuthorityMigrated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "team",
+            "type": "pubkey"
+          },
+          {
+            "name": "previousAuthority",
+            "type": "pubkey"
+          },
+          {
+            "name": "newAuthority",
+            "type": "pubkey"
           }
         ]
       }
@@ -9630,12 +17126,6 @@ export type Rooms = {
     },
     {
       "name": "teamShare",
-      "docs": [
-        "One wallet's share of a team-split room's trading fees.",
-        "",
-        "`weight_bps` is written at seal time, not on append: an even split is",
-        "`10_000 / n`, so no weight can be assigned until `n` is final."
-      ],
       "type": {
         "kind": "struct",
         "fields": [
@@ -9877,10 +17367,6 @@ export type Rooms = {
     },
     {
       "name": "vaultPresalePosition",
-      "docs": [
-        "One pending presale per room/vault prevents an aggregate RoomUser's later",
-        "allocations from being attributed to a different set of owners (R6/R14)."
-      ],
       "type": {
         "kind": "struct",
         "fields": [
