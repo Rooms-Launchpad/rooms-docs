@@ -6,13 +6,13 @@ Rooms is a Solana protocol for community-funded token launches, token allocation
 
 Program: `TWexqA2EZiSZEvu2vVdvmHnpew3Xx9wkjgLToBrooms`
 IDL program version: `1.0.0` · Anchor IDL specification: `0.1.0`
-Updated: **29 October 2026**.
+Updated: **26 November 2026**.
 
-The canonical interface is [idl/rooms.json](./idl/rooms.json), with its generated TypeScript type at [idl/rooms.ts](./idl/rooms.ts). There is one current IDL pair: 47 instructions and 33 event definitions, including the team trading vault instructions and CPI events under the original instruction names. [Historical V1 changelog](./changelog/CHANGELOG.md) records the earlier interface; the current README and IDL pair describe this release.
+The canonical interface is [idl/rooms.json](./idl/rooms.json), with its generated TypeScript type at [idl/rooms.ts](./idl/rooms.ts). It contains 49 instructions and 33 event definitions, including two Jupiter vault entries whose execution is disabled on Devnet. [Historical V1 changelog](./changelog/CHANGELOG.md) records the earlier interface.
 
 | Network | Program address | Interface status |
 | --- | --- | --- |
-| Devnet | `TWexqA2EZiSZEvu2vVdvmHnpew3Xx9wkjgLToBrooms` | Deployed and matches the published IDL, including CPI events under canonical instruction names. The former `_v2` entrypoints are removed. Raydium launch permission is present as of 29 October 2026. |
+| Devnet | `TWexqA2EZiSZEvu2vVdvmHnpew3Xx9wkjgLToBrooms` | Deployed and matches the published IDL. Equal-room reward freezing supports closed associated token accounts. Raydium launch permission is present as of 29 October 2026. |
 | Mainnet | — | This program/interface is not deployed on mainnet. |
 
 The canonical IDL targets the current Devnet deployment, including Devnet Raydium CPMM config 6. Account layouts and PDA seeds are unchanged by the CPI-only upgrade, so accounts already created under this program address remain compatible. It does not describe accounts belonging to retired program IDs; those accounts are not migrated to this program.
@@ -23,13 +23,15 @@ A room accepts SOL contributions before finalization. PumpFun launches migrate t
 
 The IDL defines room types `Open`, `AccessCode`, `Riddle` and `Approval`. Open rooms verify access automatically; other types require a verified `RoomAccess`. Reward structures are `Equal`, `Creator`, `Custom` and `Team`. Equal rewards use contribution weights with the creator bonus; Creator and Custom rewards pay the designated recipient. Team rooms seal a reward snapshot from a persistent Team roster. Later membership changes do not alter that room's sealed reward owners.
 
+`freeze_rewards` requires the Rooms authority and applies to contributors in finalized Equal rooms, with the creator exempt. It checks one token account against half the contributor's allocation, rounded down. Initialized accounts must belong to the contributor and match the room mint. A closed canonical Token-2022 associated address counts as zero when it is System-owned and has empty data, including when it holds native SOL. Previously earned rewards remain claimable after a freeze.
+
 Team fee rewards and team trading funds use separate vaults. Trading participation is a per-member flag. Free SOL belongs to each trader and can only be paid to their recorded wallet. Every buy takes the same fraction of eligible free balances, using integer largest-remainder allocation. Position parts stay fixed; subsequent deposits do not gain ownership of earlier trades. Sales credit the original owners in those fixed proportions.
 
 The default trade limit is 2000 bps (20%), with a program-enforced range of 100–5000 bps (1–50%), checked at execution. Up to 16 positions may be open, with 50 ledger slots. Only an eligible opener or the owner can sell a position. Switching a trader off or removing a member is blocked while their money is in an open position. Owner transfer requires both owners' signatures and does not transfer balances or enable a trader flag.
 
 On Devnet, the current governance owner or an admin may set trader flags and the trade limit using their own `actor` signature, provided they remain on the team roster. Trader status alone does not grant these permissions. Manual vault initialization and admin-role changes remain owner-only; the separate authority-funded automatic initialization creates only an empty vault. Ownership transfer still requires both owners to sign. These permissions apply to the current Devnet program.
 
-Vault token trading calls the Rooms PumpSwap or Raydium swap instruction directly; it does not route through Jupiter. Only supported Rooms-launched tokens and canonical route accounts are accepted. Swap minimum outputs are mandatory. Launch rewards enter trading balances only through the claimant's explicit `commit_rewards_to_vault`, sharing the same claim checkpoint as a wallet claim.
+On Devnet, vault token trading routes through the Rooms PumpSwap or Raydium swap instruction and accepts supported Rooms-launched tokens with canonical route accounts. Swap minimum outputs are mandatory. Launch rewards enter trading balances through the claimant's explicit `commit_rewards_to_vault`, sharing the same claim checkpoint as a wallet claim. Jupiter vault trading is disabled on Devnet.
 
 **Vault presales are disabled.** Their instruction/account definitions are present in the IDL, but entry and the complete allocation/refund lifecycle are not enabled.
 
@@ -122,6 +124,7 @@ Account order, signer/writable flags, arguments, discriminators, layouts and err
 | `vault_withdraw` | Withdraw only the trader's own free balance to their recorded wallet. |
 | `vault_buy` | Open a proportional position in a Rooms-launched token through an allowed direct swap route. |
 | `vault_sell` | Partially or fully sell a position as its eligible opener or the owner; distribute net proceeds by fixed parts. |
+| `vault_buy_jupiter`, `vault_sell_jupiter` | Jupiter ExactIn vault trade ABI. Execution is disabled on Devnet. |
 | `vault_exit` | Atomically pay a member's free balance and remove them, rejecting open positions and owner departure. |
 | `commit_rewards_to_vault` | Commit the signer's whole eligible claim for a room into their own free balance using shared claim accounting. |
 | `vault_acknowledge_trade` | Acknowledge indexing of a closed trade under Rooms authority before account reclamation. |
@@ -155,7 +158,7 @@ Events expose contributions, launches, swaps, reward collection/claims, referral
 
 ### CPI event instructions
 
-The interface has one set of 47 canonical instruction names. The former `_v2` entrypoints and legacy log-only event handlers are removed. The 34 event-enabled instructions below retain their original argument layouts and instruction discriminators, and require the CPI account envelope. Their event discriminators and fields are unchanged. Account data layouts and PDA seeds remain unchanged.
+The interface has 49 canonical instruction names. The former `_v2` entrypoints and legacy log-only event handlers are removed. The 36 instruction definitions below include the CPI account envelope. Account data layouts and PDA seeds remain compatible with the previous CPI interface.
 
 Events use authenticated Rooms self-CPI inner instructions. There is no duplicate `Program data:` log event or log fallback; event-emission failure propagates as an instruction failure. The 13 other instruction interfaces remain unchanged.
 
@@ -164,6 +167,7 @@ Events use authenticated Rooms self-CPI inner instructions. There is no duplicat
 | `create_room`, `increase_contribution`, `decrease_contribution`, `finalize_pump`, `finalize_raydium`, `migrate_pump_pool`, `seal_room_team` | Enabled. |
 | `swap_raydium`, `collect_pump_fees`, `collect_raydium_fees`, `claim_rewards`, `freeze_rewards`, `commit_rewards_to_vault` | Enabled. |
 | `vault_init`, `vault_init_automatic`, `vault_set_admin`, `vault_transfer_owner`, `vault_set_trade_limit`, `vault_set_trader`, `vault_deposit`, `vault_withdraw`, `vault_buy`, `vault_sell`, `vault_exit` | Enabled. |
+| `vault_buy_jupiter`, `vault_sell_jupiter` | Present in the IDL. Execution is disabled on Devnet. |
 | `rotate_rooms_authority`, `migrate_team_authority`, `claim_referral` | Enabled. |
 | `begin_escrow`, `approve_escrow`, `reject_escrow`, `withdraw_escrow`, `claim_escrow` | Enabled. |
 | `vault_enter_presale`, `vault_settle_presale` | Present in the IDL; presale lifecycle remains disabled. |

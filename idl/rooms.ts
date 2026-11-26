@@ -2,7 +2,7 @@
  * Program IDL in camelCase format in order to be used in JS/TS.
  *
  * Note that this is only a type helper and is not the actual IDL. The original
- * IDL can be found at `./rooms.json`.
+ * IDL can be found at `target/idl/rooms.json`.
  */
 export type Rooms = {
   "address": "TWexqA2EZiSZEvu2vVdvmHnpew3Xx9wkjgLToBrooms",
@@ -15,6 +15,10 @@ export type Rooms = {
   "instructions": [
     {
       "name": "addTeamMember",
+      "docs": [
+        "Adds one wallet to a team's live roster. Touches no room — only a",
+        "room sealed *after* this call will include the new member."
+      ],
       "discriminator": [
         64,
         13,
@@ -600,6 +604,9 @@ export type Rooms = {
             },
             {
               "name": "referralVault",
+              "docs": [
+                "collections across all rooms, pending referral payout."
+              ],
               "writable": true,
               "pda": {
                 "seeds": [
@@ -768,6 +775,10 @@ export type Rooms = {
             },
             {
               "name": "roomUser",
+              "docs": [
+                "Created on first claim if the signer never contributed (e.g. creator/reward_wallet).",
+                "Checkpoint starts at 0 so creators earn fees from room inception."
+              ],
               "writable": true,
               "pda": {
                 "seeds": [
@@ -798,6 +809,12 @@ export type Rooms = {
             },
             {
               "name": "roomVault",
+              "docs": [
+                "pays out of this; a Team room only ever reads its",
+                "`treasury_fee_accumulator` from `room` and pays out of `team_vault`",
+                "instead (see below) — but the account still has to be present in",
+                "every call because the struct is shared across all reward structures."
+              ],
               "writable": true,
               "pda": {
                 "seeds": [
@@ -834,6 +851,11 @@ export type Rooms = {
             },
             {
               "name": "roomTeam",
+              "docs": [
+                "Required for `RewardStructure::Team` rooms, absent for every other kind.",
+                "Trailing and optional so pre-team clients keep working (see the",
+                "`allow-missing-optionals` note in Cargo.toml)."
+              ],
               "optional": true,
               "pda": {
                 "seeds": [
@@ -860,6 +882,15 @@ export type Rooms = {
             },
             {
               "name": "teamVault",
+              "docs": [
+                "place of `room_vault`. Deliberately unconstrained here (no seeds/bump",
+                "in this macro) and validated by hand in the handler instead: its",
+                "address depends on `room.team`, itself an `Option`, and deriving one",
+                "optional account's seeds from another optional account's contents is",
+                "a real panic risk if a caller supplies them inconsistently. Manual",
+                "validation lets every case fail cleanly through `require!`/`ok_or`",
+                "instead."
+              ],
               "writable": true,
               "optional": true
             }
@@ -1057,6 +1088,9 @@ export type Rooms = {
             },
             {
               "name": "pumpswapCreatorTokenAccount",
+              "docs": [
+                "Closed at the end of each call; room_vault recreates it next time."
+              ],
               "writable": true
             },
             {
@@ -1742,6 +1776,9 @@ export type Rooms = {
             },
             {
               "name": "rewardWalletRoomUser",
+              "docs": [
+                "RoomUser PDA for the reward wallet, created at room creation time."
+              ],
               "writable": true,
               "pda": {
                 "seeds": [
@@ -1866,6 +1903,13 @@ export type Rooms = {
     },
     {
       "name": "createTeam",
+      "docs": [
+        "Creates (idempotently) the persistent on-chain roster for one team.",
+        "Lazy — called the first time a team's membership needs syncing on",
+        "chain, not eagerly for every team — and rooms_authority-signed, since",
+        "team membership stays exactly as backend-authorized as it is off",
+        "chain today."
+      ],
       "discriminator": [
         122,
         161,
@@ -1904,6 +1948,11 @@ export type Rooms = {
         },
         {
           "name": "team",
+          "docs": [
+            "Allocated once, on first sync, and reused for every room this team",
+            "ever launches — see `Team`'s own doc comment for why this differs",
+            "from `RoomTeam`'s per-room allocation."
+          ],
           "writable": true,
           "pda": {
             "seeds": [
@@ -1925,6 +1974,11 @@ export type Rooms = {
         },
         {
           "name": "teamVault",
+          "docs": [
+            "funded to the zero-data rent minimum when the team is created so a",
+            "later fee sweep can never try to create the PDA with a sub-rent",
+            "transfer after an earlier payout round drained its distributable SOL."
+          ],
           "writable": true,
           "pda": {
             "seeds": [
@@ -2129,6 +2183,14 @@ export type Rooms = {
             },
             {
               "name": "roomTeam",
+              "docs": [
+                "Required for `RewardStructure::Team` rooms, absent for every other kind.",
+                "",
+                "Last in the list, and optional, so clients built before team splits",
+                "existed keep working unchanged against non-team rooms (see the",
+                "`allow-missing-optionals` note in Cargo.toml). The seeds constraint",
+                "means a team room cannot be satisfied by passing some other account."
+              ],
               "optional": true,
               "pda": {
                 "seeds": [
@@ -2669,6 +2731,9 @@ export type Rooms = {
             },
             {
               "name": "launchAuthority",
+              "docs": [
+                "Shared signing address to give Raydium for its Permission PDA."
+              ],
               "writable": true,
               "pda": {
                 "seeds": [
@@ -3189,6 +3254,14 @@ export type Rooms = {
             },
             {
               "name": "roomTeam",
+              "docs": [
+                "Required for `RewardStructure::Team` rooms, absent for every other kind.",
+                "",
+                "Last in the list, and optional, so clients built before team splits",
+                "existed keep working unchanged against non-team rooms (see the",
+                "`allow-missing-optionals` note in Cargo.toml). The seeds constraint",
+                "means a team room cannot be satisfied by passing some other account."
+              ],
               "optional": true,
               "pda": {
                 "seeds": [
@@ -3429,6 +3502,9 @@ export type Rooms = {
         },
         {
           "name": "referralVault",
+          "docs": [
+            "every subsequent `collect_raydium_fees` transfer into it is guaranteed to succeed."
+          ],
           "writable": true,
           "pda": {
             "seeds": [
@@ -4221,6 +4297,10 @@ export type Rooms = {
     },
     {
       "name": "removeTeamMember",
+      "docs": [
+        "Removes one wallet from a team's live roster. Touches no room — a",
+        "departing member keeps their share of every room already sealed."
+      ],
       "discriminator": [
         224,
         54,
@@ -4238,6 +4318,9 @@ export type Rooms = {
         },
         {
           "name": "tradingLedger",
+          "docs": [
+            "cannot omit an initialized ledger to bypass the custody exit guard."
+          ],
           "pda": {
             "seeds": [
               {
@@ -4508,10 +4591,25 @@ export type Rooms = {
               }
             },
             {
-              "name": "team"
+              "name": "team",
+              "docs": [
+                "The team this room launched under. Its *current* roster is what gets",
+                "copied into `room_team` below — not a client-supplied wallet list —",
+                "so the program itself, not just the backend, ties a room's split to",
+                "the team it actually belongs to.",
+                "",
+                "No seeds/bump here: `room.team` already pins the one correct address",
+                "(set once, at `create_room`), so re-deriving it from `team_id` would",
+                "only re-prove what the equality constraint below already proves."
+              ]
             },
             {
               "name": "roomTeam",
+              "docs": [
+                "`init`, not `init_if_needed`: sealing a room's team is now exactly",
+                "one call, so a second attempt fails at the account-already-in-use",
+                "constraint rather than needing a runtime `sealed` check."
+              ],
               "writable": true,
               "pda": {
                 "seeds": [
@@ -4635,6 +4733,9 @@ export type Rooms = {
         },
         {
           "name": "adminWsolVault",
+          "docs": [
+            "Admin's WSOL vault for receiving sell fees"
+          ],
           "writable": true
         },
         {
@@ -5309,6 +5410,12 @@ export type Rooms = {
     },
     {
       "name": "sweepRoomToTeamVault",
+      "docs": [
+        "Forwards `amount` lamports from a team_split room's own `room_vault`",
+        "into its team's shared `team_vault`. Called right after",
+        "`collect_pump_fees`/`collect_raydium_fees` for team_split rooms,",
+        "`amount` being exactly what that sweep just collected."
+      ],
       "discriminator": [
         155,
         199,
@@ -5344,6 +5451,15 @@ export type Rooms = {
         },
         {
           "name": "roomVault",
+          "docs": [
+            "collection always lands here first (their on-chain \"creator\"/fee",
+            "recipient was registered as this exact PDA at graduation and can't be",
+            "redirected afterward), so this instruction is the forwarding step",
+            "that consolidates it into the team's shared vault. It also carries",
+            "operational reserves unrelated to fees (the per-contributor ATA-fee",
+            "float `airdrop_tokens` spends from, the WSOL-ATA-recycling reserve",
+            "`collect_pump_fees` needs) — see why `amount` is explicit, below."
+          ],
           "writable": true,
           "pda": {
             "seeds": [
@@ -5371,10 +5487,22 @@ export type Rooms = {
         },
         {
           "name": "teamVault",
+          "docs": [
+            "`room.team` — nothing the caller chooses — and validated by hand",
+            "below rather than via seeds on this account, for the same reason",
+            "`claim_rewards`'s `team_vault` is: deriving one optional account's",
+            "seeds from another account's `Option` field is a needless panic risk",
+            "when it can just be checked with `require!` instead."
+          ],
           "writable": true
         },
         {
           "name": "caller",
+          "docs": [
+            "Permissionless, like `collect_pump_fees`/`collect_raydium_fees`: the",
+            "destination is entirely PDA-derived, so the caller's identity can't",
+            "misdirect anything — they only pay the transaction fee."
+          ],
           "signer": true
         },
         {
@@ -5786,6 +5914,303 @@ export type Rooms = {
         {
           "name": "minTokensOut",
           "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "vaultBuyJupiter",
+      "discriminator": [
+        108,
+        95,
+        8,
+        174,
+        128,
+        85,
+        24,
+        42
+      ],
+      "accounts": [
+        {
+          "name": "base",
+          "accounts": [
+            {
+              "name": "access",
+              "accounts": [
+                {
+                  "name": "team",
+                  "writable": true,
+                  "relations": [
+                    "governance",
+                    "tradingVault"
+                  ]
+                },
+                {
+                  "name": "governance",
+                  "writable": true,
+                  "pda": {
+                    "seeds": [
+                      {
+                        "kind": "const",
+                        "value": [
+                          116,
+                          101,
+                          97,
+                          109,
+                          95,
+                          103,
+                          111,
+                          118,
+                          101,
+                          114,
+                          110,
+                          97,
+                          110,
+                          99,
+                          101
+                        ]
+                      },
+                      {
+                        "kind": "account",
+                        "path": "team"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "tradingVault",
+                  "writable": true,
+                  "pda": {
+                    "seeds": [
+                      {
+                        "kind": "const",
+                        "value": [
+                          116,
+                          114,
+                          97,
+                          100,
+                          105,
+                          110,
+                          103,
+                          95,
+                          118,
+                          97,
+                          117,
+                          108,
+                          116
+                        ]
+                      },
+                      {
+                        "kind": "account",
+                        "path": "team"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "ledger",
+                  "writable": true,
+                  "pda": {
+                    "seeds": [
+                      {
+                        "kind": "const",
+                        "value": [
+                          118,
+                          97,
+                          117,
+                          108,
+                          116,
+                          95,
+                          108,
+                          101,
+                          100,
+                          103,
+                          101,
+                          114
+                        ]
+                      },
+                      {
+                        "kind": "account",
+                        "path": "tradingVault"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "vaultSol",
+                  "writable": true,
+                  "pda": {
+                    "seeds": [
+                      {
+                        "kind": "const",
+                        "value": [
+                          118,
+                          97,
+                          117,
+                          108,
+                          116,
+                          95,
+                          115,
+                          111,
+                          108
+                        ]
+                      },
+                      {
+                        "kind": "account",
+                        "path": "tradingVault"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "actor",
+                  "writable": true,
+                  "signer": true
+                },
+                {
+                  "name": "wallet",
+                  "writable": true
+                },
+                {
+                  "name": "systemProgram",
+                  "address": "11111111111111111111111111111111"
+                }
+              ]
+            },
+            {
+              "name": "trade",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      118,
+                      97,
+                      117,
+                      108,
+                      116,
+                      95,
+                      116,
+                      114,
+                      97,
+                      100,
+                      101
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "access.trading_vault",
+                    "account": "vaultAccess"
+                  },
+                  {
+                    "kind": "account",
+                    "path": "access.trading_vault.next_trade_id",
+                    "account": "vaultAccess"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "payer",
+              "writable": true,
+              "signer": true
+            },
+            {
+              "name": "route",
+              "accounts": [
+                {
+                  "name": "vaultAuthority",
+                  "writable": true
+                },
+                {
+                  "name": "tokenMint"
+                },
+                {
+                  "name": "tokenAccount",
+                  "writable": true
+                },
+                {
+                  "name": "wsolAccount",
+                  "writable": true
+                },
+                {
+                  "name": "wsolMint",
+                  "address": "So11111111111111111111111111111111111111112"
+                },
+                {
+                  "name": "tokenProgram"
+                },
+                {
+                  "name": "wsolProgram",
+                  "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+                },
+                {
+                  "name": "associatedTokenProgram",
+                  "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+                },
+                {
+                  "name": "jupiterProgram",
+                  "address": "JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4"
+                }
+              ]
+            },
+            {
+              "name": "systemProgram",
+              "address": "11111111111111111111111111111111"
+            }
+          ]
+        },
+        {
+          "name": "events",
+          "accounts": [
+            {
+              "name": "eventAuthority",
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      95,
+                      95,
+                      101,
+                      118,
+                      101,
+                      110,
+                      116,
+                      95,
+                      97,
+                      117,
+                      116,
+                      104,
+                      111,
+                      114,
+                      105,
+                      116,
+                      121
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "name": "program",
+              "address": "TWexqA2EZiSZEvu2vVdvmHnpew3Xx9wkjgLToBrooms"
+            }
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        },
+        {
+          "name": "minTokensOut",
+          "type": "u64"
+        },
+        {
+          "name": "routeData",
+          "type": "bytes"
         }
       ]
     },
@@ -7442,6 +7867,297 @@ export type Rooms = {
         {
           "name": "minLamportsOut",
           "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "vaultSellJupiter",
+      "discriminator": [
+        39,
+        207,
+        78,
+        45,
+        151,
+        105,
+        33,
+        140
+      ],
+      "accounts": [
+        {
+          "name": "base",
+          "accounts": [
+            {
+              "name": "access",
+              "accounts": [
+                {
+                  "name": "team",
+                  "writable": true,
+                  "relations": [
+                    "governance",
+                    "tradingVault"
+                  ]
+                },
+                {
+                  "name": "governance",
+                  "writable": true,
+                  "pda": {
+                    "seeds": [
+                      {
+                        "kind": "const",
+                        "value": [
+                          116,
+                          101,
+                          97,
+                          109,
+                          95,
+                          103,
+                          111,
+                          118,
+                          101,
+                          114,
+                          110,
+                          97,
+                          110,
+                          99,
+                          101
+                        ]
+                      },
+                      {
+                        "kind": "account",
+                        "path": "team"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "tradingVault",
+                  "writable": true,
+                  "pda": {
+                    "seeds": [
+                      {
+                        "kind": "const",
+                        "value": [
+                          116,
+                          114,
+                          97,
+                          100,
+                          105,
+                          110,
+                          103,
+                          95,
+                          118,
+                          97,
+                          117,
+                          108,
+                          116
+                        ]
+                      },
+                      {
+                        "kind": "account",
+                        "path": "team"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "ledger",
+                  "writable": true,
+                  "pda": {
+                    "seeds": [
+                      {
+                        "kind": "const",
+                        "value": [
+                          118,
+                          97,
+                          117,
+                          108,
+                          116,
+                          95,
+                          108,
+                          101,
+                          100,
+                          103,
+                          101,
+                          114
+                        ]
+                      },
+                      {
+                        "kind": "account",
+                        "path": "tradingVault"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "vaultSol",
+                  "writable": true,
+                  "pda": {
+                    "seeds": [
+                      {
+                        "kind": "const",
+                        "value": [
+                          118,
+                          97,
+                          117,
+                          108,
+                          116,
+                          95,
+                          115,
+                          111,
+                          108
+                        ]
+                      },
+                      {
+                        "kind": "account",
+                        "path": "tradingVault"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "name": "actor",
+                  "writable": true,
+                  "signer": true
+                },
+                {
+                  "name": "wallet",
+                  "writable": true
+                },
+                {
+                  "name": "systemProgram",
+                  "address": "11111111111111111111111111111111"
+                }
+              ]
+            },
+            {
+              "name": "trade",
+              "writable": true,
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      118,
+                      97,
+                      117,
+                      108,
+                      116,
+                      95,
+                      116,
+                      114,
+                      97,
+                      100,
+                      101
+                    ]
+                  },
+                  {
+                    "kind": "account",
+                    "path": "access.trading_vault",
+                    "account": "vaultAccess"
+                  },
+                  {
+                    "kind": "arg",
+                    "path": "tradeId"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "route",
+              "accounts": [
+                {
+                  "name": "vaultAuthority",
+                  "writable": true
+                },
+                {
+                  "name": "tokenMint"
+                },
+                {
+                  "name": "tokenAccount",
+                  "writable": true
+                },
+                {
+                  "name": "wsolAccount",
+                  "writable": true
+                },
+                {
+                  "name": "wsolMint",
+                  "address": "So11111111111111111111111111111111111111112"
+                },
+                {
+                  "name": "tokenProgram"
+                },
+                {
+                  "name": "wsolProgram",
+                  "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+                },
+                {
+                  "name": "associatedTokenProgram",
+                  "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+                },
+                {
+                  "name": "jupiterProgram",
+                  "address": "JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "events",
+          "accounts": [
+            {
+              "name": "eventAuthority",
+              "pda": {
+                "seeds": [
+                  {
+                    "kind": "const",
+                    "value": [
+                      95,
+                      95,
+                      101,
+                      118,
+                      101,
+                      110,
+                      116,
+                      95,
+                      97,
+                      117,
+                      116,
+                      104,
+                      111,
+                      114,
+                      105,
+                      116,
+                      121
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "name": "program",
+              "address": "TWexqA2EZiSZEvu2vVdvmHnpew3Xx9wkjgLToBrooms"
+            }
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "tradeId",
+          "type": "u64"
+        },
+        {
+          "name": "tokenAmount",
+          "type": "u64"
+        },
+        {
+          "name": "minLamportsOut",
+          "type": "u64"
+        },
+        {
+          "name": "routeData",
+          "type": "bytes"
         }
       ]
     },
@@ -10466,6 +11182,11 @@ export type Rooms = {
     },
     {
       "name": "referralClaim",
+      "docs": [
+        "Tracks lifetime referral SOL claimed by a single user, across all rooms.",
+        "`claimed` is compared against the `cumulative_earned` figure in each signed",
+        "voucher so that resubmitting the same (or a stale) voucher pays out zero."
+      ],
       "type": {
         "kind": "struct",
         "fields": [
@@ -10675,6 +11396,11 @@ export type Rooms = {
           },
           {
             "name": "frozenContributionLamports",
+            "docs": [
+              "Sum of lamports_contributed for all frozen users (Equal rooms only).",
+              "Excluded from the fee distribution denominator so their share is",
+              "redistributed to active participants on each fee collection."
+            ],
             "type": "u64"
           },
           {
@@ -10685,6 +11411,14 @@ export type Rooms = {
           },
           {
             "name": "team",
+            "docs": [
+              "The launching team's persistent on-chain account, set once at",
+              "creation when `reward_structure == Team`. `None` for every other",
+              "room. This is what lets `seal_room_team`, `claim_rewards` and",
+              "`sweep_room_to_team_vault` derive `team_vault` and prove the",
+              "room-to-team link on chain, instead of trusting a client-supplied",
+              "team identity."
+            ],
             "type": {
               "option": "pubkey"
             }
@@ -10795,6 +11529,17 @@ export type Rooms = {
     },
     {
       "name": "roomTeam",
+      "docs": [
+        "The immutable payout list for a `RewardStructure::Team` room.",
+        "",
+        "One per room (the room's address is in the seed), written before the room",
+        "can take a single lamport, and never touched again once sealed. Teams churn",
+        "off-chain; this is the snapshot of who launched *this* room.",
+        "",
+        "No `InitSpace`/`#[max_len]`: `members` is sized from the persistent team's",
+        "current roster when `seal_room_team` creates this account, so rent tracks",
+        "the snapshot's real size."
+      ],
       "type": {
         "kind": "struct",
         "fields": [
@@ -10804,14 +11549,23 @@ export type Rooms = {
           },
           {
             "name": "expectedMembers",
+            "docs": [
+              "Member count copied atomically from the persistent team roster."
+            ],
             "type": "u16"
           },
           {
             "name": "sealed",
+            "docs": [
+              "Contributions are refused until this is true. Write-once."
+            ],
             "type": "bool"
           },
           {
             "name": "members",
+            "docs": [
+              "Weights sum to exactly 10_000 once sealed."
+            ],
             "type": {
               "vec": {
                 "defined": {
@@ -10829,6 +11583,17 @@ export type Rooms = {
     },
     {
       "name": "roomTeamSealed",
+      "docs": [
+        "Emitted when a room's team payout list is finalized.",
+        "",
+        "Deliberately carries only the COUNT, not the member list. Serializing two",
+        "more vectors here was the single largest heap allocation in the sealing",
+        "call, and it cost about 80 members of headroom: with the lists included the",
+        "program ran out of the 32KB BPF heap at ~120 members, and without them it",
+        "seals 200+ on the default heap. The list is recoverable from the RoomTeam",
+        "account at any time, so nothing is lost but a round trip nobody makes — the",
+        "backend reconciles from the account and skips this event's payload entirely."
+      ],
       "type": {
         "kind": "struct",
         "fields": [
@@ -10910,6 +11675,12 @@ export type Rooms = {
           },
           {
             "name": "claimedBasisPoints",
+            "docs": [
+              "Cumulative vesting-level target (basis points, 0-10000) already",
+              "fulfilled by `airdrop_tokens`. Lets callers pass the target level as a",
+              "cumulative value instead of a per-call increment, making retries of a",
+              "lost/ambiguous `airdrop_tokens` confirmation a harmless no-op."
+            ],
             "type": "u16"
           },
           {
@@ -10969,11 +11740,34 @@ export type Rooms = {
     },
     {
       "name": "team",
+      "docs": [
+        "The persistent, mutable roster of a team — one per team, not one per room.",
+        "",
+        "Unlike `RoomTeam` (a per-room, write-once snapshot), `Team` is meant to",
+        "change over time: members join and leave, and every future room the team",
+        "launches reads this account's *current* contents at seal time to build",
+        "its own `RoomTeam` snapshot. A room's own payout split, once sealed, is",
+        "still never retroactively affected by later changes here — only new",
+        "rooms see them.",
+        "",
+        "Seeds: `[b\"team\", team_id]`. `team_id` is the backend's own team",
+        "identifier (16 raw bytes — a UUID), so both the backend and any client",
+        "can derive this account's address deterministically with no RPC read.",
+        "",
+        "Fixed capacity (`MAX_TEAM_MEMBERS`), allocated once at creation, rather",
+        "than `realloc`-based growth: this account is reused indefinitely, so its",
+        "size can't be redeclared per call the way a `RoomTeam`'s can."
+      ],
       "type": {
         "kind": "struct",
         "fields": [
           {
             "name": "teamId",
+            "docs": [
+              "Redundant with the seed, matching `RoomTeam.room`'s existing",
+              "defense-in-depth pattern: a caller-supplied `Team` account still has",
+              "to carry the identity it claims."
+            ],
             "type": {
               "array": [
                 "u8",
@@ -10983,6 +11777,12 @@ export type Rooms = {
           },
           {
             "name": "authority",
+            "docs": [
+              "The signer allowed to call `add_team_member`/`remove_team_member`.",
+              "Always `global_config.rooms_authority` today — kept as its own field",
+              "(rather than re-reading `GlobalConfig` in every mutating instruction)",
+              "so authority checks are a single equality against this account."
+            ],
             "type": "pubkey"
           },
           {
@@ -11080,6 +11880,12 @@ export type Rooms = {
     },
     {
       "name": "teamShare",
+      "docs": [
+        "One wallet's share of a team-split room's trading fees.",
+        "",
+        "`weight_bps` is written at seal time, not on append: an even split is",
+        "`10_000 / n`, so no weight can be assigned until `n` is final."
+      ],
       "type": {
         "kind": "struct",
         "fields": [
@@ -11321,6 +12127,10 @@ export type Rooms = {
     },
     {
       "name": "vaultPresalePosition",
+      "docs": [
+        "One pending presale per room/vault prevents an aggregate RoomUser's later",
+        "allocations from being attributed to a different set of owners (R6/R14)."
+      ],
       "type": {
         "kind": "struct",
         "fields": [
